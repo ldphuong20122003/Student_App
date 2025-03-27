@@ -28,7 +28,7 @@ public class StudentController {
     public StudentController(DatabaseReference reference) {
         this.myRef = reference != null
                 ? reference
-                : FirebaseDatabase.getInstance().getReference("students");
+                : FirebaseDatabase.getInstance().getReference("Students");
         this.databaseHelper = new DatabaseHelper();
     }
 }

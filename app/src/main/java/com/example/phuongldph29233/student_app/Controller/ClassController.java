@@ -27,7 +27,7 @@ public class ClassController {
     public ClassController(DatabaseReference reference) {
         this.myRef = reference != null
                 ? reference
-                : FirebaseDatabase.getInstance().getReference("classes");
+                : FirebaseDatabase.getInstance().getReference("Classes");
         this.databaseHelper = new DatabaseHelper();
     }
 }

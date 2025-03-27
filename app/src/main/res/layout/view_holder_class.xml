@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:paddingBottom="12dp"> <!-- Nền xám nhẹ để CardView nổi bật hơn -->
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView_subject"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/white"
+        android:paddingBottom="10dp"> <!-- Đảm bảo nền trắng -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/icon_subjects"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginLeft="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/txt_maLop"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã lop"
+                        android:textStyle="bold"
+                        android:textSize="22sp"
+                        android:textColor="@color/red" />
+
+                    <TextView
+                        android:layout_width="30dp"
+                        android:layout_height="match_parent"
+                        android:text="-"
+                        android:textStyle="bold"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/txt_tenLop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tên Lop"
+                        android:textSize="22sp"
+                        android:textColor="@color/blue"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txt_Khoa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Khoa"
+                    android:textColor="@color/blue"
+                    android:textSize="20sp"
+                    android:layout_marginTop="5dp" />
+                <TextView
+                    android:id="@+id/txt_Giangvien"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Giang vien"
+                    android:textColor="@color/blue"
+                    android:textSize="20sp"
+                    android:layout_marginTop="5dp" />
+                <TextView
+                    android:id="@+id/txt_namhoc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nam hoc"
+                    android:textColor="@color/blue"
+                    android:textSize="20sp"
+                    android:layout_marginTop="5dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
