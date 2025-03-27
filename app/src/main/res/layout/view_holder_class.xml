@@ -2,11 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="120dp"
+    android:layout_height="wrap_content"
     android:paddingBottom="12dp"> <!-- Nền xám nhẹ để CardView nổi bật hơn -->
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cardView_subject"
+        android:id="@+id/cardView_class"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +46,7 @@
                         android:id="@+id/txt_maLop"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mã lop"
+                        android:text="Mã lop:"
                         android:textStyle="bold"
                         android:textSize="22sp"
                         android:textColor="@color/red" />
@@ -62,7 +62,7 @@
                         android:id="@+id/txt_tenLop"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Tên Lop"
+                        android:text="Tên Lop:"
                         android:textSize="22sp"
                         android:textColor="@color/blue"
                         android:textStyle="bold" />
@@ -72,7 +72,7 @@
                     android:id="@+id/txt_Khoa"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Khoa"
+                    android:text="Khoa:"
                     android:textColor="@color/blue"
                     android:textSize="20sp"
                     android:layout_marginTop="5dp" />
@@ -80,7 +80,7 @@
                     android:id="@+id/txt_Giangvien"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Giang vien"
+                    android:text="Giang vien:"
                     android:textColor="@color/blue"
                     android:textSize="20sp"
                     android:layout_marginTop="5dp" />
@@ -88,7 +88,7 @@
                     android:id="@+id/txt_namhoc"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nam hoc"
+                    android:text="Nam hoc:"
                     android:textColor="@color/blue"
                     android:textSize="20sp"
                     android:layout_marginTop="5dp" />
