@@ -39,20 +39,15 @@ public class ClassActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         databaseHelper = new DatabaseHelper<>("Classes");
         classArrayList = new ArrayList<>();
         originalArrayList = new ArrayList<>();
         classAdapter = new ClassAdapter(classArrayList);
-
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(classAdapter);
-
         binding.btnBack.setOnClickListener(v -> finish());
         binding.btnAdd.setOnClickListener(v -> showDialogAdd());
-
         loadDataClass();
-
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -61,7 +56,6 @@ public class ClassActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchList(s.toString());
             }
-
             @Override
             public void afterTextChanged(Editable s) {}
         });
@@ -84,7 +78,6 @@ public class ClassActivity extends AppCompatActivity {
                     binding.recyclerView.setVisibility(View.VISIBLE);
                 }
             }
-
             @Override
             public void onFailure(String error) {
                 binding.recyclerView.setVisibility(View.GONE);
@@ -97,8 +90,6 @@ public class ClassActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_class);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        // Ánh xạ view
         TextView txtTitle = dialog.findViewById(R.id.textView);
         EditText edtMaLop = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLop = dialog.findViewById(R.id.edt_tenLop_add);
@@ -107,9 +98,7 @@ public class ClassActivity extends AppCompatActivity {
         EditText edtNamHoc = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_lop);
         Button btnAdd = dialog.findViewById(R.id.btn_add_lop);
-
         txtTitle.setText("Thêm lớp học");
-
         btnAdd.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
             String maLop = edtMaLop.getText().toString().trim();
@@ -117,13 +106,11 @@ public class ClassActivity extends AppCompatActivity {
             String khoa = edtKhoa.getText().toString().trim();
             String giangVien = edtGiangVien.getText().toString().trim();
             String namHoc = edtNamHoc.getText().toString().trim();
-
             if (maLop.isEmpty() || tenLop.isEmpty() || khoa.isEmpty() ||
                     giangVien.isEmpty() || namHoc.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             Class newClass = new Class(id, maLop, tenLop, khoa, giangVien, namHoc);
             addClass(newClass, dialog);
         });
@@ -140,7 +127,6 @@ public class ClassActivity extends AppCompatActivity {
                 dialog.dismiss();
                 loadDataClass();
             }
-
             @Override
             public void onFailure(String error) {
                 Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();

@@ -18,7 +18,6 @@ public class DatabaseHelper<T> {
         this.databaseReference = FirebaseDatabase.getInstance().getReference(path);
     }
 
-    // Lấy danh sách các đối tượng
     public void getList(Class<T> clazz, DatabaseCallback<T> callback) {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -27,12 +26,10 @@ public class DatabaseHelper<T> {
                 for (DataSnapshot itemSnapshot : snapshot.getChildren()) {
                     T item = itemSnapshot.getValue(clazz);
                     if (item != null) {
-                        // Nếu đối tượng có phương thức setId, hãy gọi nó
                         try {
                             itemSnapshot.getKey();
                             item.getClass().getMethod("setId", String.class).invoke(item, itemSnapshot.getKey());
                         } catch (Exception e) {
-                            // Ignore if setId method doesn't exist
                         }
                         itemList.add(item);
                     }
@@ -47,15 +44,11 @@ public class DatabaseHelper<T> {
         });
     }
 
-    // Thêm đối tượng mới
     public void add(T item, DatabaseActionCallback callback) {
         String key = databaseReference.push().getKey();
-
-        // Nếu đối tượng có phương thức setId, hãy gọi nó
         try {
             item.getClass().getMethod("setId", String.class).invoke(item, key);
         } catch (Exception e) {
-            // Ignore if setId method doesn't exist
         }
 
         databaseReference.child(key)
@@ -64,7 +57,6 @@ public class DatabaseHelper<T> {
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    // Cập nhật đối tượng
     public void update(String id, T updatedItem, DatabaseActionCallback callback) {
         databaseReference.child(id)
                 .setValue(updatedItem)
@@ -84,7 +76,6 @@ public class DatabaseHelper<T> {
         void onFailure(String error);
     }
 
-    // Interface callback cho các hành động thêm, sửa, xóa
     public interface DatabaseActionCallback {
         void onSuccess();
         void onFailure(String error);

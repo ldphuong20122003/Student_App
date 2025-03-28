@@ -16,6 +16,10 @@
             android:name=".Activity.DetailSubjectActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.DetailStudentActivity"
+            android:launchMode="standard"
+            android:exported="false" />
+        <activity
             android:name=".Activity.SubjectActivity"
             android:exported="false" />
         <activity

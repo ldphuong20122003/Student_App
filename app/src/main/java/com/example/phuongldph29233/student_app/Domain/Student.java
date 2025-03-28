@@ -11,13 +11,13 @@ public class Student {
     private String lopHoc;
 
     private String ngayNhapHoc;
-    private String trinhDo;
+    private Branch chuyenNganh;
     private String heDaoTao;
 
     public Student() {
     }
 
-    public Student(String id, String maSV, String tenSV, String ngaySinh, String queQuan, String soDienThoai, String email, String lopHoc, String ngayNhapHoc, String trinhDo, String heDaoTao) {
+    public Student(String id, String maSV, String tenSV, String ngaySinh, String queQuan, String soDienThoai, String email, String lopHoc, String ngayNhapHoc, Branch chuyenNganh, String heDaoTao) {
         this.id = id;
         this.maSV = maSV;
         this.tenSV = tenSV;
@@ -27,7 +27,7 @@ public class Student {
         this.email = email;
         this.lopHoc = lopHoc;
         this.ngayNhapHoc = ngayNhapHoc;
-        this.trinhDo = trinhDo;
+        this.chuyenNganh = chuyenNganh;
         this.heDaoTao = heDaoTao;
     }
 
@@ -104,12 +104,12 @@ public class Student {
         this.ngayNhapHoc = ngayNhapHoc;
     }
 
-    public String getTrinhDo() {
-        return trinhDo;
+    public Branch getChuyenNganh() {
+        return chuyenNganh;
     }
 
-    public void setTrinhDo(String trinhDo) {
-        this.trinhDo = trinhDo;
+    public void setChuyenNganh(Branch chuyenNganh) {
+        this.chuyenNganh = chuyenNganh;
     }
 
     public String getHeDaoTao() {

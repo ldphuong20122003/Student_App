@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.example.phuongldph29233.student_app.Activity.DetailClassActivity;
+import com.example.phuongldph29233.student_app.Activity.DetailStudentActivity;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
@@ -46,20 +47,26 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
 
         @Override
         public void bind(Student studentItem) {
-//            binding.txtMaLop.setText(studentItem.getId());
-//            binding.txtKhoa.setText(studentItem.getMaSV());
-//            binding.txtGiangvien.setText(studentItem.getTenSV());
-//            binding.txtNamhoc.setText(studentItem.getNgaySinh());
+            binding.txtMaSV.setText(studentItem.getMaSV());
+            binding.txtTenSV.setText(studentItem.getTenSV());
+            binding.txtLopHoc.setText(studentItem.getLopHoc());
+            binding.txtHeDaotao.setText(studentItem.getHeDaoTao());
             binding.cardViewStudent.setOnClickListener(v -> {
                 if (actionListener != null) {
                     actionListener.onItemClick(studentItem);
                 }else {
-                    Intent intent = new Intent(context, DetailClassActivity.class);
-//                    intent.putExtra("id", studentItem.getId());
-//s                    intent.putExtra("tenLop", classItem.getTenLop());
-//                    intent.putExtra("khoa", classItem.getKhoa());
-//                    intent.putExtra("giangVien", classItem.getGiangVien());
-//                    intent.putExtra("namHoc",classItem.getNamHoc());
+                    Intent intent = new Intent(context, DetailStudentActivity.class);
+                    intent.putExtra("id", studentItem.getId());
+                    intent.putExtra("maSV", studentItem.getMaSV());
+                    intent.putExtra("tenSV", studentItem.getTenSV());
+                    intent.putExtra("ngaySinh", studentItem.getNgaySinh());
+                    intent.putExtra("queQuan", studentItem.getQueQuan());
+                    intent.putExtra("soDienThoai", studentItem.getSoDienThoai());
+                    intent.putExtra("email", studentItem.getEmail());
+                    intent.putExtra("lopHoc", studentItem.getLopHoc());
+                    intent.putExtra("ngayNhapHoc", studentItem.getNgayNhapHoc());
+                    intent.putExtra("chuyenNganh", studentItem.getChuyenNganh().toString());
+                    intent.putExtra("heDaoTao",studentItem.getHeDaoTao());
                     context.startActivity(intent);
                 }
             });
