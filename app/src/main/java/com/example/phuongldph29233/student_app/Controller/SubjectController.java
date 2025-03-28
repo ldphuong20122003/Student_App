@@ -3,6 +3,7 @@ package com.example.phuongldph29233.student_app.Controller;
 import androidx.annotation.NonNull;
 
 import com.example.phuongldph29233.student_app.Domain.Subject;
+import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -12,61 +13,28 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class SubjectController {
-    private final DatabaseReference myRef;
+    private final DatabaseHelper<Subject> databaseHelper;
 
     public SubjectController() {
-        myRef = FirebaseDatabase.getInstance().getReference("Subject");
+        databaseHelper = new DatabaseHelper<>("Subject");
     }
 
-    public void getSubject(SubjectCallback callback) {
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Subject> arrayList = new ArrayList<>();
-                for (DataSnapshot issue : snapshot.getChildren()) {
-                    Subject subject = issue.getValue(Subject.class);
-                    if (subject != null) {
-                        arrayList.add(subject);
-                    }
-                }
-                callback.onSuccess(arrayList);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                callback.onFailed(error.getMessage());
-            }
-        });
-    }
-
-    public void addSubject(Subject subject, AddSubjectCallback callback) {
-        myRef.child(subject.getId()).setValue(subject).addOnSuccessListener(v -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailed(e.getMessage()));
-    }
-
-    public void updateSubject(String id, Subject updateSubject, AddSubjectCallback callback) {
-        myRef.child(id).setValue(updateSubject).addOnSuccessListener(v -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailed(e.getMessage()));
-    }
-
-    public void deleteSubject(String id, DeleteSubjectCallback callback) {
-        myRef.child(id).removeValue().addOnSuccessListener(v -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailed(e.getMessage()));
-    }
-
-    public interface SubjectCallback {
-        void onSuccess(ArrayList<Subject> list);
-
-        void onFailed(String error);
-    }
-
-    public interface AddSubjectCallback {
-        void onSuccess();
-
-        void onFailed(String error);
+    public void getSubject(DatabaseHelper.DatabaseCallback<Subject> callback) {
+        databaseHelper.getList(Subject.class, callback);
 
     }
 
-    public interface DeleteSubjectCallback {
-        void onSuccess();
-
-        void onFailed(String error);
+    public void addSubject(Subject subject, DatabaseHelper.DatabaseActionCallback callback) {
+        databaseHelper.add(subject, callback);
     }
+
+    public void updateSubject(String id, Subject updateSubject, DatabaseHelper.DatabaseActionCallback callback) {
+        databaseHelper.update(id, updateSubject, callback);
+    }
+
+    public void deleteSubject(String id, DatabaseHelper.DatabaseActionCallback callback) {
+        databaseHelper.delete(id, callback);
+    }
+
+
 }

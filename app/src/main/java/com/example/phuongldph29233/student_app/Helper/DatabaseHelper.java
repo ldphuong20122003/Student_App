@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper<T> {
-    private DatabaseReference databaseReference;
+    private final DatabaseReference databaseReference;
 
     public DatabaseHelper(String path) {
         this.databaseReference = FirebaseDatabase.getInstance().getReference(path);
@@ -20,7 +20,7 @@ public class DatabaseHelper<T> {
 
     // Lấy danh sách các đối tượng
     public void getList(Class<T> clazz, DatabaseCallback<T> callback) {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 List<T> itemList = new ArrayList<>();
@@ -81,12 +81,14 @@ public class DatabaseHelper<T> {
 
     public interface DatabaseCallback<T> {
         void onSuccess(List<T> itemList);
+
         void onFailure(String error);
     }
 
     // Interface callback cho các hành động thêm, sửa, xóa
     public interface DatabaseActionCallback {
         void onSuccess();
+
         void onFailure(String error);
     }
 }

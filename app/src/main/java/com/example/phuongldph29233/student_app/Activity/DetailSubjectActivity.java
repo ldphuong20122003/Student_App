@@ -28,6 +28,7 @@ import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.SubjectController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Subject;
+import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityDetailSubjectBinding;
 
@@ -140,17 +141,20 @@ public class DetailSubjectActivity extends AppCompatActivity {
     }
 
     private void updateSubject(Subject subject) {
-        subjectController.updateSubject(id, subject, new SubjectController.AddSubjectCallback() {
+        subjectController.updateSubject(id, subject, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(DetailSubjectActivity.this, "Cập nhật môn học thành công !!!", Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
-            public void onFailed(String error) {
+            public void onFailure(String error) {
                 Toast.makeText(DetailSubjectActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+
             }
         });
+
     }
 
     private void loadDataBranchs() {
@@ -176,7 +180,7 @@ public class DetailSubjectActivity extends AppCompatActivity {
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                subjectController.deleteSubject(id, new SubjectController.DeleteSubjectCallback() {
+                subjectController.deleteSubject(id, new DatabaseHelper.DatabaseActionCallback() {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(DetailSubjectActivity.this, "Xóa môn học thành công !!!", Toast.LENGTH_SHORT).show();
@@ -184,11 +188,12 @@ public class DetailSubjectActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailed(String error) {
+                    public void onFailure(String error) {
                         Toast.makeText(DetailSubjectActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 });
+               
             }
         });
         builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {
