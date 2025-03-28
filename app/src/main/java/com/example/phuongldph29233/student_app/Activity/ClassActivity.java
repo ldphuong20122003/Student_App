@@ -17,18 +17,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.phuongldph29233.student_app.Adapter.ClassAdapter;
-import com.example.phuongldph29233.student_app.Controller.ClassController;
 import com.example.phuongldph29233.student_app.Domain.Class;
+import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityClassBinding;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class ClassActivity extends AppCompatActivity {
     ActivityClassBinding binding;
-    private ClassController classController;
+    private DatabaseHelper<Class> databaseHelper;
     private ClassAdapter classAdapter;
     private ArrayList<Class> classArrayList;
     private ArrayList<Class> originalArrayList;
@@ -39,17 +40,14 @@ public class ClassActivity extends AppCompatActivity {
         binding = ActivityClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Khởi tạo controller
-        classController = new ClassController();
+        databaseHelper = new DatabaseHelper<>("Classes");
         classArrayList = new ArrayList<>();
         originalArrayList = new ArrayList<>();
         classAdapter = new ClassAdapter(classArrayList);
 
-        // Thiết lập RecyclerView
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(classAdapter);
 
-        // Sự kiện
         binding.btnBack.setOnClickListener(v -> finish());
         binding.btnAdd.setOnClickListener(v -> showDialogAdd());
 
@@ -70,13 +68,10 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void loadDataClass() {
-//        binding.progressBar.setVisibility(View.VISIBLE);
-//        binding.txtNoData.setVisibility(View.GONE);
-
-        classController.getClasses(new ClassController.ClassCallback() {
+        databaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
-            public void onSuccess(ArrayList<Class> list) {
+            public void onSuccess(List<Class> list) {
                 classArrayList.clear();
                 originalArrayList.clear();
                 classArrayList.addAll(list);
@@ -84,19 +79,14 @@ public class ClassActivity extends AppCompatActivity {
                 classAdapter.notifyDataSetChanged();
 
                 if (classArrayList.isEmpty()) {
-//                    binding.txtNoData.setVisibility(View.VISIBLE);
                     binding.recyclerView.setVisibility(View.GONE);
                 } else {
                     binding.recyclerView.setVisibility(View.VISIBLE);
-//                    binding.txtNoData.setVisibility(View.GONE);
                 }
-//                binding.progressBar.setVisibility(View.GONE);
             }
 
             @Override
-            public void onFailed(String error) {
-//                binding.progressBar.setVisibility(View.GONE);
-//                binding.txtNoData.setVisibility(View.VISIBLE);
+            public void onFailure(String error) {
                 binding.recyclerView.setVisibility(View.GONE);
                 Toast.makeText(ClassActivity.this, "Lỗi tải dữ liệu: " + error, Toast.LENGTH_SHORT).show();
             }
@@ -143,7 +133,7 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void addClass(Class newClass, Dialog dialog) {
-        classController.addClass(newClass, new ClassController.ClassActionCallback() {
+        databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(ClassActivity.this, "Thêm lớp học thành công", Toast.LENGTH_SHORT).show();
@@ -152,7 +142,7 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailed(String error) {
+            public void onFailure(String error) {
                 Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
             }
         });
