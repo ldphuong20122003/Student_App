@@ -15,73 +15,74 @@
         android:gravity="center"
         android:layout_marginBottom="16dp"/>
 
-    <EditText
-        android:id="@+id/edt_maSV_detail"
+    <TextView
+        android:id="@+id/txt_maSV_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Mã sinh viên"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_tenSV_detail"
+    <TextView
+        android:id="@+id/txt_tenSV_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Tên sinh viên"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_ngaySinh_detail"
+    <TextView
+        android:id="@+id/txt_ngaySinh_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Ngày sinh"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_queQuan_detail"
+    <TextView
+        android:id="@+id/txt_queQuan_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Quê quán"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_sdt_detail"
+    <TextView
+        android:id="@+id/txt_sdt_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Số điện thoại"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_email_detail"
+    <TextView
+        android:id="@+id/txt_email_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_lopHoc_detail"
+    <TextView
+        android:id="@+id/txt_lopHoc_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Lớp học"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_ngayNhaphoc_detail"
+    <TextView
+        android:id="@+id/txt_ngayNhaphoc_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Ngày nhập học"
         android:layout_marginBottom="8dp"/>
 
-    <EditText
-        android:id="@+id/edt_heDaotao_detail"
+    <TextView
+        android:id="@+id/txt_heDaotao_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Hệ đào tạo"
         android:layout_marginBottom="8dp"/>
 
-    <Spinner
-        android:id="@+id/spn_chuyenNganh_detail"
+    <TextView
+        android:id="@+id/txt_chuyenNganh_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="Chuyên ngành"
         android:layout_marginBottom="16dp"/>
 
     <LinearLayout

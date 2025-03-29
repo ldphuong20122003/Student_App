@@ -27,77 +27,71 @@ import java.util.List;
 import java.util.Objects;
 
 public class DetailStudentActivity extends AppCompatActivity {
-    private EditText edtMaSV, edtTenSV, edtNgaySinh, edtQueQuan, edtSdt, edtEmail, edtLopHoc, edtNgayNhapHoc, edtHeDaoTao;
-    private Spinner spnChuyenNganh;
+    private TextView txtMaSV, txtTenSV, txtNgaySinh, txtQueQuan, txtSdt, txtEmail, txtLopHoc, txtNgayNhapHoc, txtHeDaoTao, txtChuyenNganh;
     private Button btnEdit, btnDelete, btnBack;
 
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Branch> branchDatabaseHelper;
-    private ArrayAdapter<Branch> branchAdapter;
     private ArrayList<Branch> branchList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_student);
-        studentDatabaseHelper = new DatabaseHelper<>("Classes");
+        studentDatabaseHelper = new DatabaseHelper<>("Student");
         branchDatabaseHelper = new DatabaseHelper<>("Branch");
         initViews();
         getIntentExtra();
         branchList = new ArrayList<>();
-        branchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
-        branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnChuyenNganh.setAdapter(branchAdapter);
         loadBranches();
         setupButtonListeners();
     }
 
     private void initViews() {
-        edtMaSV = findViewById(R.id.edt_maSV_detail);
-        edtTenSV = findViewById(R.id.edt_tenSV_detail);
-        edtNgaySinh = findViewById(R.id.edt_ngaySinh_detail);
-        edtQueQuan = findViewById(R.id.edt_queQuan_detail);
-        edtSdt = findViewById(R.id.edt_sdt_detail);
-        edtEmail = findViewById(R.id.edt_email_detail);
-        edtLopHoc = findViewById(R.id.edt_lopHoc_detail);
-        edtNgayNhapHoc = findViewById(R.id.edt_ngayNhaphoc_detail);
-        edtHeDaoTao = findViewById(R.id.edt_heDaotao_detail);
-        spnChuyenNganh = findViewById(R.id.spn_chuyenNganh_detail);
+        txtMaSV = findViewById(R.id.txt_maSV_detail);
+        txtTenSV = findViewById(R.id.txt_tenSV_detail);
+        txtNgaySinh = findViewById(R.id.txt_ngaySinh_detail);
+        txtQueQuan = findViewById(R.id.txt_queQuan_detail);
+        txtSdt = findViewById(R.id.txt_sdt_detail);
+        txtEmail = findViewById(R.id.txt_email_detail);
+        txtLopHoc = findViewById(R.id.txt_lopHoc_detail);
+        txtNgayNhapHoc = findViewById(R.id.txt_ngayNhaphoc_detail);
+        txtHeDaoTao = findViewById(R.id.txt_heDaotao_detail);
+        txtChuyenNganh = findViewById(R.id.txt_chuyenNganh_detail);
         btnEdit = findViewById(R.id.btn_edit);
         btnDelete = findViewById(R.id.btn_delete);
         btnBack = findViewById(R.id.btn_back);
     }
 
     private void getIntentExtra() {
-        id =(String) getIntent().getSerializableExtra("id");
-        maSV = (String)getIntent().getSerializableExtra("maSV");
-        tenSV = (String)getIntent().getSerializableExtra("tenSV");
-        ngaySinh = (String)getIntent().getSerializableExtra("ngaySinh");
-        queQuan = (String)getIntent().getSerializableExtra("queQuan");
-        sdt = (String)getIntent().getSerializableExtra("soDienThoai");
-        email = (String)getIntent().getSerializableExtra("email");
-        lopHoc = (String)getIntent().getSerializableExtra("lopHoc");
-        ngayNhapHoc = (String)getIntent().getSerializableExtra("ngayNhapHoc");
-        chuyenNganh = (String)getIntent().getSerializableExtra("chuyenNganh");
+        id = (String) getIntent().getSerializableExtra("id");
+        maSV = (String) getIntent().getSerializableExtra("maSV");
+        tenSV = (String) getIntent().getSerializableExtra("tenSV");
+        ngaySinh = (String) getIntent().getSerializableExtra("ngaySinh");
+        queQuan = (String) getIntent().getSerializableExtra("queQuan");
+        sdt = (String) getIntent().getSerializableExtra("soDienThoai");
+        email = (String) getIntent().getSerializableExtra("email");
+        lopHoc = (String) getIntent().getSerializableExtra("lopHoc");
+        ngayNhapHoc = (String) getIntent().getSerializableExtra("ngayNhapHoc");
+        chuyenNganh = (String) getIntent().getSerializableExtra("chuyenNganh");
         heDaoTao = (String) getIntent().getSerializableExtra("heDaoTao");
 
-        edtMaSV.setText(maSV);
-        edtTenSV.setText(tenSV);
-        edtNgaySinh.setText(ngaySinh);
-        edtQueQuan.setText(queQuan);
-        edtSdt.setText(sdt);
-        edtEmail.setText(email);
-        edtLopHoc.setText(lopHoc);
-        edtNgayNhapHoc.setText(ngayNhapHoc);
-        edtHeDaoTao.setText(heDaoTao);
+        txtMaSV.setText(maSV);
+        txtTenSV.setText(tenSV);
+        txtNgaySinh.setText(ngaySinh);
+        txtQueQuan.setText(queQuan);
+        txtSdt.setText(sdt);
+        txtEmail.setText(email);
+        txtLopHoc.setText(lopHoc);
+        txtNgayNhapHoc.setText(ngayNhapHoc);
+        txtHeDaoTao.setText(heDaoTao);
+        txtChuyenNganh.setText(chuyenNganh);
     }
 
     private void setupButtonListeners() {
         btnBack.setOnClickListener(v -> finish());
-
         btnEdit.setOnClickListener(v -> showEditDialog());
-
         btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
@@ -107,21 +101,6 @@ public class DetailStudentActivity extends AppCompatActivity {
             public void onSuccess(List<Branch> itemList) {
                 branchList.clear();
                 branchList.addAll(itemList);
-                branchAdapter.notifyDataSetChanged();
-
-                new Handler().postDelayed(() -> {
-                    int position = -1;
-                    for (int i = 0; i < branchAdapter.getCount(); i++) {
-                        Branch branch = branchAdapter.getItem(i);
-                        if (branch.getTenKhoa().trim().equalsIgnoreCase(chuyenNganh.trim())) {
-                            position = i;
-                            break;
-                        }
-                    }
-                    if (position != -1) {
-                        spnChuyenNganh.setSelection(position);
-                    }
-                }, 500);
             }
 
             @Override
@@ -162,10 +141,12 @@ public class DetailStudentActivity extends AppCompatActivity {
         edtLopHocEdit.setText(lopHoc);
         edtNgayNhapHocEdit.setText(ngayNhapHoc);
         edtHeDaoTaoEdit.setText(heDaoTao);
+
         ArrayAdapter<Branch> dialogBranchAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, branchList);
         dialogBranchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spnChuyenNganhEdit.setAdapter(dialogBranchAdapter);
+
         new Handler().postDelayed(() -> {
             int position = -1;
             for (int i = 0; i < dialogBranchAdapter.getCount(); i++) {
@@ -191,6 +172,7 @@ public class DetailStudentActivity extends AppCompatActivity {
             String updatedNgayNhapHoc = edtNgayNhapHocEdit.getText().toString();
             String updatedHeDaoTao = edtHeDaoTaoEdit.getText().toString();
             Branch selectedBranch = (Branch) spnChuyenNganhEdit.getSelectedItem();
+
             if (updatedMaSV.isEmpty() || updatedTenSV.isEmpty() || updatedNgaySinh.isEmpty() ||
                     updatedQueQuan.isEmpty() || updatedSdt.isEmpty() || updatedEmail.isEmpty() ||
                     updatedLopHoc.isEmpty() || updatedNgayNhapHoc.isEmpty() || updatedHeDaoTao.isEmpty()) {
@@ -201,7 +183,7 @@ public class DetailStudentActivity extends AppCompatActivity {
             Student updatedStudent = new Student(
                     id, updatedMaSV, updatedTenSV, updatedNgaySinh, updatedQueQuan,
                     updatedSdt, updatedEmail, updatedLopHoc, updatedNgayNhapHoc,
-                    selectedBranch,updatedHeDaoTao
+                    selectedBranch, updatedHeDaoTao
             );
 
             studentDatabaseHelper.update(id, updatedStudent, new DatabaseHelper.DatabaseActionCallback() {
@@ -209,16 +191,33 @@ public class DetailStudentActivity extends AppCompatActivity {
                 public void onSuccess() {
                     Toast.makeText(DetailStudentActivity.this, "Cập nhật sinh viên thành công!", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
-                    finish();
+                    maSV = updatedMaSV;
+                    tenSV = updatedTenSV;
+                    ngaySinh = updatedNgaySinh;
+                    queQuan = updatedQueQuan;
+                    sdt = updatedSdt;
+                    email = updatedEmail;
+                    lopHoc = updatedLopHoc;
+                    ngayNhapHoc = updatedNgayNhapHoc;
+                    heDaoTao = updatedHeDaoTao;
+                    chuyenNganh = selectedBranch.getTenKhoa();
+                    txtMaSV.setText(maSV);
+                    txtTenSV.setText(tenSV);
+                    txtNgaySinh.setText(ngaySinh);
+                    txtQueQuan.setText(queQuan);
+                    txtSdt.setText(sdt);
+                    txtEmail.setText(email);
+                    txtLopHoc.setText(lopHoc);
+                    txtNgayNhapHoc.setText(ngayNhapHoc);
+                    txtHeDaoTao.setText(heDaoTao);
+                    txtChuyenNganh.setText(chuyenNganh);
                 }
-
                 @Override
                 public void onFailure(String error) {
                     Toast.makeText(DetailStudentActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
                 }
             });
         });
-
         btnCancel.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
