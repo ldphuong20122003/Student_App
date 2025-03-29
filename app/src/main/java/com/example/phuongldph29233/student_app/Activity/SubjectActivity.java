@@ -30,6 +30,7 @@ import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.SubjectController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Subject;
+import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivitySubjectBinding;
 
@@ -91,14 +92,13 @@ public class SubjectActivity extends AppCompatActivity {
     private void loadDataSubject() {
         binding.progressBar.setVisibility(View.VISIBLE);
         binding.txtNoData.setVisibility(View.GONE);
-        subjectController.getSubject(new SubjectController.SubjectCallback() {
-            @SuppressLint("NotifyDataSetChanged")
+        subjectController.getSubject(new DatabaseHelper.DatabaseCallback<Subject>() {
             @Override
-            public void onSuccess(ArrayList<Subject> list) {
+            public void onSuccess(List<Subject> itemList) {
                 subjectArrayList.clear();
                 originalArrayList.clear();
-                subjectArrayList.addAll(list);
-                originalArrayList.addAll(list);
+                subjectArrayList.addAll(itemList);
+                originalArrayList.addAll(itemList);
                 subjectAdapter.notifyDataSetChanged();
                 if (subjectArrayList.isEmpty()) {
                     binding.txtNoData.setVisibility(View.VISIBLE);
@@ -111,13 +111,14 @@ public class SubjectActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailed(String error) {
+            public void onFailure(String error) {
                 binding.progressBar.setVisibility(View.GONE);
                 binding.txtNoData.setVisibility(View.VISIBLE);
                 binding.recyclerView.setVisibility(View.GONE);
                 Toast.makeText(SubjectActivity.this, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void showDialogAdd() {
@@ -159,7 +160,7 @@ public class SubjectActivity extends AppCompatActivity {
     }
 
     private void addSubject(Subject subject, Dialog dialog) {
-        subjectController.addSubject(subject, new SubjectController.AddSubjectCallback() {
+        subjectController.addSubject(subject, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(SubjectActivity.this, "Thêm môn học thành công !!!", Toast.LENGTH_SHORT).show();
@@ -167,7 +168,7 @@ public class SubjectActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailed(String error) {
+            public void onFailure(String error) {
                 Toast.makeText(SubjectActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
             }
         });
