@@ -67,4 +67,9 @@ public class Teacher {
     public void setKhoa(Branch khoa) {
         this.khoa = khoa;
     }
+
+    @Override
+    public String toString() {
+        return getTenGV();
+    }
 }

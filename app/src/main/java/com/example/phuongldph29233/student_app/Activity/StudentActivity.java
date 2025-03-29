@@ -79,7 +79,11 @@ public class StudentActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {}
         });
     }
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDataStudent();
+    }
     private void loadDataStudent() {
         databaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
             @SuppressLint("NotifyDataSetChanged")

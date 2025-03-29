@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.phuongldph29233.student_app.Adapter.ClassAdapter;
+import com.example.phuongldph29233.student_app.Controller.BranchController;
+import com.example.phuongldph29233.student_app.Controller.TeacherController;
+import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
+import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityClassBinding;
@@ -33,10 +39,18 @@ public class ClassActivity extends AppCompatActivity {
     private ClassAdapter classAdapter;
     private ArrayList<Class> classArrayList;
     private ArrayList<Class> originalArrayList;
+    private ArrayAdapter<Branch> branchAdapter;
+    private ArrayAdapter<Teacher> teacherAdapter;
+    private ArrayList<Branch> branchList;
+    private ArrayList<Teacher> teacherList;
+    private BranchController branchController;
+    private TeacherController teacherController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityClassBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         binding = ActivityClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         databaseHelper = new DatabaseHelper<>("Classes");
@@ -59,6 +73,86 @@ public class ClassActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {}
         });
+        initializeComponents();
+        setupListeners();
+        loadData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+    private void initializeComponents() {
+        branchList = new ArrayList<>();
+        teacherList = new ArrayList<>();
+        branchController = new BranchController();
+        teacherController = new TeacherController();
+        branchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
+        branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        teacherAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, teacherList);
+        teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    private void setupListeners() {
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnAdd.setOnClickListener(v -> showDialogAdd());
+        binding.edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                searchList(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+    private void loadData() {
+        loadBranches();
+        loadTeachers();
+    }
+
+    private void loadBranches() {
+        branchController.getBranches(new BranchController.BranchCallback() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onSuccess(ArrayList<Branch> list) {
+                runOnUiThread(() -> {
+                    branchList.clear();
+                    branchList.addAll(list);
+                    branchAdapter.notifyDataSetChanged();
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() ->
+                        Toast.makeText(ClassActivity.this, "Lỗi tải khoa: " + error, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void loadTeachers() {
+        teacherController.getTeacher(new DatabaseHelper.DatabaseCallback<Teacher>() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onSuccess(List<Teacher> itemList) {
+                runOnUiThread(() -> {
+                    teacherList.clear();
+                    teacherList.addAll(itemList);
+                    teacherAdapter.notifyDataSetChanged();
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() ->
+                        Toast.makeText(ClassActivity.this, "Lỗi tải giảng viên: " + error, Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     private void loadDataClass() {
@@ -71,17 +165,18 @@ public class ClassActivity extends AppCompatActivity {
                 classArrayList.addAll(list);
                 originalArrayList.addAll(list);
                 classAdapter.notifyDataSetChanged();
-
-                if (classArrayList.isEmpty()) {
+                if (classArrayList.isEmpty()){
                     binding.recyclerView.setVisibility(View.GONE);
-                } else {
+                }else {
                     binding.recyclerView.setVisibility(View.VISIBLE);
                 }
             }
+
             @Override
             public void onFailure(String error) {
-                binding.recyclerView.setVisibility(View.GONE);
-                Toast.makeText(ClassActivity.this, "Lỗi tải dữ liệu: " + error, Toast.LENGTH_SHORT).show();
+                    binding.recyclerView.setVisibility(View.GONE);
+                    Toast.makeText(ClassActivity.this, "Lỗi tải dữ liệu lớp: " + error, Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -93,24 +188,46 @@ public class ClassActivity extends AppCompatActivity {
         TextView txtTitle = dialog.findViewById(R.id.textView);
         EditText edtMaLop = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLop = dialog.findViewById(R.id.edt_tenLop_add);
-        EditText edtKhoa = dialog.findViewById(R.id.edt_khoa_add);
-        EditText edtGiangVien = dialog.findViewById(R.id.edt_giangVien_add);
+        Spinner spnKhoaAdd = dialog.findViewById(R.id.edt_khoa_add);
+        Spinner spnGiangVienAdd = dialog.findViewById(R.id.edt_giangVien_add);
         EditText edtNamHoc = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_lop);
         Button btnAdd = dialog.findViewById(R.id.btn_add_lop);
-        txtTitle.setText("Thêm lớp học");
+
+        if (txtTitle == null || edtMaLop == null || edtTenLop == null || spnKhoaAdd == null ||
+                spnGiangVienAdd == null || edtNamHoc == null || btnHuy == null || btnAdd == null) {
+            Toast.makeText(this, "Lỗi hiển thị dialog", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        runOnUiThread(() -> {
+            spnKhoaAdd.setAdapter(branchAdapter);
+            spnGiangVienAdd.setAdapter(teacherAdapter);
+            txtTitle.setText("Thêm lớp học");
+        });
+
         btnAdd.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
             String maLop = edtMaLop.getText().toString().trim();
             String tenLop = edtTenLop.getText().toString().trim();
-            String khoa = edtKhoa.getText().toString().trim();
-            String giangVien = edtGiangVien.getText().toString().trim();
+            Branch khoa = (Branch) spnKhoaAdd.getSelectedItem();
+            Teacher giangVien = (Teacher) spnGiangVienAdd.getSelectedItem();
             String namHoc = edtNamHoc.getText().toString().trim();
-            if (maLop.isEmpty() || tenLop.isEmpty() || khoa.isEmpty() ||
-                    giangVien.isEmpty() || namHoc.isEmpty()) {
+
+            if (maLop.isEmpty() || tenLop.isEmpty() || namHoc.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            if (khoa == null || khoa.getTenKhoa() == null || khoa.getMaKhoa().trim().isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn khoa hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (giangVien == null || giangVien.getTenGV() == null || giangVien.getMaGV().trim().isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn giảng viên hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Class newClass = new Class(id, maLop, tenLop, khoa, giangVien, namHoc);
             addClass(newClass, dialog);
         });
@@ -123,13 +240,17 @@ public class ClassActivity extends AppCompatActivity {
         databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(ClassActivity.this, "Thêm lớp học thành công", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-                loadDataClass();
+                runOnUiThread(() -> {
+                    Toast.makeText(ClassActivity.this, "Thêm lớp học thành công", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    loadDataClass();
+                });
             }
+
             @Override
             public void onFailure(String error) {
-                Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+                runOnUiThread(() ->
+                        Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show());
             }
         });
     }

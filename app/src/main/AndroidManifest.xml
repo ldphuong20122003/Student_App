@@ -23,6 +23,10 @@
             android:launchMode="standard"
             android:exported="false" />
         <activity
+            android:name=".Activity.DetailClassActivity"
+            android:launchMode="standard"
+            android:exported="false" />
+        <activity
             android:name=".Activity.SubjectActivity"
             android:exported="false" />
         <activity

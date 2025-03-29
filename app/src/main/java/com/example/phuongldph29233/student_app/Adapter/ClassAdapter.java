@@ -8,9 +8,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.example.phuongldph29233.student_app.Activity.DetailClassActivity;
+import com.example.phuongldph29233.student_app.Activity.DetailStudentActivity;
 import com.example.phuongldph29233.student_app.Domain.Class;
+import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderClassBinding;
+import com.example.phuongldph29233.student_app.databinding.ViewHolderStudentBinding;
 
 import java.util.List;
 
@@ -44,22 +47,22 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
 
         @Override
         public void bind(Class classItem) {
-        binding.txtMaLop.setText(classItem.getMaLop());
-        binding.txtTenLop.setText(classItem.getTenLop());
-        binding.txtKhoa.setText(classItem.getKhoa());
-        binding.txtGiangvien.setText(classItem.getGiangVien());
-        binding.txtNamhoc.setText(classItem.getNamHoc());
+            binding.txtMaLop.setText(classItem.getMaLop());
+            binding.txtTenLop.setText(classItem.getTenLop());
+            binding.txtKhoa.setText(classItem.getKhoa().toString());
+            binding.txtGiangvien.setText(classItem.getGiangVien().toString());
+            binding.txtNamhoc.setText(classItem.getNamHoc());
             binding.cardViewClass.setOnClickListener(v -> {
                 if (actionListener != null) {
                     actionListener.onItemClick(classItem);
-                }else {
+                } else {
                     Intent intent = new Intent(context, DetailClassActivity.class);
                     intent.putExtra("id", classItem.getId());
                     intent.putExtra("maLop", classItem.getMaLop());
                     intent.putExtra("tenLop", classItem.getTenLop());
-                    intent.putExtra("khoa", classItem.getKhoa());
-                    intent.putExtra("giangVien", classItem.getGiangVien());
-                   intent.putExtra("namHoc",classItem.getNamHoc());
+                    intent.putExtra("khoa", classItem.getKhoa().toString());
+                    intent.putExtra("giangVien", classItem.getGiangVien().toString());
+                    intent.putExtra("namHoc", classItem.getNamHoc());
                     context.startActivity(intent);
                 }
             });

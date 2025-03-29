@@ -5,14 +5,14 @@ public class Class {
     private String maLop;
 
     private String tenLop;
-    private String khoa;
-    private String giangVien;
+    private Branch khoa;
+    private Teacher giangVien;
     private String namHoc;
 
     public Class() {
     }
 
-    public Class(String id, String maLop, String tenLop, String khoa, String giangVien, String namHoc) {
+    public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc) {
         this.id = id;
         this.maLop = maLop;
         this.tenLop = tenLop;
@@ -45,19 +45,19 @@ public class Class {
         this.tenLop = tenLop;
     }
 
-    public String getKhoa() {
+    public Branch getKhoa() {
         return khoa;
     }
 
-    public void setKhoa(String khoa) {
+    public void setKhoa(Branch khoa) {
         this.khoa = khoa;
     }
 
-    public String getGiangVien() {
+    public Teacher getGiangVien() {
         return giangVien;
     }
 
-    public void setGiangVien(String giangVien) {
+    public void setGiangVien(Teacher giangVien) {
         this.giangVien = giangVien;
     }
 
@@ -67,5 +67,17 @@ public class Class {
 
     public void setNamHoc(String namHoc) {
         this.namHoc = namHoc;
+    }
+
+    @Override
+    public String toString() {
+        return "Class{" +
+                "id='" + id + '\'' +
+                ", maLop='" + maLop + '\'' +
+                ", tenLop='" + tenLop + '\'' +
+                ", khoa=" + (khoa != null ? khoa.toString() : "null") +
+                ", giangVien=" + (giangVien != null ? giangVien.toString() : "null") +
+                ", namHoc='" + namHoc + '\'' +
+                '}';
     }
 }
