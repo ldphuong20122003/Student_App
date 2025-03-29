@@ -25,6 +25,7 @@ import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityClassBinding;
 
@@ -193,7 +194,7 @@ public class ClassActivity extends AppCompatActivity {
         EditText edtNamHoc = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_lop);
         Button btnAdd = dialog.findViewById(R.id.btn_add_lop);
-
+        HelperUtils.setupDatePicker(this,edtNamHoc);
         if (txtTitle == null || edtMaLop == null || edtTenLop == null || spnKhoaAdd == null ||
                 spnGiangVienAdd == null || edtNamHoc == null || btnHuy == null || btnAdd == null) {
             Toast.makeText(this, "Lỗi hiển thị dialog", Toast.LENGTH_SHORT).show();

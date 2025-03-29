@@ -1,11 +1,14 @@
 package com.example.phuongldph29233.student_app.Activity;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,11 +32,14 @@ import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityStudentBinding;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -46,7 +52,7 @@ public class StudentActivity extends AppCompatActivity {
     private ArrayList<Student> studentArrayList;
     private ArrayList<Branch> branchList;
     private ArrayList<Student> originalArrayList;
-
+    private Calendar calendar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,7 +131,6 @@ public class StudentActivity extends AppCompatActivity {
             }
         });
     }
-
     private void showDialogAdd() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_student);
@@ -136,13 +141,17 @@ public class StudentActivity extends AppCompatActivity {
         EditText edtNgaysinh = dialog.findViewById(R.id.edt_ngaySinh_add);
         EditText edtQue = dialog.findViewById(R.id.edt_queQuan_add);
         EditText edtSDT = dialog.findViewById(R.id.edt_sdt_add);
+        HelperUtils.setupPhoneNumberValidation(edtSDT);
         EditText edtMail = dialog.findViewById(R.id.edt_email_add);
+        HelperUtils.setupEmailValidation(edtMail);
         EditText edtLophoc = dialog.findViewById(R.id.edt_lopHoc_add);
         EditText edtNgayNhapHoc = dialog.findViewById(R.id.edt_ngayNhaphoc_add);
         EditText edtHeDaotao = dialog.findViewById(R.id.edt_heDaotao_add);
         Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganh);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_sv);
         Button btnAdd = dialog.findViewById(R.id.btn_add_sv);
+        HelperUtils.setupDatePicker(this,edtNgaysinh);
+        HelperUtils.setupDatePicker(this,edtNgayNhapHoc);
         txtTitle.setText("Thêm sinh viên");
         spn_chuyenNganh.setAdapter(arrayAdapter);
         btnAdd.setOnClickListener(v -> {
@@ -157,6 +166,8 @@ public class StudentActivity extends AppCompatActivity {
             String ngayNhapHoc = edtNgayNhapHoc.getText().toString().trim();
             String heDaoTao = edtHeDaotao.getText().toString().trim();
             Branch selectedBranch = (Branch) spn_chuyenNganh.getSelectedItem();
+            calendar = Calendar.getInstance();
+
             if (maSV.isEmpty() || tenSV.isEmpty() || lopHoc.isEmpty() || heDaoTao.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
@@ -165,12 +176,22 @@ public class StudentActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng chọn chuyên ngành hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (!HelperUtils.isValidPhoneNumber(soDienThoai)) {
+                edtSDT.setError("Số điện thoại phải có 10 chữ số và bắt đầu bằng 0");
+                return;
+            }
+            if (!HelperUtils.isValidEmail(email)) {
+                edtMail.setError("Email không hợp lệ");
+                return;
+            }
             Student student = new Student(id, maSV, tenSV, ngaySinh, queQuan, soDienThoai, email, lopHoc, ngayNhapHoc, selectedBranch, heDaoTao);
             addStudent(student, dialog);
         });
         btnHuy.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
+
+
 
     private void addStudent(Student student, Dialog dialog) {
         databaseHelper.add(student, new DatabaseHelper.DatabaseActionCallback() {

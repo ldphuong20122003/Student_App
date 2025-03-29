@@ -23,6 +23,7 @@ import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
@@ -132,7 +133,7 @@ public class DetailClassActivity extends AppCompatActivity {
         EditText edtNamHocEdit = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnUpdate = dialog.findViewById(R.id.btn_add_lop);
         Button btnCancel = dialog.findViewById(R.id.btn_huy_lop);
-
+        HelperUtils.setupDatePicker(this,edtNamHocEdit);
         txtTitle.setText("Chỉnh sửa lớp học");
         btnUpdate.setText("Cập nhật");
 
@@ -220,7 +221,7 @@ public class DetailClassActivity extends AppCompatActivity {
             });
         });
         btnCancel.setOnClickListener(v -> dialog.dismiss());
-        dialog.show();
+
     }
 
     private void showDeleteConfirmationDialog() {

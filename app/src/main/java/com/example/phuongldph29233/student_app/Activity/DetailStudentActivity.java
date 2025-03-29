@@ -2,6 +2,7 @@ package com.example.phuongldph29233.student_app.Activity;
 
 import static com.example.phuongldph29233.student_app.R.*;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,10 +21,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 public class DetailStudentActivity extends AppCompatActivity {
@@ -128,7 +132,8 @@ public class DetailStudentActivity extends AppCompatActivity {
         Spinner spnChuyenNganhEdit = dialog.findViewById(R.id.spn_chuyenNganh);
         Button btnUpdate = dialog.findViewById(R.id.btn_add_sv);
         Button btnCancel = dialog.findViewById(R.id.btn_huy_sv);
-
+        HelperUtils.setupDatePicker(this,edtNgaySinhEdit);
+        HelperUtils.setupDatePicker(this,edtNgayNhapHocEdit);
         txtTitle.setText("Chỉnh sửa sinh viên");
         btnUpdate.setText("Cập nhật");
 
@@ -179,7 +184,18 @@ public class DetailStudentActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                 return;
             }
-
+            if (selectedBranch == null || selectedBranch.getTenKhoa() == null || selectedBranch.getMaKhoa().trim().isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn chuyên ngành hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!HelperUtils.isValidPhoneNumber(updatedSdt)) {
+                edtSdtEdit.setError("Số điện thoại phải có 10 chữ số và bắt đầu bằng 0");
+                return;
+            }
+            if (!HelperUtils.isValidEmail(email)) {
+                edtEmailEdit.setError("Email không hợp lệ");
+                return;
+            }
             Student updatedStudent = new Student(
                     id, updatedMaSV, updatedTenSV, updatedNgaySinh, updatedQueQuan,
                     updatedSdt, updatedEmail, updatedLopHoc, updatedNgayNhapHoc,

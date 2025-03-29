@@ -26,6 +26,7 @@ import com.example.phuongldph29233.student_app.Controller.TeacherController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityTeacherBinding;
 
@@ -105,7 +106,9 @@ public class TeacherActivity extends AppCompatActivity {
         EditText ed_maGv_add = dialog.findViewById(R.id.edt_maGV_add);
         EditText ed_tenGv_add = dialog.findViewById(R.id.edt_tenGV_add);
         EditText ed_emailGv_add = dialog.findViewById(R.id.edt_emailGv_add);
+        HelperUtils.setupEmailValidation(ed_emailGv_add);
         EditText ed_soDtGv_add = dialog.findViewById(R.id.edt_soDTGv_add);
+        HelperUtils.setupPhoneNumberValidation(ed_soDtGv_add);
         Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganhgv);
         Button btn_addGv = dialog.findViewById(R.id.btn_add_GV);
         Button btn_huyGv = dialog.findViewById(R.id.btn_huy_GV);
@@ -123,6 +126,14 @@ public class TeacherActivity extends AppCompatActivity {
                 Branch selectedItem = (Branch) spn_chuyenNganh.getSelectedItem();
                 if (maGV.isEmpty() || tenGV.isEmpty() || emailGV.isEmpty() || soDTGV.isEmpty()) {
                     Toast.makeText(TeacherActivity.this, "Vui lòng nhập đầy đủ thông tin !!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!HelperUtils.isValidPhoneNumber(soDTGV)) {
+                    ed_soDtGv_add.setError("Số điện thoại phải có 10 chữ số và bắt đầu bằng 0");
+                    return;
+                }
+                if (!HelperUtils.isValidEmail(emailGV)) {
+                    ed_emailGv_add.setError("Email không hợp lệ");
                     return;
                 }
                 Teacher teacher = new Teacher(id, maGV, tenGV, emailGV, soDTGV, selectedItem);
