@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.phuongldph29233.student_app.Domain.Branch;
+import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
@@ -37,16 +38,20 @@ public class DetailStudentActivity extends AppCompatActivity {
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Branch> branchDatabaseHelper;
+    private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Branch> branchList;
-
+    private ArrayList<Class> classList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_student);
         studentDatabaseHelper = new DatabaseHelper<>("Student");
         branchDatabaseHelper = new DatabaseHelper<>("Branch");
+        classDatabaseHelper = new DatabaseHelper<>("Classes");
         initViews();
         getIntentExtra();
+        classList = new ArrayList<>();
+        loadClass();
         branchList = new ArrayList<>();
         loadBranches();
         setupButtonListeners();
@@ -99,6 +104,21 @@ public class DetailStudentActivity extends AppCompatActivity {
         btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
+    private void loadClass() {
+    classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
+        @Override
+        public void onSuccess(List<Class> itemList) {
+            classList.clear();
+            classList.addAll(itemList);
+        }
+
+        @Override
+        public void onFailure(String error) {
+            Toast.makeText(DetailStudentActivity.this, "Lỗi tải : " + error, Toast.LENGTH_SHORT).show();
+        }
+    });
+    }
+
     private void loadBranches() {
         branchDatabaseHelper.getList(Branch.class, new DatabaseHelper.DatabaseCallback<Branch>() {
             @Override
@@ -126,7 +146,7 @@ public class DetailStudentActivity extends AppCompatActivity {
         EditText edtQueQuanEdit = dialog.findViewById(R.id.edt_queQuan_add);
         EditText edtSdtEdit = dialog.findViewById(R.id.edt_sdt_add);
         EditText edtEmailEdit = dialog.findViewById(R.id.edt_email_add);
-        EditText edtLopHocEdit = dialog.findViewById(R.id.edt_lopHoc_add);
+        Spinner edtLopHocEdit = dialog.findViewById(R.id.edt_lopHoc_add);
         EditText edtNgayNhapHocEdit = dialog.findViewById(R.id.edt_ngayNhaphoc_add);
         EditText edtHeDaoTaoEdit = dialog.findViewById(R.id.edt_heDaotao_add);
         Spinner spnChuyenNganhEdit = dialog.findViewById(R.id.spn_chuyenNganh);
@@ -143,10 +163,26 @@ public class DetailStudentActivity extends AppCompatActivity {
         edtQueQuanEdit.setText(queQuan);
         edtSdtEdit.setText(sdt);
         edtEmailEdit.setText(email);
-        edtLopHocEdit.setText(lopHoc);
         edtNgayNhapHocEdit.setText(ngayNhapHoc);
         edtHeDaoTaoEdit.setText(heDaoTao);
+        ArrayAdapter<Class> dialogClassAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, classList);
+        dialogClassAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        edtLopHocEdit.setAdapter(dialogClassAdapter);
 
+        new Handler().postDelayed(() -> {
+            int position = -1;
+            for (int i = 0; i < dialogClassAdapter.getCount(); i++) {
+                Class classes = dialogClassAdapter.getItem(i);
+                if (classes.getTenLop() != null && classes.getTenLop().equals(lopHoc)) {
+                    position = i;
+                    break;
+                }
+            }
+            if (position != -1) {
+                edtLopHocEdit.setSelection(position);
+            }
+        }, 250);
         ArrayAdapter<Branch> dialogBranchAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, branchList);
         dialogBranchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -164,7 +200,7 @@ public class DetailStudentActivity extends AppCompatActivity {
             if (position != -1) {
                 spnChuyenNganhEdit.setSelection(position);
             }
-        }, 500);
+        }, 250);
 
         btnUpdate.setOnClickListener(v -> {
             String updatedMaSV = edtMaSVEdit.getText().toString();
@@ -173,14 +209,14 @@ public class DetailStudentActivity extends AppCompatActivity {
             String updatedQueQuan = edtQueQuanEdit.getText().toString();
             String updatedSdt = edtSdtEdit.getText().toString();
             String updatedEmail = edtEmailEdit.getText().toString();
-            String updatedLopHoc = edtLopHocEdit.getText().toString();
+            Class updatedLopHoc = (Class) edtLopHocEdit.getSelectedItem();
             String updatedNgayNhapHoc = edtNgayNhapHocEdit.getText().toString();
             String updatedHeDaoTao = edtHeDaoTaoEdit.getText().toString();
             Branch selectedBranch = (Branch) spnChuyenNganhEdit.getSelectedItem();
 
             if (updatedMaSV.isEmpty() || updatedTenSV.isEmpty() || updatedNgaySinh.isEmpty() ||
                     updatedQueQuan.isEmpty() || updatedSdt.isEmpty() || updatedEmail.isEmpty() ||
-                    updatedLopHoc.isEmpty() || updatedNgayNhapHoc.isEmpty() || updatedHeDaoTao.isEmpty()) {
+                     updatedNgayNhapHoc.isEmpty() || updatedHeDaoTao.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -213,7 +249,7 @@ public class DetailStudentActivity extends AppCompatActivity {
                     queQuan = updatedQueQuan;
                     sdt = updatedSdt;
                     email = updatedEmail;
-                    lopHoc = updatedLopHoc;
+                    lopHoc = updatedLopHoc.getTenLop();
                     ngayNhapHoc = updatedNgayNhapHoc;
                     heDaoTao = updatedHeDaoTao;
                     chuyenNganh = selectedBranch.getTenKhoa();

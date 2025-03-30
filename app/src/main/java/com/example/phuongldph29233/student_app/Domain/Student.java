@@ -8,7 +8,7 @@ public class Student {
     private String queQuan;
     private String soDienThoai;
     private String email;
-    private String lopHoc;
+    private Class lopHoc;
 
     private String ngayNhapHoc;
     private Branch chuyenNganh;
@@ -17,7 +17,7 @@ public class Student {
     public Student() {
     }
 
-    public Student(String id, String maSV, String tenSV, String ngaySinh, String queQuan, String soDienThoai, String email, String lopHoc, String ngayNhapHoc, Branch chuyenNganh, String heDaoTao) {
+    public Student(String id, String maSV, String tenSV, String ngaySinh, String queQuan, String soDienThoai, String email, Class lopHoc, String ngayNhapHoc, Branch chuyenNganh, String heDaoTao) {
         this.id = id;
         this.maSV = maSV;
         this.tenSV = tenSV;
@@ -40,11 +40,11 @@ public class Student {
     }
 
 
-    public String getLopHoc() {
+    public Class getLopHoc() {
         return lopHoc;
     }
 
-    public void setLopHoc(String lopHoc) {
+    public void setLopHoc(Class lopHoc) {
         this.lopHoc = lopHoc;
     }
 

@@ -1,10 +1,12 @@
 package com.example.phuongldph29233.student_app.Activity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class DetailClassActivity extends AppCompatActivity {
-    private TextView txtMaLop, txtTenLop, txtKhoa, txtGiangVien, txtNamHoc;
+    private TextView txtMaLop, txtTenLop, txtKhoa, txtGiangVien, txtNamHoc,txtListSV;
     private Button btnEdit, btnDelete, btnBack;
     private String id, maLop, tenLop, khoa, giangVien, namHoc;
     private DatabaseHelper<Class> classDatabaseHelper;
@@ -63,9 +65,16 @@ public class DetailClassActivity extends AppCompatActivity {
         txtKhoa = findViewById(R.id.txt_khoa_detail);
         txtGiangVien = findViewById(R.id.txt_giangVien_detail);
         txtNamHoc = findViewById(R.id.txt_namHoc_detail);
+        txtListSV = findViewById(R.id.btn_danhSachSV);
         btnEdit = findViewById(R.id.btn_edit);
         btnDelete = findViewById(R.id.btn_delete);
         btnBack = findViewById(R.id.btn_back);
+        txtListSV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(DetailClassActivity.this, ClassActivity.class));
+            }
+        });
     }
 
     private void getIntentExtra() {
@@ -124,7 +133,7 @@ public class DetailClassActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_class);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
+        dialog.show();
         TextView txtTitle = dialog.findViewById(R.id.textView);
         EditText edtMaLopEdit = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLopEdit = dialog.findViewById(R.id.edt_tenLop_add);
@@ -133,7 +142,7 @@ public class DetailClassActivity extends AppCompatActivity {
         EditText edtNamHocEdit = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnUpdate = dialog.findViewById(R.id.btn_add_lop);
         Button btnCancel = dialog.findViewById(R.id.btn_huy_lop);
-        HelperUtils.setupDatePicker(this,edtNamHocEdit);
+        HelperUtils.setupDatePicker(this, edtNamHocEdit);
         txtTitle.setText("Chỉnh sửa lớp học");
         btnUpdate.setText("Cập nhật");
 

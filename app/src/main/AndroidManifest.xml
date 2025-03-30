@@ -16,6 +16,9 @@
             android:name=".Activity.TeacherActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.MarkActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.DetailSubjectActivity"
             android:exported="false" />
         <activity

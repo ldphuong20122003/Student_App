@@ -1,5 +1,8 @@
 package com.example.phuongldph29233.student_app.Domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Class {
     private String id;
     private String maLop;
@@ -8,17 +11,26 @@ public class Class {
     private Branch khoa;
     private Teacher giangVien;
     private String namHoc;
+    private List<Student> danhSachSinhVien;
 
     public Class() {
+        this.danhSachSinhVien = new ArrayList<>(); // Khởi tạo danh sách
     }
-
     public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc) {
+        this();
         this.id = id;
         this.maLop = maLop;
         this.tenLop = tenLop;
         this.khoa = khoa;
         this.giangVien = giangVien;
         this.namHoc = namHoc;
+    }
+
+    public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc, List<Student> danhSachSinhVien) {
+        this(id, maLop, tenLop, khoa, giangVien, namHoc);
+        if (danhSachSinhVien != null) {
+            this.danhSachSinhVien.addAll(danhSachSinhVien);
+        }
     }
 
     public String getId() {
@@ -61,6 +73,27 @@ public class Class {
         this.giangVien = giangVien;
     }
 
+    public List<Student> getDanhSachSinhVien() {
+        return danhSachSinhVien;
+    }
+
+    public void setDanhSachSinhVien(List<Student> danhSachSinhVien) {
+        this.danhSachSinhVien.clear();
+        if (danhSachSinhVien != null) {
+            this.danhSachSinhVien.addAll(danhSachSinhVien);
+        }
+    }
+
+    public void xoaSinhVien(Student sinhVien) {
+        this.danhSachSinhVien.remove(sinhVien);
+    }
+
+    public void themSinhVien(Student sinhVien) {
+        if (sinhVien != null) {
+            this.danhSachSinhVien.add(sinhVien);
+        }
+    }
+
     public String getNamHoc() {
         return namHoc;
     }
@@ -71,13 +104,6 @@ public class Class {
 
     @Override
     public String toString() {
-        return "Class{" +
-                "id='" + id + '\'' +
-                ", maLop='" + maLop + '\'' +
-                ", tenLop='" + tenLop + '\'' +
-                ", khoa=" + (khoa != null ? khoa.toString() : "null") +
-                ", giangVien=" + (giangVien != null ? giangVien.toString() : "null") +
-                ", namHoc='" + namHoc + '\'' +
-                '}';
+        return getTenLop();
     }
 }

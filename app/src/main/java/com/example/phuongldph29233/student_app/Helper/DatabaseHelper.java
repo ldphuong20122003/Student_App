@@ -8,6 +8,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,39 @@ public class DatabaseHelper<T> {
                 .removeValue()
                 .addOnSuccessListener(v -> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+    }
+
+    public void get(String id, Class<T> clazz, DatabaseGetCallback<T> callback) {
+        databaseReference.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    T item = snapshot.getValue(clazz);
+                    if (item != null) {
+                        try {
+                            Method setIdMethod = item.getClass().getMethod("setId", String.class);
+                            setIdMethod.invoke(item, snapshot.getKey());
+                        } catch (Exception e) {
+                        }
+                        callback.onSuccess(item);
+                    } else {
+                        callback.onFailure("Không thể chuyển đổi dữ liệu");
+                    }
+                } else {
+                    callback.onFailure("Không tìm thấy đối tượng với ID: " + id);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFailure(error.getMessage());
+            }
+        });
+    }
+    // Interface callback mới cho phương thức get
+    public interface DatabaseGetCallback<T> {
+        void onSuccess(T item);
+        void onFailure(String error);
     }
 
     public interface DatabaseCallback<T> {

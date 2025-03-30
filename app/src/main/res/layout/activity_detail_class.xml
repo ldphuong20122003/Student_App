@@ -9,7 +9,7 @@
         android:id="@+id/txt_title_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Chi tiết sinh viên"
+        android:text="Chi tiết lớp học"
         android:textSize="20sp"
         android:textStyle="bold"
         android:gravity="center"
@@ -120,7 +120,29 @@
             />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="8dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:text="Sinh viên: "
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/btn_danhSachSV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Danh sách sinh viên"
+            android:textColor="@color/blue"
+            android:textSize="16dp"
+            android:backgroundTint="#4CAF50"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

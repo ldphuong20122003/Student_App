@@ -20,7 +20,7 @@ public class HelperUtils {
     private static final int PHONE_NUMBER_LENGTH = 10;
     private static final String EMAIL_ERROR_MSG = "Email không hợp lệ";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+            "^[A-Za-z0-9]+[A-Za-z0-9]*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)$"
     );
     public static void setupPhoneNumberValidation(EditText editText) {
         editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(PHONE_NUMBER_LENGTH)});
@@ -139,6 +139,65 @@ public class HelperUtils {
                     calendar.get(Calendar.MONTH),
                     calendar.get(Calendar.DAY_OF_MONTH)
             );
+            datePickerDialog.show();
+        });
+    }
+
+    public static boolean isAtLeast18YearsOld(int year, int month, int day) {
+        Calendar dob = Calendar.getInstance();
+        dob.set(year, month, day);
+
+        Calendar today = Calendar.getInstance();
+
+        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
+            age--;
+        }
+        return age >= 18;
+    }
+
+    public static boolean isValidAge(String dateStr) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date dob = sdf.parse(dateStr);
+            Calendar dobCal = Calendar.getInstance();
+            dobCal.setTime(dob);
+
+            return isAtLeast18YearsOld(
+                    dobCal.get(Calendar.YEAR),
+                    dobCal.get(Calendar.MONTH),
+                    dobCal.get(Calendar.DAY_OF_MONTH)
+            );
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static void setupDatePickerWithAgeCheck(
+            Context context,
+            EditText editText,
+            String errorMessage
+    ) {
+        editText.setOnClickListener(v -> {
+            final Calendar calendar = Calendar.getInstance();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    context,
+                    (view, year, month, day) -> {
+                        if (!isAtLeast18YearsOld(year, month, day)) {
+                            editText.setError(errorMessage);
+                            editText.requestFocus();
+                        } else {
+                            String date = String.format(Locale.getDefault(),
+                                    "%02d/%02d/%04d", day, month + 1, year);
+                            editText.setText(date);
+                            editText.setError(null);
+                        }
+                    },
+                    calendar.get(Calendar.YEAR),
+                    calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.DAY_OF_MONTH)
+            );
+            datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
             datePickerDialog.show();
         });
     }

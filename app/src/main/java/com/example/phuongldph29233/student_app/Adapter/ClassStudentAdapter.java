@@ -1,5 +1,6 @@
 package com.example.phuongldph29233.student_app.Adapter;
 
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -17,13 +18,13 @@ import com.example.phuongldph29233.student_app.databinding.ViewHolderStudentBind
 
 import java.util.List;
 
-public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBinding> {
+public class ClassStudentAdapter extends AdapterHelper<Student, ViewHolderStudentBinding> {
 
-    public StudentAdapter(List<Student> items) {
+    public ClassStudentAdapter(List<Student> items) {
         super(items);
     }
 
-    public StudentAdapter(List<Student> items, OnItemActionListener<Student> listener) {
+    public ClassStudentAdapter(List<Student> items, OnItemActionListener<Student> listener) {
         super(items, listener);
     }
 
@@ -50,11 +51,6 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
             binding.txtMaSV.setText(studentItem.getMaSV());
             binding.txtTenSV.setText(studentItem.getTenSV());
             binding.txtLopHoc.setText(studentItem.getLopHoc().toString());
-            if ((studentItem.getLopHoc().toString() != null && studentItem.getLopHoc().getTenLop() != null && !studentItem.getLopHoc().getTenLop().isEmpty())) {
-                binding.txtLopHoc.setText(studentItem.getLopHoc().toString());
-            } else {
-                binding.txtLopHoc.setText("Chưa có lớp học");
-            }
             binding.txtHeDaotao.setText(studentItem.getHeDaoTao());
             binding.cardViewStudent.setOnClickListener(v -> {
                 if (actionListener != null) {
@@ -79,7 +75,7 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void searchStudent(List<Student> searchStudent) {
+    public void searchClassStudent(List<Student> searchStudent) {
         updateDataSet(searchStudent);
     }
 }

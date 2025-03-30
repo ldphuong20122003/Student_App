@@ -31,6 +31,7 @@ import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
+import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
@@ -46,32 +47,40 @@ import java.util.UUID;
 public class StudentActivity extends AppCompatActivity {
     ActivityStudentBinding binding;
     private DatabaseHelper<Student> databaseHelper;
-    private ArrayAdapter arrayAdapter;
+    private ArrayAdapter<Branch> branchAdapter;
+    private ArrayAdapter<Class> classAdapter;
     private StudentAdapter studentAdapter;
     private BranchController branchController;
     private ArrayList<Student> studentArrayList;
     private ArrayList<Branch> branchList;
     private ArrayList<Student> originalArrayList;
-    private Calendar calendar;
+    private DatabaseHelper<Class> classDatabaseHelper;
+    private ArrayList<Class> classList;
+    private static final Class EMPTY_CLASS = new Class("","", "Chưa có lớp học",null, null, "");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityStudentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         databaseHelper = new DatabaseHelper<>("Student");
+        classDatabaseHelper = new DatabaseHelper<>("Classes");
+        classList = new ArrayList<>();
         branchController = new BranchController();
         studentArrayList = new ArrayList<>();
         originalArrayList = new ArrayList<>();
         branchList = new ArrayList<>();
         studentAdapter = new StudentAdapter(studentArrayList);
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        branchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
+        branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        classAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, classList);
+        classAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(studentAdapter);
         binding.btnBack.setOnClickListener(v -> finish());
         binding.btnAdd.setOnClickListener(v -> showDialogAdd());
-        loadDataStudent();
         loadDataBranch();
+        loadDataClass();
+        loadDataStudent();
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -97,8 +106,25 @@ public class StudentActivity extends AppCompatActivity {
             public void onSuccess(List<Student> list) {
                 studentArrayList.clear();
                 originalArrayList.clear();
-                studentArrayList.addAll(list);
-                originalArrayList.addAll(list);
+                for (Student student : list) {
+                    Class studentClass = student.getLopHoc();
+                    boolean classExists = false;
+                    for (Class cls : classList) {
+                        if (cls != null && cls.getMaLop() != null &&
+                                cls.getMaLop().equals(studentClass.getMaLop())) {
+                            classExists = true;
+                            break;
+                        }
+                    }
+                    if (!classExists) {
+                        student.setLopHoc(EMPTY_CLASS);
+                        updateStudentClass(student.getId(), EMPTY_CLASS);
+                    }
+
+                    studentArrayList.add(student);
+                }
+
+                originalArrayList.addAll(studentArrayList);
                 studentAdapter.notifyDataSetChanged();
 
                 if (studentArrayList.isEmpty()) {
@@ -116,13 +142,52 @@ public class StudentActivity extends AppCompatActivity {
         });
     }
 
+    private void updateStudentClass(String studentId, Class newClass) {
+        databaseHelper.get(studentId, Student.class, new DatabaseHelper.DatabaseGetCallback<Student>() {
+            @Override
+            public void onSuccess(Student student) {
+                if (student != null) {
+                    student.setLopHoc(newClass);
+                    databaseHelper.update(studentId, student, new DatabaseHelper.DatabaseActionCallback() {
+                        @Override
+                        public void onSuccess() {
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onFailure(String error) {
+            }
+        });
+    }
+    private void loadDataClass() {
+        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
+            @Override
+            public void onSuccess(List<Class> itemList) {
+                classList.add(EMPTY_CLASS);
+                classList.addAll(itemList);
+                classAdapter.notifyDataSetChanged();
+                loadDataStudent();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(StudentActivity.this, "Lỗi tải : " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void loadDataBranch() {
         branchController.getBranches(new BranchController.BranchCallback() {
             @Override
             public void onSuccess(ArrayList<Branch> list) {
                 branchList.clear();
                 branchList.addAll(list);
-                arrayAdapter.notifyDataSetChanged();
+                branchAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -144,7 +209,8 @@ public class StudentActivity extends AppCompatActivity {
         HelperUtils.setupPhoneNumberValidation(edtSDT);
         EditText edtMail = dialog.findViewById(R.id.edt_email_add);
         HelperUtils.setupEmailValidation(edtMail);
-        EditText edtLophoc = dialog.findViewById(R.id.edt_lopHoc_add);
+        Spinner edtLophoc = dialog.findViewById(R.id.edt_lopHoc_add);
+
         EditText edtNgayNhapHoc = dialog.findViewById(R.id.edt_ngayNhaphoc_add);
         EditText edtHeDaotao = dialog.findViewById(R.id.edt_heDaotao_add);
         Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganh);
@@ -153,7 +219,9 @@ public class StudentActivity extends AppCompatActivity {
         HelperUtils.setupDatePicker(this,edtNgaysinh);
         HelperUtils.setupDatePicker(this,edtNgayNhapHoc);
         txtTitle.setText("Thêm sinh viên");
-        spn_chuyenNganh.setAdapter(arrayAdapter);
+        spn_chuyenNganh.setAdapter(branchAdapter);
+        edtLophoc.setAdapter(classAdapter);
+
         btnAdd.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
             String maSV = edtMaSV.getText().toString().trim();
@@ -162,13 +230,13 @@ public class StudentActivity extends AppCompatActivity {
             String queQuan = edtQue.getText().toString().trim();
             String soDienThoai = edtSDT.getText().toString().trim();
             String email = edtMail.getText().toString().trim();
-            String lopHoc = edtLophoc.getText().toString().trim();
+//            String lopHoc = edtLophoc.getText().toString().trim();
+            Class lopHoc = (Class) edtLophoc.getSelectedItem();
             String ngayNhapHoc = edtNgayNhapHoc.getText().toString().trim();
             String heDaoTao = edtHeDaotao.getText().toString().trim();
             Branch selectedBranch = (Branch) spn_chuyenNganh.getSelectedItem();
-            calendar = Calendar.getInstance();
 
-            if (maSV.isEmpty() || tenSV.isEmpty() || lopHoc.isEmpty() || heDaoTao.isEmpty()) {
+            if (maSV.isEmpty() || tenSV.isEmpty() || heDaoTao.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }

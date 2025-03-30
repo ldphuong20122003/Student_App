@@ -58,5 +58,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, TeacherActivity.class));
             }
         });
+        binding.cardMath.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, MarkActivity.class));
+            }
+        });
     }
 }
