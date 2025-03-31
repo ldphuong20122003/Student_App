@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StudentSelectionAdapter extends ArrayAdapter<Student> {
-    private List<Student> students;
-    private SparseBooleanArray selectedStudents;
+    private final List<Student> students;
+    private final SparseBooleanArray selectedStudents;
 
     public StudentSelectionAdapter(Context context, List<Student> students) {
         super(context, 0, students);
@@ -41,8 +41,8 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
             CheckBox cbStudent = convertView.findViewById(R.id.cbStudent);
             TextView tvStudentCode = convertView.findViewById(R.id.tvStudentCode);
             TextView tvStudentName = convertView.findViewById(R.id.tvStudentName);
-            tvStudentCode.setText(student.getMaSV());
-            tvStudentName.setText(student.getTenSV());
+            tvStudentCode.setText(student.getStudentID());
+            tvStudentName.setText(student.getStudentName());
 
             cbStudent.setChecked(selectedStudents.get(position, false));
 

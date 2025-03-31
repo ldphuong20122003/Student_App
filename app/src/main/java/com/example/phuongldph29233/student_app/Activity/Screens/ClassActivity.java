@@ -77,14 +77,17 @@ public class ClassActivity extends AppCompatActivity {
         loadDataClass();
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 searchList(s.toString());
             }
+
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
         initializeComponents();
         setupListeners();
@@ -97,6 +100,7 @@ public class ClassActivity extends AppCompatActivity {
         loadData();
         loadDataClass();
     }
+
     private void initializeComponents() {
         branchList = new ArrayList<>();
         teacherList = new ArrayList<>();
@@ -126,6 +130,7 @@ public class ClassActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadData() {
         loadBranches();
         loadTeachers();
@@ -220,7 +225,7 @@ public class ClassActivity extends AppCompatActivity {
         EditText edtNamHoc = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_lop);
         Button btnAdd = dialog.findViewById(R.id.btn_add_lop);
-        HelperUtils.setupDatePicker(this,edtNamHoc);
+        HelperUtils.setupDatePicker(this, edtNamHoc);
         if (txtTitle == null || edtMaLop == null || edtTenLop == null || spnKhoaAdd == null ||
                 spnGiangVienAdd == null || edtNamHoc == null || btnHuy == null || btnAdd == null) {
             Toast.makeText(this, "Lỗi hiển thị dialog", Toast.LENGTH_SHORT).show();
@@ -291,6 +296,7 @@ public class ClassActivity extends AppCompatActivity {
                 dialog.dismiss();
                 loadDataClass();
             }
+
             @Override
             public void onFailure(String error) {
                 Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
@@ -304,7 +310,7 @@ public class ClassActivity extends AppCompatActivity {
             public void onSuccess(List<Student> students) {
                 List<Student> filteredStudents = new ArrayList<>();
                 for (Student student : students) {
-                    if (student.getLopHoc() == null || student.getLopHoc().getMaLop().isEmpty()) {
+                    if (student.getStudentClass() == null || student.getStudentClass().getMaLop().isEmpty()) {
                         filteredStudents.add(student);
                     }
                 }
@@ -354,7 +360,7 @@ public class ClassActivity extends AppCompatActivity {
         }
 
         for (Student student : students) {
-            student.setLopHoc(newClass);
+            student.setStudentClass(newClass);
 
             studentDatabaseHelper.update(student.getId(), student, new DatabaseHelper.DatabaseActionCallback() {
                 @Override

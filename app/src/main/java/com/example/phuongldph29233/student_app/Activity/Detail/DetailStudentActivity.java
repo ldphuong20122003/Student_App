@@ -1,8 +1,5 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Detail;
 
-import static com.example.phuongldph29233.student_app.R.*;
-
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -26,9 +23,7 @@ import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 public class DetailStudentActivity extends AppCompatActivity {
@@ -41,6 +36,7 @@ public class DetailStudentActivity extends AppCompatActivity {
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Branch> branchList;
     private ArrayList<Class> classList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,16 +71,16 @@ public class DetailStudentActivity extends AppCompatActivity {
 
     private void getIntentExtra() {
         id = (String) getIntent().getSerializableExtra("id");
-        maSV = (String) getIntent().getSerializableExtra("maSV");
-        tenSV = (String) getIntent().getSerializableExtra("tenSV");
-        ngaySinh = (String) getIntent().getSerializableExtra("ngaySinh");
-        queQuan = (String) getIntent().getSerializableExtra("queQuan");
-        sdt = (String) getIntent().getSerializableExtra("soDienThoai");
-        email = (String) getIntent().getSerializableExtra("email");
-        lopHoc = (String) getIntent().getSerializableExtra("lopHoc");
-        ngayNhapHoc = (String) getIntent().getSerializableExtra("ngayNhapHoc");
-        chuyenNganh = (String) getIntent().getSerializableExtra("chuyenNganh");
-        heDaoTao = (String) getIntent().getSerializableExtra("heDaoTao");
+        maSV = (String) getIntent().getSerializableExtra("studentID");
+        tenSV = (String) getIntent().getSerializableExtra("studentName");
+        ngaySinh = (String) getIntent().getSerializableExtra("studentBirthday");
+        queQuan = (String) getIntent().getSerializableExtra("studentHomeTown");
+        sdt = (String) getIntent().getSerializableExtra("studentPhone");
+        email = (String) getIntent().getSerializableExtra("studentEmail");
+        lopHoc = (String) getIntent().getSerializableExtra("studentClass");
+        ngayNhapHoc = (String) getIntent().getSerializableExtra("studentDateJoin");
+        chuyenNganh = (String) getIntent().getSerializableExtra("studentBranch");
+        heDaoTao = (String) getIntent().getSerializableExtra("studentTOT");
 
         txtMaSV.setText(maSV);
         txtTenSV.setText(tenSV);
@@ -105,18 +101,18 @@ public class DetailStudentActivity extends AppCompatActivity {
     }
 
     private void loadClass() {
-    classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
-        @Override
-        public void onSuccess(List<Class> itemList) {
-            classList.clear();
-            classList.addAll(itemList);
-        }
+        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
+            @Override
+            public void onSuccess(List<Class> itemList) {
+                classList.clear();
+                classList.addAll(itemList);
+            }
 
-        @Override
-        public void onFailure(String error) {
-            Toast.makeText(DetailStudentActivity.this, "Lỗi tải : " + error, Toast.LENGTH_SHORT).show();
-        }
-    });
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(DetailStudentActivity.this, "Lỗi tải : " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadBranches() {
@@ -152,8 +148,8 @@ public class DetailStudentActivity extends AppCompatActivity {
         Spinner spnChuyenNganhEdit = dialog.findViewById(R.id.spn_chuyenNganh);
         Button btnUpdate = dialog.findViewById(R.id.btn_add_sv);
         Button btnCancel = dialog.findViewById(R.id.btn_huy_sv);
-        HelperUtils.setupDatePicker(this,edtNgaySinhEdit);
-        HelperUtils.setupDatePicker(this,edtNgayNhapHocEdit);
+        HelperUtils.setupDatePicker(this, edtNgaySinhEdit);
+        HelperUtils.setupDatePicker(this, edtNgayNhapHocEdit);
         txtTitle.setText("Chỉnh sửa sinh viên");
         btnUpdate.setText("Cập nhật");
 
@@ -216,7 +212,7 @@ public class DetailStudentActivity extends AppCompatActivity {
 
             if (updatedMaSV.isEmpty() || updatedTenSV.isEmpty() || updatedNgaySinh.isEmpty() ||
                     updatedQueQuan.isEmpty() || updatedSdt.isEmpty() || updatedEmail.isEmpty() ||
-                     updatedNgayNhapHoc.isEmpty() || updatedHeDaoTao.isEmpty()) {
+                    updatedNgayNhapHoc.isEmpty() || updatedHeDaoTao.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -264,6 +260,7 @@ public class DetailStudentActivity extends AppCompatActivity {
                     txtHeDaoTao.setText(heDaoTao);
                     txtChuyenNganh.setText(chuyenNganh);
                 }
+
                 @Override
                 public void onFailure(String error) {
                     Toast.makeText(DetailStudentActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();

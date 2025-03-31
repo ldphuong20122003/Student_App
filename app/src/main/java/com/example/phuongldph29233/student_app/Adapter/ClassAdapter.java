@@ -8,12 +8,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import com.example.phuongldph29233.student_app.Activity.Detail.DetailClassActivity;
-import com.example.phuongldph29233.student_app.Activity.DetailStudentActivity;
 import com.example.phuongldph29233.student_app.Domain.Class;
-import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderClassBinding;
-import com.example.phuongldph29233.student_app.databinding.ViewHolderStudentBinding;
 
 import java.util.List;
 
@@ -37,7 +34,7 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
 
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        ((ClassViewHolder) holder).bind(items.get(position));
+        holder.bind(items.get(position));
     }
 
     public class ClassViewHolder extends BaseViewHolder {

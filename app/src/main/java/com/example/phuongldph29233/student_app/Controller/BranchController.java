@@ -44,7 +44,24 @@ public class BranchController {
     }
 
     public void deleteBranch(Branch branch, DeleteBranchCallback callback) {
-        myRef.child(branch.getId()).removeValue().addOnSuccessListener(unused -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailed(e.getMessage()));
+        DatabaseReference subjectsRef = FirebaseDatabase.getInstance().getReference("Subject");
+        subjectsRef.orderByChild("subjectBranch/branchID").equalTo(branch.getBranchID()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    callback.onFailed("Không thể xóa! Khoa này đang có môn học");
+                } else {
+                    myRef.child(branch.getId()).removeValue().addOnSuccessListener(unused -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailed(e.getMessage()));
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                callback.onFailed("Lỗi: " + error);
+
+            }
+        });
     }
 
     // Interface Callback

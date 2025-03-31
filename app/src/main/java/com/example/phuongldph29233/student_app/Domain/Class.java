@@ -6,16 +6,16 @@ import java.util.List;
 public class Class {
     private String id;
     private String maLop;
-
     private String tenLop;
     private Branch khoa;
     private Teacher giangVien;
     private String namHoc;
-    private List<Student> danhSachSinhVien;
+    private final List<Student> danhSachSinhVien;
 
     public Class() {
         this.danhSachSinhVien = new ArrayList<>(); // Khởi tạo danh sách
     }
+
     public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc) {
         this();
         this.id = id;

@@ -8,11 +8,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.example.phuongldph29233.student_app.Activity.DetailStudentActivity;
-import com.example.phuongldph29233.student_app.Domain.Class;
+import com.example.phuongldph29233.student_app.Activity.Detail.DetailStudentActivity;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
-import com.example.phuongldph29233.student_app.databinding.ViewHolderClassBinding;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderStudentBinding;
 
 import java.util.List;
@@ -37,7 +35,7 @@ public class ClassStudentAdapter extends AdapterHelper<Student, ViewHolderStuden
 
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        ((StudentViewHolder) holder).bind(items.get(position));
+        holder.bind(items.get(position));
     }
 
     public class StudentViewHolder extends BaseViewHolder {
@@ -47,26 +45,27 @@ public class ClassStudentAdapter extends AdapterHelper<Student, ViewHolderStuden
 
         @Override
         public void bind(Student studentItem) {
-            binding.txtMaSV.setText(studentItem.getMaSV());
-            binding.txtTenSV.setText(studentItem.getTenSV());
-            binding.txtLopHoc.setText(studentItem.getLopHoc().toString());
-            binding.txtHeDaotao.setText(studentItem.getHeDaoTao());
+            binding.txtStudentName.setText(studentItem.getStudentID());
+            binding.txtStudentName.setText(studentItem.getStudentName());
+            binding.txtStudentEmail.setText(studentItem.getStudentEmail());
+            binding.txtStudentPhone.setText(studentItem.getStudentPhone());
+            binding.txtStudentTOT.setText(studentItem.getStudentTOT());
             binding.cardViewStudent.setOnClickListener(v -> {
                 if (actionListener != null) {
                     actionListener.onItemClick(studentItem);
-                }else {
+                } else {
                     Intent intent = new Intent(context, DetailStudentActivity.class);
                     intent.putExtra("id", studentItem.getId());
-                    intent.putExtra("maSV", studentItem.getMaSV());
-                    intent.putExtra("tenSV", studentItem.getTenSV());
-                    intent.putExtra("ngaySinh", studentItem.getNgaySinh());
-                    intent.putExtra("queQuan", studentItem.getQueQuan());
-                    intent.putExtra("soDienThoai", studentItem.getSoDienThoai());
-                    intent.putExtra("email", studentItem.getEmail());
-                    intent.putExtra("lopHoc", studentItem.getLopHoc().toString());
-                    intent.putExtra("ngayNhapHoc", studentItem.getNgayNhapHoc());
-                    intent.putExtra("chuyenNganh", studentItem.getChuyenNganh().toString());
-                    intent.putExtra("heDaoTao",studentItem.getHeDaoTao());
+                    intent.putExtra("studentID", studentItem.getStudentID());
+                    intent.putExtra("studentName", studentItem.getStudentName());
+                    intent.putExtra("studentBirthday", studentItem.getStudentBirthday());
+                    intent.putExtra("studentHomeTown", studentItem.getStudentHomeTown());
+                    intent.putExtra("studentPhone", studentItem.getStudentPhone());
+                    intent.putExtra("studentEmail", studentItem.getStudentEmail());
+                    intent.putExtra("studentClass", studentItem.getStudentClass().toString());
+                    intent.putExtra("studentDateJoin", studentItem.getStudentDateJoin());
+                    intent.putExtra("studentBranch", studentItem.getStudentBranch().toString());
+                    intent.putExtra("studentTOT", studentItem.getStudentTOT());
                     context.startActivity(intent);
                 }
             });

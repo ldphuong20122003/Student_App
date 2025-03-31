@@ -22,7 +22,7 @@
             android:name=".Activity.Detail.DetailSubjectActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.DetailStudentActivity"
+            android:name=".Activity.Detail.DetailStudentActivity"
             android:launchMode="standard"
             android:exported="false" />
         <activity

@@ -56,7 +56,8 @@ public class StudentActivity extends AppCompatActivity {
     private ArrayList<Student> originalArrayList;
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Class> classList;
-    private static final Class EMPTY_CLASS = new Class("","", "Chưa có lớp học",null, null, "");
+    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null, null, "");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +84,8 @@ public class StudentActivity extends AppCompatActivity {
         loadDataStudent();
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -91,14 +93,17 @@ public class StudentActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
+
     @Override
     protected void onResume() {
         super.onResume();
         loadDataStudent();
     }
+
     private void loadDataStudent() {
         databaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
             @SuppressLint("NotifyDataSetChanged")
@@ -107,7 +112,7 @@ public class StudentActivity extends AppCompatActivity {
                 studentArrayList.clear();
                 originalArrayList.clear();
                 for (Student student : list) {
-                    Class studentClass = student.getLopHoc();
+                    Class studentClass = student.getStudentClass();
                     boolean classExists = false;
                     for (Class cls : classList) {
                         if (cls != null && cls.getMaLop() != null &&
@@ -117,7 +122,7 @@ public class StudentActivity extends AppCompatActivity {
                         }
                     }
                     if (!classExists) {
-                        student.setLopHoc(EMPTY_CLASS);
+                        student.setStudentClass(EMPTY_CLASS);
                         updateStudentClass(student.getId(), EMPTY_CLASS);
                     }
 
@@ -147,7 +152,7 @@ public class StudentActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Student student) {
                 if (student != null) {
-                    student.setLopHoc(newClass);
+                    student.setStudentClass(newClass);
                     databaseHelper.update(studentId, student, new DatabaseHelper.DatabaseActionCallback() {
                         @Override
                         public void onSuccess() {
@@ -165,6 +170,7 @@ public class StudentActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadDataClass() {
         classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
@@ -181,6 +187,7 @@ public class StudentActivity extends AppCompatActivity {
             }
         });
     }
+
     private void loadDataBranch() {
         branchController.getBranches(new BranchController.BranchCallback() {
             @Override
@@ -196,6 +203,7 @@ public class StudentActivity extends AppCompatActivity {
             }
         });
     }
+
     private void showDialogAdd() {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_student);
@@ -216,8 +224,8 @@ public class StudentActivity extends AppCompatActivity {
         Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganh);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_sv);
         Button btnAdd = dialog.findViewById(R.id.btn_add_sv);
-        HelperUtils.setupDatePicker(this,edtNgaysinh);
-        HelperUtils.setupDatePicker(this,edtNgayNhapHoc);
+        HelperUtils.setupDatePicker(this, edtNgaysinh);
+        HelperUtils.setupDatePicker(this, edtNgayNhapHoc);
         txtTitle.setText("Thêm sinh viên");
         spn_chuyenNganh.setAdapter(branchAdapter);
         edtLophoc.setAdapter(classAdapter);
@@ -260,7 +268,6 @@ public class StudentActivity extends AppCompatActivity {
     }
 
 
-
     private void addStudent(Student student, Dialog dialog) {
         databaseHelper.add(student, new DatabaseHelper.DatabaseActionCallback() {
             @Override
@@ -269,6 +276,7 @@ public class StudentActivity extends AppCompatActivity {
                 dialog.dismiss();
                 loadDataStudent();
             }
+
             @Override
             public void onFailure(String error) {
                 Toast.makeText(StudentActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
@@ -279,7 +287,7 @@ public class StudentActivity extends AppCompatActivity {
     private void searchList(String text) {
         ArrayList<Student> filteredList = new ArrayList<>();
         for (Student data : originalArrayList) {
-            if (data.getMaSV().toLowerCase().contains(text.toLowerCase()) || data.getTenSV().toLowerCase().contains(text.toLowerCase())) {
+            if (data.getStudentID().toLowerCase().contains(text.toLowerCase()) || data.getStudentName().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(data);
             }
         }

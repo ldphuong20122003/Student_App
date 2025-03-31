@@ -2,33 +2,33 @@ package com.example.phuongldph29233.student_app.Domain;
 
 public class Student {
     private String id;
-    private String maSV;
-    private String tenSV;
-    private String ngaySinh;
-    private String queQuan;
-    private String soDienThoai;
-    private String email;
-    private Class lopHoc;
+    private String studentID;
+    private String studentName;
+    private String studentBirthday;
+    private String studentHomeTown;
+    private String studentPhone;
+    private String studentEmail;
+    private Class studentClass;
 
-    private String ngayNhapHoc;
-    private Branch chuyenNganh;
-    private String heDaoTao;
+    private String studentDateJoin;
+    private Branch studentBranch;
+    private String studentTOT;
 
     public Student() {
     }
 
-    public Student(String id, String maSV, String tenSV, String ngaySinh, String queQuan, String soDienThoai, String email, Class lopHoc, String ngayNhapHoc, Branch chuyenNganh, String heDaoTao) {
+    public Student(String id, String studentID, String studentName, String studentBirthday, String studentHomeTown, String studentPhone, String studentEmail, Class studentClass, String studentDateJoin, Branch studentBranch, String studentTOT) {
         this.id = id;
-        this.maSV = maSV;
-        this.tenSV = tenSV;
-        this.ngaySinh = ngaySinh;
-        this.queQuan = queQuan;
-        this.soDienThoai = soDienThoai;
-        this.email = email;
-        this.lopHoc = lopHoc;
-        this.ngayNhapHoc = ngayNhapHoc;
-        this.chuyenNganh = chuyenNganh;
-        this.heDaoTao = heDaoTao;
+        this.studentID = studentID;
+        this.studentName = studentName;
+        this.studentBirthday = studentBirthday;
+        this.studentHomeTown = studentHomeTown;
+        this.studentPhone = studentPhone;
+        this.studentEmail = studentEmail;
+        this.studentClass = studentClass;
+        this.studentDateJoin = studentDateJoin;
+        this.studentBranch = studentBranch;
+        this.studentTOT = studentTOT;
     }
 
     public String getId() {
@@ -39,86 +39,83 @@ public class Student {
         this.id = id;
     }
 
-
-    public Class getLopHoc() {
-        return lopHoc;
+    public String getStudentID() {
+        return studentID;
     }
 
-    public void setLopHoc(Class lopHoc) {
-        this.lopHoc = lopHoc;
+    public void setStudentID(String studentID) {
+        this.studentID = studentID;
     }
 
-    public String getMaSV() {
-        return maSV;
+    public String getStudentName() {
+        return studentName;
     }
 
-    public void setMaSV(String maSV) {
-        this.maSV = maSV;
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
     }
 
-    public String getTenSV() {
-        return tenSV;
+    public String getStudentBirthday() {
+        return studentBirthday;
     }
 
-    public void setTenSV(String tenSV) {
-        this.tenSV = tenSV;
+    public void setStudentBirthday(String studentBirthday) {
+        this.studentBirthday = studentBirthday;
     }
 
-    public String getNgaySinh() {
-        return ngaySinh;
+    public String getStudentHomeTown() {
+        return studentHomeTown;
     }
 
-    public void setNgaySinh(String ngaySinh) {
-        this.ngaySinh = ngaySinh;
+    public void setStudentHomeTown(String studentHomeTown) {
+        this.studentHomeTown = studentHomeTown;
     }
 
-    public String getQueQuan() {
-        return queQuan;
+    public String getStudentPhone() {
+        return studentPhone;
     }
 
-    public void setQueQuan(String queQuan) {
-        this.queQuan = queQuan;
+    public void setStudentPhone(String studentPhone) {
+        this.studentPhone = studentPhone;
     }
 
-    public String getSoDienThoai() {
-        return soDienThoai;
+    public String getStudentEmail() {
+        return studentEmail;
     }
 
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
     }
 
-    public String getEmail() {
-        return email;
+    public Class getStudentClass() {
+        return studentClass;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setStudentClass(Class studentClass) {
+        this.studentClass = studentClass;
     }
 
-    public String getNgayNhapHoc() {
-        return ngayNhapHoc;
+    public String getStudentDateJoin() {
+        return studentDateJoin;
     }
 
-    public void setNgayNhapHoc(String ngayNhapHoc) {
-        this.ngayNhapHoc = ngayNhapHoc;
+    public void setStudentDateJoin(String studentDateJoin) {
+        this.studentDateJoin = studentDateJoin;
     }
 
-    public Branch getChuyenNganh() {
-        return chuyenNganh;
+    public Branch getStudentBranch() {
+        return studentBranch;
     }
 
-    public void setChuyenNganh(Branch chuyenNganh) {
-        this.chuyenNganh = chuyenNganh;
+    public void setStudentBranch(Branch studentBranch) {
+        this.studentBranch = studentBranch;
     }
 
-    public String getHeDaoTao() {
-        return heDaoTao;
+    public String getStudentTOT() {
+        return studentTOT;
     }
 
-    public void setHeDaoTao(String heDaoTao) {
-        this.heDaoTao = heDaoTao;
+    public void setStudentTOT(String studentTOT) {
+        this.studentTOT = studentTOT;
     }
-
-
 }

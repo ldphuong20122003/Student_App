@@ -56,7 +56,7 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
 
                             @Override
                             public void onFailed(String error) {
-                                Toast.makeText(context, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
