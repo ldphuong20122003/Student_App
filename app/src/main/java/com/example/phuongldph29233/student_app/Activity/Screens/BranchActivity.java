@@ -111,22 +111,22 @@ public class BranchActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_add_branch);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        EditText edt_maKhoa_add = dialog.findViewById(R.id.edt_maKhoa_add);
-        EditText edt_tenKhoa_add = dialog.findViewById(R.id.edt_tenKhoa_add);
-        Button btn_huy = dialog.findViewById(R.id.btn_huy_khoa);
-        Button btn_add = dialog.findViewById(R.id.btn_add_khoa);
+        EditText edt_branchID_add = dialog.findViewById(R.id.edt_branchID_add);
+        EditText edt_branchName_add = dialog.findViewById(R.id.edt_branchName_add);
+        Button btn_huy = dialog.findViewById(R.id.btn_cancel_branch);
+        Button btn_add = dialog.findViewById(R.id.btn_add_branch);
 
         btn_add.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
-            String maKhoa = edt_maKhoa_add.getText().toString().trim();
-            String tenKhoa = edt_tenKhoa_add.getText().toString().trim();
+            String branchID = edt_branchID_add.getText().toString().trim();
+            String branchName = edt_branchName_add.getText().toString().trim();
 
-            if (maKhoa.isEmpty() || tenKhoa.isEmpty()) {
+            if (branchID.isEmpty() || branchName.isEmpty()) {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin !!!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            Branch branch = new Branch(id, maKhoa, tenKhoa);
+            Branch branch = new Branch(id, branchID, branchName);
             addBranch(branch, dialog);
         });
 
@@ -156,7 +156,7 @@ public class BranchActivity extends AppCompatActivity {
     private void searchList(String text) {
         ArrayList<Branch> filteredList = new ArrayList<>();
         for (Branch data : originalList) {
-            if (data.getTenKhoa().toLowerCase().contains(text.toLowerCase())) {
+            if (data.getBranchName().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(data);
             }
         }

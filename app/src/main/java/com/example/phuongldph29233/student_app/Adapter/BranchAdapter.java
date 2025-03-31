@@ -36,7 +36,7 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull BranchAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.binding.txtTenKhoa.setText(items.get(position).getTenKhoa());
+        holder.binding.txtBranchName.setText(items.get(position).getBranchName());
         holder.binding.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

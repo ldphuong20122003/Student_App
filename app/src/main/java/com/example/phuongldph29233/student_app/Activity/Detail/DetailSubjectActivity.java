@@ -33,7 +33,7 @@ import java.util.Objects;
 
 public class DetailSubjectActivity extends AppCompatActivity {
     private ActivityDetailSubjectBinding binding;
-    private String id, maMon, tenMon, chuyenNganh, soTin;
+    private String id, subjectID, subjectName, subjectBranch, subjectNOC;
     boolean isVisible;
     private SubjectController subjectController;
     private ArrayAdapter<Branch> arrayAdapter;
@@ -95,47 +95,47 @@ public class DetailSubjectActivity extends AppCompatActivity {
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         TextView txt_title = dialog.findViewById(R.id.txt_title_subject);
         txt_title.setText("Chỉnh sửa môn học");
-        EditText edt_maMon_add = dialog.findViewById(R.id.edt_maMon_add);
-        EditText edt_tenMon_add = dialog.findViewById(R.id.edt_tenMon_add);
-        EditText edt_soTin_add = dialog.findViewById(R.id.edt_soTin_add);
-        Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganh);
-        Button btn_update = dialog.findViewById(R.id.btn_add_mon);
-        Button btn_cancel = dialog.findViewById(R.id.btn_huy_mon);
+        EditText edt_subjectID_add = dialog.findViewById(R.id.edt_subjectID_add);
+        EditText edt_subjectName_add = dialog.findViewById(R.id.edt_subjectName_add);
+        EditText edt_subjectNOC_add = dialog.findViewById(R.id.edt_subjectNOC_add);
+        Spinner spn_subjectBranch = dialog.findViewById(R.id.spn_subjectBranch);
+        Button btn_update = dialog.findViewById(R.id.btn_add_subject);
+        Button btn_cancel = dialog.findViewById(R.id.btn_cancel_subject);
         loadDataBranchs();
-        edt_maMon_add.setText(maMon);
-        edt_tenMon_add.setText(tenMon);
-        edt_soTin_add.setText(soTin);
-        spn_chuyenNganh.setAdapter(arrayAdapter);
+        edt_subjectID_add.setText(subjectID);
+        edt_subjectName_add.setText(subjectName);
+        edt_subjectNOC_add.setText(subjectNOC);
+        spn_subjectBranch.setAdapter(arrayAdapter);
         new Handler().postDelayed(() -> {
-            spn_chuyenNganh.setAdapter(arrayAdapter);
+            spn_subjectBranch.setAdapter(arrayAdapter);
             int position = -1;
             for (int i = 0; i < arrayAdapter.getCount(); i++) {
                 Branch branch = arrayAdapter.getItem(i);
-                if (branch.getTenKhoa().trim().equalsIgnoreCase(chuyenNganh.trim())) {
+                if (branch.getBranchName().trim().equalsIgnoreCase(subjectBranch.trim())) {
                     position = i;
                     break;
                 }
             }
 
             if (position != -1) {
-                spn_chuyenNganh.setSelection(position);
+                spn_subjectBranch.setSelection(position);
                 Log.d("DEBUG", "Đặt selection tại vị trí: " + position);
             } else {
-                Log.d("DEBUG", "Không tìm thấy chuyên ngành: " + chuyenNganh);
+                Log.d("DEBUG", "Không tìm thấy chuyên ngành: " + subjectBranch);
             }
         }, 500);
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String maMon = edt_maMon_add.getText().toString();
-                String tenMon = edt_tenMon_add.getText().toString();
-                String soTin = edt_soTin_add.getText().toString();
-                if (maMon.isEmpty() || tenMon.isEmpty() || soTin.isEmpty()) {
+                String subjectID = edt_subjectID_add.getText().toString();
+                String subjectName = edt_subjectName_add.getText().toString();
+                String subjectNOC = edt_subjectNOC_add.getText().toString();
+                if (subjectID.isEmpty() || subjectName.isEmpty() || subjectNOC.isEmpty()) {
                     Toast.makeText(DetailSubjectActivity.this, "Vui lòng nhập đầy đủ thông tin !!!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Branch selectedBranch = (Branch) spn_chuyenNganh.getSelectedItem();
-                Subject subject = new Subject(id, maMon, tenMon, selectedBranch, soTin);
+                Branch selectedBranch = (Branch) spn_subjectBranch.getSelectedItem();
+                Subject subject = new Subject(id, subjectID, subjectName, selectedBranch, subjectNOC);
                 updateSubject(subject);
                 dialog.dismiss();
                 finish();
@@ -213,13 +213,13 @@ public class DetailSubjectActivity extends AppCompatActivity {
 
     private void getIntentExtra() {
         id = (String) getIntent().getSerializableExtra("id");
-        maMon = (String) getIntent().getSerializableExtra("maMon");
-        tenMon = (String) getIntent().getSerializableExtra("tenMon");
-        chuyenNganh = (String) getIntent().getSerializableExtra("chuyenNganh");
-        soTin = (String) getIntent().getSerializableExtra("soTin");
-        binding.txtDetailMaMon.setText(maMon);
-        binding.txtDetailTenMon.setText(tenMon);
-        binding.txtDetailChuyenNganh.setText(chuyenNganh);
-        binding.txtDetailSoTin.setText(soTin);
+        subjectID = (String) getIntent().getSerializableExtra("subjectID");
+        subjectName = (String) getIntent().getSerializableExtra("subjectName");
+        subjectBranch = (String) getIntent().getSerializableExtra("subjectBranch");
+        subjectNOC = (String) getIntent().getSerializableExtra("subjectNOC");
+        binding.txtDetailMaMon.setText(subjectID);
+        binding.txtDetailTenMon.setText(subjectName);
+        binding.txtDetailChuyenNganh.setText(subjectBranch);
+        binding.txtDetailSoTin.setText(subjectNOC);
     }
 }

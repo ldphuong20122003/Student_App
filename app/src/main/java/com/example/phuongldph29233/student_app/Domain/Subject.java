@@ -2,20 +2,21 @@ package com.example.phuongldph29233.student_app.Domain;
 
 public class Subject {
     private String id;
-    private String maMon;
-    private String tenMon;
-    private Branch chuyenNganh;
-    private String soTinChi;
+    private String subjectID;
+    private String subjectName;
+    private Branch subjectBranch;
+    private String subjectNOC;
 
-    public Subject(String id, String maMon, String tenMon, Branch chuyenNganh, String soTinChi) {
-        this.id = id;
-        this.maMon = maMon;
-        this.tenMon = tenMon;
-        this.chuyenNganh = chuyenNganh;
-        this.soTinChi = soTinChi;
-    }
 
     public Subject() {
+    }
+
+    public Subject(String id, String subjectID, String subjectName, Branch subjectBranch, String subjectNOC) {
+        this.id = id;
+        this.subjectID = subjectID;
+        this.subjectName = subjectName;
+        this.subjectBranch = subjectBranch;
+        this.subjectNOC = subjectNOC;
     }
 
     public String getId() {
@@ -26,35 +27,35 @@ public class Subject {
         this.id = id;
     }
 
-    public String getMaMon() {
-        return maMon;
+    public String getSubjectID() {
+        return subjectID;
     }
 
-    public void setMaMon(String maMon) {
-        this.maMon = maMon;
+    public void setSubjectID(String subjectID) {
+        this.subjectID = subjectID;
     }
 
-    public String getTenMon() {
-        return tenMon;
+    public String getSubjectName() {
+        return subjectName;
     }
 
-    public void setTenMon(String tenMon) {
-        this.tenMon = tenMon;
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
     }
 
-    public Branch getChuyenNganh() {
-        return chuyenNganh;
+    public Branch getSubjectBranch() {
+        return subjectBranch;
     }
 
-    public void setChuyenNganh(Branch chuyenNganh) {
-        this.chuyenNganh = chuyenNganh;
+    public void setSubjectBranch(Branch subjectBranch) {
+        this.subjectBranch = subjectBranch;
     }
 
-    public String getSoTinChi() {
-        return soTinChi;
+    public String getSubjectNOC() {
+        return subjectNOC;
     }
 
-    public void setSoTinChi(String soTinChi) {
-        this.soTinChi = soTinChi;
+    public void setSubjectNOC(String subjectNOC) {
+        this.subjectNOC = subjectNOC;
     }
 }

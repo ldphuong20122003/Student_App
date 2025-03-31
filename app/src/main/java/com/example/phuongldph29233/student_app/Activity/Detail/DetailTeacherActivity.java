@@ -114,7 +114,7 @@ public class DetailTeacherActivity extends AppCompatActivity {
             int position = -1;
             for (int i = 0; i < arrayAdapter.getCount(); i++) {
                 Branch branch = arrayAdapter.getItem(i);
-                if (branch.getTenKhoa().trim().equalsIgnoreCase(teacherBranch.toLowerCase())) {
+                if (branch.getBranchName().trim().equalsIgnoreCase(teacherBranch.toLowerCase())) {
                     position = i;
                     break;
                 }

@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.phuongldph29233.student_app.Activity.Detail.DetailSubjectActivity;
 import com.example.phuongldph29233.student_app.Adapter.SubjectAdapter;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.SubjectController;
@@ -120,34 +121,33 @@ public class SubjectActivity extends AppCompatActivity {
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         //Ánh xạ sự kiện
         TextView txt_title_subject = dialog.findViewById(R.id.txt_title_subject);
-        EditText edt_maMon_add = dialog.findViewById(R.id.edt_maMon_add);
-        EditText edt_tenMon_add = dialog.findViewById(R.id.edt_tenMon_add);
-        Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganh);
-        EditText edt_soTin_add = dialog.findViewById(R.id.edt_soTin_add);
-        Button btn_huy = dialog.findViewById(R.id.btn_huy_mon);
-        Button btn_add = dialog.findViewById(R.id.btn_add_mon);
+        EditText edt_subjectID_add = dialog.findViewById(R.id.edt_subjectID_add);
+        EditText edt_subjectName_add = dialog.findViewById(R.id.edt_subjectName_add);
+        EditText edt_subjectNOC_add = dialog.findViewById(R.id.edt_subjectNOC_add);
+        Spinner spn_subjectBranch = dialog.findViewById(R.id.spn_subjectBranch);
+        Button btn_add = dialog.findViewById(R.id.btn_add_subject);
+        Button btn_cancel = dialog.findViewById(R.id.btn_cancel_subject);
         txt_title_subject.setText("Thêm môn học");
         //Lấy dữ liệu branch
         loadDataBranch();
         //Gán dữ liệu vào spinner
-        spn_chuyenNganh.setAdapter(arrayAdapter);
+        spn_subjectBranch.setAdapter(arrayAdapter);
 
         // Sự kiện add
         btn_add.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
-            String maMon = edt_maMon_add.getText().toString().trim();
-            String tenMon = edt_tenMon_add.getText().toString().trim();
-            String soTin = edt_soTin_add.getText().toString().trim();
-
-            if (maMon.isEmpty() || tenMon.isEmpty() || soTin.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin !!!", Toast.LENGTH_SHORT).show();
+            String subjectID = edt_subjectID_add.getText().toString();
+            String subjectName = edt_subjectName_add.getText().toString();
+            String subjectNOC = edt_subjectNOC_add.getText().toString();
+            if (subjectID.isEmpty() || subjectName.isEmpty() || subjectNOC.isEmpty()) {
+                Toast.makeText(SubjectActivity.this, "Vui lòng nhập đầy đủ thông tin !!!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            Branch selectedBranch = (Branch) spn_chuyenNganh.getSelectedItem();
-            Subject subject = new Subject(id, maMon, tenMon, selectedBranch, soTin);
+            Branch selectedBranch = (Branch) spn_subjectBranch.getSelectedItem();
+            Subject subject = new Subject(id, subjectID, subjectName, selectedBranch, subjectNOC);
             addSubject(subject, dialog);
         });
-        btn_huy.setOnClickListener(v -> dialog.dismiss());
+        btn_cancel.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
@@ -157,6 +157,7 @@ public class SubjectActivity extends AppCompatActivity {
             public void onSuccess() {
                 Toast.makeText(SubjectActivity.this, "Thêm môn học thành công !!!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+                loadDataSubject();
             }
 
             @Override
@@ -185,7 +186,7 @@ public class SubjectActivity extends AppCompatActivity {
     private void searchList(String text) {
         ArrayList<Subject> filteredList = new ArrayList<>();
         for (Subject data : originalArrayList) {
-            if (data.getTenMon().toLowerCase().contains(text.toLowerCase())) {
+            if (data.getSubjectName().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(data);
             }
         }

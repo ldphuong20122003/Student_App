@@ -34,18 +34,18 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull SubjectAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.binding.txtMaMon.setText(items.get(position).getMaMon());
-        holder.binding.txtTenMon.setText(items.get(position).getTenMon());
-        holder.binding.txtSoTin.setText("Số tín: " + items.get(position).getSoTinChi());
+        holder.binding.txtSubjectID.setText(items.get(position).getSubjectID());
+        holder.binding.txtSubjectName.setText(items.get(position).getSubjectName());
+        holder.binding.txtSubjectNOC.setText("Số tín: " + items.get(position).getSubjectNOC());
         holder.binding.cardViewSubject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(context, DetailSubjectActivity.class);
                 intent.putExtra("id", items.get(position).getId());
-                intent.putExtra("maMon", items.get(position).getMaMon());
-                intent.putExtra("tenMon", items.get(position).getTenMon());
-                intent.putExtra("chuyenNganh", items.get(position).getChuyenNganh().toString());
-                intent.putExtra("soTin", items.get(position).getSoTinChi());
+                intent.putExtra("subjectID", items.get(position).getSubjectID());
+                intent.putExtra("subjectName", items.get(position).getSubjectName());
+                intent.putExtra("subjectBranch", items.get(position).getSubjectBranch().toString());
+                intent.putExtra("subjectNOC", items.get(position).getSubjectNOC());
                 context.startActivity(intent);
             }
         });
