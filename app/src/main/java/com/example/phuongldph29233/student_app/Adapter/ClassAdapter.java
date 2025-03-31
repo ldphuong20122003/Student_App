@@ -15,6 +15,7 @@ import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderClassBinding;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderStudentBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
@@ -52,6 +53,10 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
             binding.txtKhoa.setText(classItem.getKhoa().toString());
             binding.txtGiangvien.setText(classItem.getGiangVien().toString());
             binding.txtNamhoc.setText(classItem.getNamHoc());
+//            int studentCount = classItem.getDanhSachSinhVien() != null ?
+//                    classItem.getDanhSachSinhVien().size() : 0;
+//            binding.txtSoLuongSV.setText("Số SV: " + studentCount);
+
             binding.cardViewClass.setOnClickListener(v -> {
                 if (actionListener != null) {
                     actionListener.onItemClick(classItem);
@@ -63,6 +68,15 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
                     intent.putExtra("khoa", classItem.getKhoa().toString());
                     intent.putExtra("giangVien", classItem.getGiangVien().toString());
                     intent.putExtra("namHoc", classItem.getNamHoc());
+
+                    ArrayList<String> studentIds = new ArrayList<>();
+                    if (classItem.getDanhSachSinhVien() != null) {
+                        for (Student student : classItem.getDanhSachSinhVien()) {
+                            studentIds.add(student.getId());
+                        }
+                    }
+                    intent.putStringArrayListExtra("danhSachSinhVienIds", studentIds);
+
                     context.startActivity(intent);
                 }
             });

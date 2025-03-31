@@ -39,7 +39,7 @@ public class DetailClassActivity extends AppCompatActivity {
     private String id, maLop, tenLop, khoa, giangVien, namHoc;
     private DatabaseHelper<Class> classDatabaseHelper;
     private BranchController branchController;
-
+    private List<String> danhSachSinhVienIds;
     private TeacherController teacherController;
     private ArrayList<Branch> branchList;
     private ArrayList<Teacher> teacherList;
@@ -60,6 +60,8 @@ public class DetailClassActivity extends AppCompatActivity {
         setupButtonListeners();
     }
 
+
+
     private void initViews() {
         txtMaLop = findViewById(R.id.txt_maLop_detail);
         txtTenLop = findViewById(R.id.txt_tenLop_detail);
@@ -73,7 +75,12 @@ public class DetailClassActivity extends AppCompatActivity {
         txtListSV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DetailClassActivity.this, StudentListActivity.class));
+                Intent intent = new Intent(DetailClassActivity.this, StudentListActivity.class);
+                intent.putExtra("maLop", maLop);
+                intent.putExtra("tenLop", tenLop);
+                intent.putStringArrayListExtra("danhSachSinhVienIds",
+                        new ArrayList<>(danhSachSinhVienIds));
+                startActivity(intent);
             }
         });
     }
@@ -85,6 +92,7 @@ public class DetailClassActivity extends AppCompatActivity {
         khoa = (String) getIntent().getSerializableExtra("khoa");
         giangVien = (String) getIntent().getSerializableExtra("giangVien");
         namHoc = (String) getIntent().getSerializableExtra("namHoc");
+        danhSachSinhVienIds = (List<String>) getIntent().getSerializableExtra("danhSachSinhVien");
 
         txtMaLop.setText(maLop);
         txtTenLop.setText(tenLop);

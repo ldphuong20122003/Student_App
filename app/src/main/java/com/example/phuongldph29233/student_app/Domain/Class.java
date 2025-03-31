@@ -14,7 +14,7 @@ public class Class {
     private List<Student> danhSachSinhVien;
 
     public Class() {
-        this.danhSachSinhVien = new ArrayList<>(); // Khởi tạo danh sách
+        this.danhSachSinhVien = new ArrayList<>();
     }
     public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc) {
         this();
