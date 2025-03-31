@@ -2,22 +2,22 @@ package com.example.phuongldph29233.student_app.Domain;
 
 public class Teacher {
     private String id;
-    private String maGV;
-    private String tenGV;
-    private String email;
-    private String soDT;
-    private Branch khoa;
+    private String teacherID;
+    private String teacherName;
+    private String teacherEmail;
+    private String teacherPhone;
+    private Branch teacherBranch;
 
     public Teacher() {
     }
 
-    public Teacher(String id, String maGV, String tenGV, String email, String soDT, Branch khoa) {
+    public Teacher(String id, String teacherID, String teacherName, String teacherEmail, String teacherPhone, Branch teacherBranch) {
         this.id = id;
-        this.maGV = maGV;
-        this.tenGV = tenGV;
-        this.email = email;
-        this.soDT = soDT;
-        this.khoa = khoa;
+        this.teacherID = teacherID;
+        this.teacherName = teacherName;
+        this.teacherEmail = teacherEmail;
+        this.teacherPhone = teacherPhone;
+        this.teacherBranch = teacherBranch;
     }
 
     public String getId() {
@@ -28,43 +28,43 @@ public class Teacher {
         this.id = id;
     }
 
-    public String getMaGV() {
-        return maGV;
+    public String getTeacherID() {
+        return teacherID;
     }
 
-    public void setMaGV(String maGV) {
-        this.maGV = maGV;
+    public void setTeacherID(String teacherID) {
+        this.teacherID = teacherID;
     }
 
-    public String getTenGV() {
-        return tenGV;
+    public String getTeacherName() {
+        return teacherName;
     }
 
-    public void setTenGV(String tenGV) {
-        this.tenGV = tenGV;
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getTeacherEmail() {
+        return teacherEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setTeacherEmail(String teacherEmail) {
+        this.teacherEmail = teacherEmail;
     }
 
-    public String getSoDT() {
-        return soDT;
+    public String getTeacherPhone() {
+        return teacherPhone;
     }
 
-    public void setSoDT(String soDT) {
-        this.soDT = soDT;
+    public void setTeacherPhone(String teacherPhone) {
+        this.teacherPhone = teacherPhone;
     }
 
-    public Branch getKhoa() {
-        return khoa;
+    public Branch getTeacherBranch() {
+        return teacherBranch;
     }
 
-    public void setKhoa(Branch khoa) {
-        this.khoa = khoa;
+    public void setTeacherBranch(Branch teacherBranch) {
+        this.teacherBranch = teacherBranch;
     }
 }

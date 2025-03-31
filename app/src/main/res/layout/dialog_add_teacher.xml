@@ -38,7 +38,7 @@
             android:layout_marginVertical="10dp" />
 
         <EditText
-            android:id="@+id/edt_maGV_add"
+            android:id="@+id/edt_teacherID_add"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -52,7 +52,7 @@
             android:text="Tên giảng viên:" />
 
         <EditText
-            android:id="@+id/edt_tenGV_add"
+            android:id="@+id/edt_teacherName_add"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -66,7 +66,7 @@
             android:text="Email:" />
 
         <EditText
-            android:id="@+id/edt_emailGv_add"
+            android:id="@+id/edt_teacherEmail_add"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -80,7 +80,7 @@
             android:text="Chuyên ngành:" />
 
         <Spinner
-            android:id="@+id/spn_chuyenNganhgv"
+            android:id="@+id/spn_teacherBranch"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -99,7 +99,7 @@
                 android:text="Số điện thoại:" />
 
             <EditText
-                android:id="@+id/edt_soDTGv_add"
+                android:id="@+id/edt_teacherPhone_add"
                 android:layout_marginLeft="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -114,7 +114,7 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/btn_add_GV"
+                android:id="@+id/btn_add_teacher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -123,7 +123,7 @@
                 android:text="Lưu" />
 
             <Button
-                android:id="@+id/btn_huy_GV"
+                android:id="@+id/btn_cancel_teacher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"

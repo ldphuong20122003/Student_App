@@ -7,11 +7,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.example.phuongldph29233.student_app.Activity.DetailClassActivity;
-import com.example.phuongldph29233.student_app.Domain.Class;
+import com.example.phuongldph29233.student_app.Activity.Detail.DetailClassActivity;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
-import com.example.phuongldph29233.student_app.databinding.ViewHolderClassBinding;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderStudentBinding;
 
 import java.util.List;
@@ -36,7 +34,7 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
 
     @Override
     public void onBindViewHolder(@NonNull BaseViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        ((StudentViewHolder) holder).bind(items.get(position));
+        holder.bind(items.get(position));
     }
 
     public class StudentViewHolder extends BaseViewHolder {
@@ -53,7 +51,7 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
             binding.cardViewStudent.setOnClickListener(v -> {
                 if (actionListener != null) {
                     actionListener.onItemClick(studentItem);
-                }else {
+                } else {
                     Intent intent = new Intent(context, DetailClassActivity.class);
 //                    intent.putExtra("id", studentItem.getId());
 //s                    intent.putExtra("tenLop", classItem.getTenLop());

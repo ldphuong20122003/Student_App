@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Screens;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;

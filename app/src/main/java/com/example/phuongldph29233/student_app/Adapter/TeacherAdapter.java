@@ -1,6 +1,8 @@
 package com.example.phuongldph29233.student_app.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.phuongldph29233.student_app.Activity.Detail.DetailTeacherActivity;
+import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderTeacherBinding;
 
@@ -29,12 +33,36 @@ public class TeacherAdapter extends RecyclerView.Adapter<TeacherAdapter.ViewHold
         return new ViewHolder(binding);
     }
 
+    @SuppressLint("RecyclerView")
     @Override
     public void onBindViewHolder(@NonNull TeacherAdapter.ViewHolder holder, int position) {
-        holder.binding.txtMaGv.setText(items.get(position).getMaGV());
-        holder.binding.txtTenGv.setText(items.get(position).getTenGV());
-        holder.binding.txtEmail.setText(items.get(position).getEmail());
+        holder.binding.txtTeacherID.setText(items.get(position).getTeacherID());
+        String teacherName = items.get(position).getTeacherName();
+        if (teacherName.length() > 12) {
+            teacherName = teacherName.substring(0, 12) + "...";
+        }
+        holder.binding.txtTeacherName.setText(teacherName);
+        holder.binding.txtTeacherEmail.setText(items.get(position).getTeacherEmail());
+        holder.binding.cardViewTeacher.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, DetailTeacherActivity.class);
+                intent.putExtra("id", items.get(position).getId());
+                intent.putExtra("teacherID", items.get(position).getTeacherID());
+                intent.putExtra("teacherName", items.get(position).getTeacherName());
+                intent.putExtra("teacherEmail", items.get(position).getTeacherEmail());
+                intent.putExtra("teacherPhone", items.get(position).getTeacherPhone());
+                intent.putExtra("teacherBranch", items.get(position).getTeacherBranch().toString());
+                context.startActivity(intent);
+            }
+        });
 
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void searchTeacher(ArrayList<Teacher> searchTeacher) {
+        items = searchTeacher;
+        notifyDataSetChanged();
     }
 
     @Override

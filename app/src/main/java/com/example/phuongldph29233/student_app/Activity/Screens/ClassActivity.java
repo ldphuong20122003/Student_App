@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Screens;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -55,7 +55,8 @@ public class ClassActivity extends AppCompatActivity {
 
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -63,7 +64,8 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
 

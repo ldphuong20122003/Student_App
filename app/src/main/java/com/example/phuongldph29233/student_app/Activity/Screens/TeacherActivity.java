@@ -1,9 +1,11 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Screens;
 
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -13,20 +15,18 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.phuongldph29233.student_app.Adapter.TeacherAdapter;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.TeacherController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
+import com.example.phuongldph29233.student_app.Domain.Subject;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.R;
+import com.example.phuongldph29233.student_app.Validator.Validator;
 import com.example.phuongldph29233.student_app.databinding.ActivityTeacherBinding;
 
 import java.util.ArrayList;
@@ -35,9 +35,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class TeacherActivity extends AppCompatActivity {
-    ActivityTeacherBinding binding;
+    private ActivityTeacherBinding binding;
     private BranchController branchController;
-    private ArrayAdapter arrayAdapter;
+    private ArrayAdapter<Branch> arrayAdapter;
     private ArrayList<Branch> branchArrayList;
     private TeacherController teacherController;
     private ArrayList<Teacher> teacherArrayList;
@@ -49,20 +49,56 @@ public class TeacherActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityTeacherBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        initControllers();
+        initRecycleView();
+        initUI();
+        loadDataTeacher();
+    }
+
+
+    private void initControllers() {
         branchController = new BranchController();
         teacherController = new TeacherController();
         branchArrayList = new ArrayList<>();
         teacherArrayList = new ArrayList<>();
         originArrayList = new ArrayList<>();
+    }
+
+    private void initRecycleView() {
         teacherAdapter = new TeacherAdapter(teacherArrayList);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(teacherAdapter);
+    }
+
+    private void initUI() {
         arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchArrayList);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.btnAdd.setOnClickListener(v -> showDialogAdd());
         binding.btnBack.setOnClickListener(v -> finish());
-        loadDataTeacher();
+        binding.edtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                searchTeacher(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+    }
+
+    private void searchTeacher(String text) {
+        ArrayList<Teacher> filteredList = new ArrayList<>();
+        for (Teacher data : originArrayList) {
+            if (data.getTeacherName().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(data);
+            }
+        }
+        teacherAdapter.searchTeacher(filteredList);
     }
 
     private void loadDataTeacher() {
@@ -102,38 +138,46 @@ public class TeacherActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.dialog_add_teacher);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         TextView txt_title_Gv = dialog.findViewById(R.id.txt_title_teacher);
-        EditText ed_maGv_add = dialog.findViewById(R.id.edt_maGV_add);
-        EditText ed_tenGv_add = dialog.findViewById(R.id.edt_tenGV_add);
-        EditText ed_emailGv_add = dialog.findViewById(R.id.edt_emailGv_add);
-        EditText ed_soDtGv_add = dialog.findViewById(R.id.edt_soDTGv_add);
-        Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganhgv);
-        Button btn_addGv = dialog.findViewById(R.id.btn_add_GV);
-        Button btn_huyGv = dialog.findViewById(R.id.btn_huy_GV);
+        EditText edt_teacherID = dialog.findViewById(R.id.edt_teacherID_add);
+        EditText edt_teacherName = dialog.findViewById(R.id.edt_teacherName_add);
+        EditText edt_teacherEmail = dialog.findViewById(R.id.edt_teacherEmail_add);
+        EditText edt_teacherPhone = dialog.findViewById(R.id.edt_teacherPhone_add);
+        Spinner spn_teacherBranch = dialog.findViewById(R.id.spn_teacherBranch);
+        Button btn_add = dialog.findViewById(R.id.btn_add_teacher);
+        Button btn_cancel = dialog.findViewById(R.id.btn_cancel_teacher);
         txt_title_Gv.setText("Thêm giảng viên");
         loadDataBranch();
-        spn_chuyenNganh.setAdapter(arrayAdapter);
-        btn_addGv.setOnClickListener(new View.OnClickListener() {
+        spn_teacherBranch.setAdapter(arrayAdapter);
+        btn_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String id = UUID.randomUUID().toString();
-                String maGV = ed_maGv_add.getText().toString();
-                String tenGV = ed_tenGv_add.getText().toString();
-                String emailGV = ed_emailGv_add.getText().toString();
-                String soDTGV = ed_soDtGv_add.getText().toString();
-                Branch selectedItem = (Branch) spn_chuyenNganh.getSelectedItem();
-                if (maGV.isEmpty() || tenGV.isEmpty() || emailGV.isEmpty() || soDTGV.isEmpty()) {
+                String teacherID = edt_teacherID.getText().toString();
+                String teacherName = edt_teacherName.getText().toString();
+                String teacherEmail = edt_teacherEmail.getText().toString();
+                String teacherPhone = edt_teacherPhone.getText().toString();
+                Branch selectedItem = (Branch) spn_teacherBranch.getSelectedItem();
+                if (teacherID.isEmpty() || teacherName.isEmpty() || teacherEmail.isEmpty() || teacherPhone.isEmpty()) {
                     Toast.makeText(TeacherActivity.this, "Vui lòng nhập đầy đủ thông tin !!!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Teacher teacher = new Teacher(id, maGV, tenGV, emailGV, soDTGV, selectedItem);
+                if (!Validator.isValidEmail(teacherEmail)) {
+                    Toast.makeText(TeacherActivity.this, "Email không hợp lệ !!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (!Validator.isValidPhone(teacherPhone)) {
+                    Toast.makeText(TeacherActivity.this, "Số điện thoại không hợp lệ !!!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Teacher teacher = new Teacher(id, teacherID, teacherName, teacherEmail, teacherPhone, selectedItem);
+                btn_add.setEnabled(false);
                 addTeacher(teacher, dialog);
             }
         });
-        btn_huyGv.setOnClickListener(v -> dialog.dismiss());
+        btn_cancel.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
-
-
     }
+
 
     private void addTeacher(Teacher teacher, Dialog dialog) {
         teacherController.addTeacher(teacher, new DatabaseHelper.DatabaseActionCallback() {
@@ -141,6 +185,7 @@ public class TeacherActivity extends AppCompatActivity {
             public void onSuccess() {
                 Toast.makeText(TeacherActivity.this, "Thêm giảng viên thành công !!!", Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
+                loadDataTeacher();
             }
 
             @Override
@@ -165,4 +210,11 @@ public class TeacherActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        loadDataTeacher();
+        super.onResume();
+    }
+
 }

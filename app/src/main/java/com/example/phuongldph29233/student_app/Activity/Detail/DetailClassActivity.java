@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Detail;
 
 import androidx.appcompat.app.AppCompatActivity;
 

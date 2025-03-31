@@ -3,7 +3,6 @@ package com.example.phuongldph29233.student_app.Adapter;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.phuongldph29233.student_app.Activity.DetailSubjectActivity;
+import com.example.phuongldph29233.student_app.Activity.Detail.DetailSubjectActivity;
 import com.example.phuongldph29233.student_app.Domain.Subject;
-import com.example.phuongldph29233.student_app.databinding.ViewHolderBranchBinding;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderSubjectBinding;
 
 import java.util.ArrayList;

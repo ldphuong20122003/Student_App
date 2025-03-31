@@ -1,15 +1,12 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Screens;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,14 +14,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.phuongldph29233.student_app.Adapter.BranchAdapter;
 import com.example.phuongldph29233.student_app.Adapter.SubjectAdapter;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.SubjectController;
@@ -42,7 +34,7 @@ import java.util.UUID;
 public class SubjectActivity extends AppCompatActivity {
     ActivitySubjectBinding binding;
     private BranchController branchController;
-    private ArrayAdapter arrayAdapter;
+    private ArrayAdapter<Branch> arrayAdapter;
     private SubjectAdapter subjectAdapter;
     private ArrayList<Subject> subjectArrayList;
     private ArrayList<Subject> originalArrayList;
@@ -198,5 +190,11 @@ public class SubjectActivity extends AppCompatActivity {
             }
         }
         subjectAdapter.searchSubject(filteredList);
+    }
+
+    @Override
+    protected void onResume() {
+        loadDataSubject();
+        super.onResume();
     }
 }

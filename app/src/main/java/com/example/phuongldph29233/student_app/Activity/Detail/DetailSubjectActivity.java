@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Detail;
 
 import static com.example.phuongldph29233.student_app.R.*;
 
@@ -17,12 +17,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.SubjectController;
@@ -34,14 +30,13 @@ import com.example.phuongldph29233.student_app.databinding.ActivityDetailSubject
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.UUID;
 
 public class DetailSubjectActivity extends AppCompatActivity {
-    ActivityDetailSubjectBinding binding;
-    String id, maMon, tenMon, chuyenNganh, soTin;
+    private ActivityDetailSubjectBinding binding;
+    private String id, maMon, tenMon, chuyenNganh, soTin;
     boolean isVisible;
     private SubjectController subjectController;
-    private ArrayAdapter arrayAdapter;
+    private ArrayAdapter<Branch> arrayAdapter;
     private ArrayList<Branch> branchArrayList;
 
     @Override
@@ -49,12 +44,23 @@ public class DetailSubjectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailSubjectBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        initController();
         getIntentExtra();
+        initRecycleView();
+        initUI();
+    }
+
+    private void initRecycleView() {
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchArrayList);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    private void initController() {
         subjectController = new SubjectController();
         branchArrayList = new ArrayList<>();
-        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, branchArrayList);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //Function
+    }
+
+    private void initUI() {
         binding.btnBack.setOnClickListener(v -> finish());
         binding.btnList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -104,8 +110,7 @@ public class DetailSubjectActivity extends AppCompatActivity {
             spn_chuyenNganh.setAdapter(arrayAdapter);
             int position = -1;
             for (int i = 0; i < arrayAdapter.getCount(); i++) {
-                Branch branch = (Branch) arrayAdapter.getItem(i);
-                Log.d("DEBUG", "So sánh: '" + branch.getTenKhoa().trim() + "' với '" + chuyenNganh.trim() + "'");
+                Branch branch = arrayAdapter.getItem(i);
                 if (branch.getTenKhoa().trim().equalsIgnoreCase(chuyenNganh.trim())) {
                     position = i;
                     break;
@@ -193,7 +198,7 @@ public class DetailSubjectActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-               
+
             }
         });
         builder.setNegativeButton("Không", new DialogInterface.OnClickListener() {

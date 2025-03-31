@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.example.phuongldph29233.student_app.R;
+import com.example.phuongldph29233.student_app.Activity.Screens.BranchActivity;
+import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
+import com.example.phuongldph29233.student_app.Activity.Screens.StudentActivity;
+import com.example.phuongldph29233.student_app.Activity.Screens.SubjectActivity;
+import com.example.phuongldph29233.student_app.Activity.Screens.TeacherActivity;
 import com.example.phuongldph29233.student_app.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
