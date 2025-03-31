@@ -1,6 +1,8 @@
 package com.example.phuongldph29233.student_app.Domain;
 
-public class Student {
+import java.io.Serializable;
+
+public class Student implements Serializable {
     private String id;
     private String studentID;
     private String studentName;

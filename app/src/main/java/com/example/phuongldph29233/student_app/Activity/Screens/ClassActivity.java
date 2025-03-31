@@ -247,7 +247,7 @@ public class ClassActivity extends AppCompatActivity {
 
         btnSelectAll.setOnClickListener(v -> {
             boolean selectAll = studentAdapter.getSelectedStudents().size() != studentsWithoutClass.size();
-            studentAdapter.selectAll(selectAll);
+//            studentAdapter.selectAll(selectAll);
             btnSelectAll.setText(selectAll ? "Bỏ chọn tất cả" : "Chọn tất cả");
         });
 
@@ -330,66 +330,6 @@ public class ClassActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
             }
         });
-    }
-
-    private void saveClassWithStudents(Class newClass, Dialog dialog) {
-        databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
-            @Override
-            public void onSuccess() {
-                updateStudentsClass(newClass, newClass.getDanhSachSinhVien(), dialog);
-            }
-
-            @Override
-            public void onFailure(String error) {
-                runOnUiThread(() ->
-                        Toast.makeText(ClassActivity.this,
-                                "Lỗi khi tạo lớp: " + error,
-                                Toast.LENGTH_SHORT).show());
-            }
-        });
-    }
-
-    private void updateStudentsClass(Class newClass, List<Student> students, Dialog dialog) {
-        AtomicInteger successCount = new AtomicInteger();
-        int totalStudents = students.size();
-
-        if (totalStudents == 0) {
-            dialog.dismiss();
-            loadDataClass();
-            return;
-        }
-
-        for (Student student : students) {
-            student.setStudentClass(newClass);
-
-            studentDatabaseHelper.update(student.getId(), student, new DatabaseHelper.DatabaseActionCallback() {
-                @Override
-                public void onSuccess() {
-                    if (successCount.incrementAndGet() == totalStudents) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(ClassActivity.this,
-                                    "Tạo lớp thành công với " + totalStudents + " sinh viên",
-                                    Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                            loadDataClass();
-                        });
-                    }
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    if (successCount.incrementAndGet() == totalStudents) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(ClassActivity.this,
-                                    "Tạo lớp thành công nhưng có lỗi với một số sinh viên",
-                                    Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                            loadDataClass();
-                        });
-                    }
-                }
-            });
-        }
     }
 
     private void searchList(String text) {

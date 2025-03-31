@@ -12,12 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Student_App"
         tools:targetApi="31">
-        <activity
-            android:name=".Activity.TeacherActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.MarkActivity"
-            android:exported="false" />
+
         <activity
             android:name=".Activity.Detail.DetailSubjectActivity"
             android:exported="false" />
@@ -27,8 +22,15 @@
             android:exported="false" />
         <activity
             android:name=".Activity.Detail.DetailClassActivity"
-            android:launchMode="standard"
             android:exported="false" />
+        <activity
+            android:name=".Activity.Screens.StudentListActivity"
+            android:exported="false"
+            android:parentActivityName=".Activity.Detail.DetailClassActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activity.Detail.DetailClassActivity" />
+        </activity>
         <activity
             android:name=".Activity.Detail.DetailTeacherActivity"
             android:launchMode="standard"

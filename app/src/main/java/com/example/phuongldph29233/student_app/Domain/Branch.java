@@ -1,6 +1,8 @@
 package com.example.phuongldph29233.student_app.Domain;
 
-public class Branch {
+import java.io.Serializable;
+
+public class Branch implements Serializable {
     private String id;
     private String branchID;
     private String branchName;

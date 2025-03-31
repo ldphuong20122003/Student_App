@@ -1,9 +1,10 @@
 package com.example.phuongldph29233.student_app.Domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Class {
+public class Class implements Serializable {
     private String id;
     private String maLop;
     private String tenLop;

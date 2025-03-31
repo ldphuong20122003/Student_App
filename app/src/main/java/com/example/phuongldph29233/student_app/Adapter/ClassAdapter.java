@@ -2,6 +2,7 @@ package com.example.phuongldph29233.student_app.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -9,9 +10,11 @@ import androidx.annotation.NonNull;
 
 import com.example.phuongldph29233.student_app.Activity.Detail.DetailClassActivity;
 import com.example.phuongldph29233.student_app.Domain.Class;
+import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.AdapterHelper;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderClassBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
@@ -60,6 +63,13 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
                     intent.putExtra("khoa", classItem.getKhoa().toString());
                     intent.putExtra("giangVien", classItem.getGiangVien().toString());
                     intent.putExtra("namHoc", classItem.getNamHoc());
+                    ArrayList<String> studentIds = new ArrayList<>();
+                    if (classItem.getDanhSachSinhVien() != null) {
+                        for (Student student : classItem.getDanhSachSinhVien()) {
+                            studentIds.add(student.getId());
+                        }
+                    }
+                    intent.putStringArrayListExtra("danhSachSinhVienIds", studentIds);
                     context.startActivity(intent);
                 }
             });
