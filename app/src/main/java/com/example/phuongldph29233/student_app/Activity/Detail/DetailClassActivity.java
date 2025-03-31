@@ -329,8 +329,6 @@ public class DetailClassActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     studentAdapter.clear();
                     studentAdapter.addAll(studentsToShow);
-
-                    // Đánh dấu các sinh viên đã chọn trước đó
                     for (int i = 0; i < studentsToShow.size(); i++) {
                         Student student = studentsToShow.get(i);
                         if (currentClassStudents.contains(student)) {

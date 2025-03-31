@@ -247,7 +247,7 @@ public class ClassActivity extends AppCompatActivity {
 
         btnSelectAll.setOnClickListener(v -> {
             boolean selectAll = studentAdapter.getSelectedStudents().size() != studentsWithoutClass.size();
-//            studentAdapter.selectAll(selectAll);
+            studentAdapter.selectAll(selectAll);
             btnSelectAll.setText(selectAll ? "Bỏ chọn tất cả" : "Chọn tất cả");
         });
 
