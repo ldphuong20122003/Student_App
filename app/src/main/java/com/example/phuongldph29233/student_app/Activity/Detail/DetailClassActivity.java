@@ -73,7 +73,7 @@ public class DetailClassActivity extends AppCompatActivity {
         txtListSV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(DetailClassActivity.this, ClassActivity.class));
+                startActivity(new Intent(DetailClassActivity.this, StudentListActivity.class));
             }
         });
     }
