@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Detail;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Controller.TeacherController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
@@ -158,7 +159,7 @@ public class DetailClassActivity extends AppCompatActivity {
             int position = -1;
             for (int i = 0; i < dialogBranchAdapter.getCount(); i++) {
                 Branch branch = dialogBranchAdapter.getItem(i);
-                if (branch.getTenKhoa().trim().equalsIgnoreCase(khoa.trim())) {
+                if (branch.getBranchName().trim().equalsIgnoreCase(khoa.trim())) {
                     position = i;
                     break;
                 }
@@ -177,7 +178,7 @@ public class DetailClassActivity extends AppCompatActivity {
             int position = -1;
             for (int i = 0; i < dialogTeacherAdapter.getCount(); i++) {
                 Teacher teacher = dialogTeacherAdapter.getItem(i);
-                if (teacher.getTenGV().trim().equalsIgnoreCase(giangVien.trim()) || teacher.getMaGV().trim().equalsIgnoreCase(giangVien.trim())) {
+                if (teacher.getTeacherName().trim().equalsIgnoreCase(giangVien.trim()) || teacher.getTeacherID().trim().equalsIgnoreCase(giangVien.trim())) {
                     position = i;
                     break;
                 }
@@ -212,8 +213,8 @@ public class DetailClassActivity extends AppCompatActivity {
                     dialog.dismiss();
                     maLop = updatedMaLop;
                     tenLop = updatedTenLop;
-                    khoa = selectedBranch.getTenKhoa();
-                    giangVien = selectedTeacher.getTenGV();
+                    khoa = selectedBranch.getBranchName();
+                    giangVien = selectedTeacher.getTeacherID();
                     namHoc = updatedNamHoc;
 
                     txtMaLop.setText(maLop);

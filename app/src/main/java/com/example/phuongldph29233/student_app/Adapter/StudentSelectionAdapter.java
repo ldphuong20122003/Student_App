@@ -37,14 +37,19 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
         }
 
         Student student = getItem(position);
-        CheckBox cbStudent = convertView.findViewById(R.id.cbStudent);
-        TextView tvStudentCode = convertView.findViewById(R.id.tvStudentCode);
-        TextView tvStudentName = convertView.findViewById(R.id.tvStudentName);
-        cbStudent.setChecked(selectedStudents.get(position, false));
+        if (student != null) {
+            CheckBox cbStudent = convertView.findViewById(R.id.cbStudent);
+            TextView tvStudentCode = convertView.findViewById(R.id.tvStudentCode);
+            TextView tvStudentName = convertView.findViewById(R.id.tvStudentName);
+            tvStudentCode.setText(student.getMaSV());
+            tvStudentName.setText(student.getTenSV());
 
-        cbStudent.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            selectedStudents.put(position, isChecked);
-        });
+            cbStudent.setChecked(selectedStudents.get(position, false));
+
+            cbStudent.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                selectedStudents.put(position, isChecked);
+            });
+        }
 
         return convertView;
     }

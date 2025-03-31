@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Screens;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -113,7 +113,8 @@ public class ClassActivity extends AppCompatActivity {
         binding.btnAdd.setOnClickListener(v -> showDialogAdd());
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -121,7 +122,8 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {}
+            public void afterTextChanged(Editable s) {
+            }
         });
     }
     private void loadData() {
@@ -174,23 +176,27 @@ public class ClassActivity extends AppCompatActivity {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSuccess(List<Class> list) {
-                classArrayList.clear();
-                originalArrayList.clear();
-                classArrayList.addAll(list);
-                originalArrayList.addAll(list);
-                classAdapter.notifyDataSetChanged();
-                if (classArrayList.isEmpty()){
-                    binding.recyclerView.setVisibility(View.GONE);
-                }else {
-                    binding.recyclerView.setVisibility(View.VISIBLE);
-                }
+                runOnUiThread(() -> {
+                    classArrayList.clear();
+                    originalArrayList.clear();
+                    classArrayList.addAll(list);
+                    originalArrayList.addAll(list);
+                    classAdapter.notifyDataSetChanged();
+
+                    if (classArrayList.isEmpty()) {
+                        binding.recyclerView.setVisibility(View.GONE);
+                    } else {
+                        binding.recyclerView.setVisibility(View.VISIBLE);
+                    }
+                });
             }
 
             @Override
             public void onFailure(String error) {
+                runOnUiThread(() -> {
                     binding.recyclerView.setVisibility(View.GONE);
                     Toast.makeText(ClassActivity.this, "Lỗi tải dữ liệu lớp: " + error, Toast.LENGTH_SHORT).show();
-
+                });
             }
         });
     }
@@ -253,12 +259,12 @@ public class ClassActivity extends AppCompatActivity {
                 return;
             }
 
-            if (khoa == null || khoa.getTenKhoa() == null || khoa.getMaKhoa().trim().isEmpty()) {
+            if (khoa == null || khoa.getBranchName() == null || khoa.getBranchID().trim().isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn khoa hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (giangVien == null || giangVien.getTenGV() == null || giangVien.getMaGV().trim().isEmpty()) {
+            if (giangVien == null || giangVien.getTeacherName() == null || giangVien.getTeacherID().trim().isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn giảng viên hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -270,11 +276,26 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             Class newClass = new Class(id, maLop, tenLop, khoa, giangVien, namHoc, selectedStudents);
-            saveClassWithStudents(newClass, dialog);
+            addClass(newClass, dialog);
         });
 
         btnHuy.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
+    }
+
+    private void addClass(Class classes, Dialog dialog) {
+        databaseHelper.add(classes, new DatabaseHelper.DatabaseActionCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(ClassActivity.this, "Thêm lớp học thành công", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                loadDataClass();
+            }
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadStudentsWithoutClass() {
@@ -340,11 +361,11 @@ public class ClassActivity extends AppCompatActivity {
                 public void onSuccess() {
                     if (successCount.incrementAndGet() == totalStudents) {
                         runOnUiThread(() -> {
-                            dialog.dismiss();
-                            loadDataClass();
                             Toast.makeText(ClassActivity.this,
                                     "Tạo lớp thành công với " + totalStudents + " sinh viên",
                                     Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            loadDataClass();
                         });
                     }
                 }
@@ -353,35 +374,16 @@ public class ClassActivity extends AppCompatActivity {
                 public void onFailure(String error) {
                     if (successCount.incrementAndGet() == totalStudents) {
                         runOnUiThread(() -> {
-                            dialog.dismiss();
-                            loadDataClass();
                             Toast.makeText(ClassActivity.this,
                                     "Tạo lớp thành công nhưng có lỗi với một số sinh viên",
                                     Toast.LENGTH_SHORT).show();
+                            dialog.dismiss();
+                            loadDataClass();
                         });
                     }
                 }
             });
         }
-    }
-
-    private void addClass(Class newClass, Dialog dialog) {
-        databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
-            @Override
-            public void onSuccess() {
-                runOnUiThread(() -> {
-                    Toast.makeText(ClassActivity.this, "Thêm lớp học thành công", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    loadDataClass();
-                });
-            }
-
-            @Override
-            public void onFailure(String error) {
-                runOnUiThread(() ->
-                        Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show());
-            }
-        });
     }
 
     private void searchList(String text) {

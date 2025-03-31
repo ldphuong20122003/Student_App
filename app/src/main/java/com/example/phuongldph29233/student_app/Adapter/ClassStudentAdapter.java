@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
-import com.example.phuongldph29233.student_app.Activity.DetailClassActivity;
 import com.example.phuongldph29233.student_app.Activity.DetailStudentActivity;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;

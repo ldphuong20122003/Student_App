@@ -12,7 +12,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.phuongldph29233.student_app.Activity.BranchActivity;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.databinding.ViewHolderBranchBinding;
@@ -37,7 +36,7 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull BranchAdapter.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.binding.txtTenKhoa.setText(items.get(position).getTenKhoa());
+        holder.binding.txtBranchName.setText(items.get(position).getBranchName());
         holder.binding.btnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

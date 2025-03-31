@@ -19,27 +19,34 @@
             android:name=".Activity.MarkActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.DetailSubjectActivity"
+            android:name=".Activity.Detail.DetailSubjectActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.DetailStudentActivity"
             android:launchMode="standard"
             android:exported="false" />
         <activity
-            android:name=".Activity.DetailClassActivity"
+            android:name=".Activity.Detail.DetailClassActivity"
             android:launchMode="standard"
             android:exported="false" />
         <activity
-            android:name=".Activity.SubjectActivity"
+            android:name=".Activity.Detail.DetailTeacherActivity"
+            android:launchMode="standard"
             android:exported="false" />
         <activity
-            android:name=".Activity.BranchActivity"
+            android:name=".Activity.Screens.SubjectActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.ClassActivity"
+            android:name=".Activity.Screens.BranchActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.StudentActivity"
+            android:name=".Activity.Screens.ClassActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Screens.StudentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Screens.TeacherActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.LoginActivity"

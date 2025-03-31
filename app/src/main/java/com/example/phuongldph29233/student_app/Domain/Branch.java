@@ -2,24 +2,16 @@ package com.example.phuongldph29233.student_app.Domain;
 
 public class Branch {
     private String id;
-    private String maKhoa;
-    private String tenKhoa;
+    private String branchID;
+    private String branchName;
 
     public Branch() {
     }
 
-    public Branch(String id, String maKhoa, String tenKhoa) {
+    public Branch(String id, String branchID, String branchName) {
         this.id = id;
-        this.maKhoa = maKhoa;
-        this.tenKhoa = tenKhoa;
-    }
-
-    public String getMaKhoa() {
-        return maKhoa;
-    }
-
-    public void setMaKhoa(String maKhoa) {
-        this.maKhoa = maKhoa;
+        this.branchID = branchID;
+        this.branchName = branchName;
     }
 
     public String getId() {
@@ -30,16 +22,24 @@ public class Branch {
         this.id = id;
     }
 
-    public String getTenKhoa() {
-        return tenKhoa;
+    public String getBranchID() {
+        return branchID;
     }
 
-    public void setTenKhoa(String tenKhoa) {
-        this.tenKhoa = tenKhoa;
+    public void setBranchID(String branchID) {
+        this.branchID = branchID;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
     }
 
     @Override
     public String toString() {
-        return getTenKhoa(); // Hiển thị tên chuyên ngành trong log và Spinner
+        return getBranchName(); // Hiển thị tên chuyên ngành trong log và Spinner
     }
 }

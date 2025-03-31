@@ -43,7 +43,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/txt_maGv"
+                        android:id="@+id/txt_teacherID"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Mã GV"
@@ -59,7 +59,7 @@
                         android:gravity="center" />
 
                     <TextView
-                        android:id="@+id/txt_tenGv"
+                        android:id="@+id/txt_teacherName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tên Môn"
@@ -69,7 +69,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/txt_email"
+                    android:id="@+id/txt_teacherEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Email"

@@ -192,7 +192,7 @@ public class DetailStudentActivity extends AppCompatActivity {
             int position = -1;
             for (int i = 0; i < dialogBranchAdapter.getCount(); i++) {
                 Branch branch = dialogBranchAdapter.getItem(i);
-                if (branch.getTenKhoa().trim().equalsIgnoreCase(chuyenNganh.trim())) {
+                if (branch.getBranchName().trim().equalsIgnoreCase(chuyenNganh.trim())) {
                     position = i;
                     break;
                 }
@@ -220,7 +220,7 @@ public class DetailStudentActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (selectedBranch == null || selectedBranch.getTenKhoa() == null || selectedBranch.getMaKhoa().trim().isEmpty()) {
+            if (selectedBranch == null || selectedBranch.getBranchName() == null || selectedBranch.getBranchID().trim().isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn chuyên ngành hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -252,7 +252,7 @@ public class DetailStudentActivity extends AppCompatActivity {
                     lopHoc = updatedLopHoc.getTenLop();
                     ngayNhapHoc = updatedNgayNhapHoc;
                     heDaoTao = updatedHeDaoTao;
-                    chuyenNganh = selectedBranch.getTenKhoa();
+                    chuyenNganh = selectedBranch.getBranchName();
                     txtMaSV.setText(maSV);
                     txtTenSV.setText(tenSV);
                     txtNgaySinh.setText(ngaySinh);

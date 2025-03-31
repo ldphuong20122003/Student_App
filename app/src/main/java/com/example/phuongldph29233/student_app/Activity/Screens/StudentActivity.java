@@ -1,4 +1,4 @@
-package com.example.phuongldph29233.student_app.Activity;
+package com.example.phuongldph29233.student_app.Activity.Screens;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -240,7 +240,7 @@ public class StudentActivity extends AppCompatActivity {
                 Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (selectedBranch == null || selectedBranch.getTenKhoa() == null || selectedBranch.getMaKhoa().trim().isEmpty()) {
+            if (selectedBranch == null || selectedBranch.getBranchName() == null || selectedBranch.getBranchID().trim().isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn chuyên ngành hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }

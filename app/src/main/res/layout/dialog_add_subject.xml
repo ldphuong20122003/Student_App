@@ -38,7 +38,7 @@
             android:layout_marginVertical="10dp" />
 
         <EditText
-            android:id="@+id/edt_maMon_add"
+            android:id="@+id/edt_subjectID_add"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -52,7 +52,7 @@
             android:text="Tên môn:" />
 
         <EditText
-            android:id="@+id/edt_tenMon_add"
+            android:id="@+id/edt_subjectName_add"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -66,7 +66,7 @@
             android:text="Chuyên ngành:" />
 
         <Spinner
-            android:id="@+id/spn_chuyenNganh"
+            android:id="@+id/spn_subjectBranch"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:paddingStart="10dp" />
@@ -85,8 +85,9 @@
                 android:text="Số tín chỉ:" />
 
             <EditText
-                android:id="@+id/edt_soTin_add"
+                android:id="@+id/edt_subjectNOC_add"
                 android:layout_marginLeft="8dp"
+                android:inputType="number"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:paddingStart="10dp" />
@@ -99,7 +100,7 @@
             android:gravity="center">
 
             <Button
-                android:id="@+id/btn_add_mon"
+                android:id="@+id/btn_add_subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -108,7 +109,7 @@
                 android:text="Lưu" />
 
             <Button
-                android:id="@+id/btn_huy_mon"
+                android:id="@+id/btn_cancel_subject"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
