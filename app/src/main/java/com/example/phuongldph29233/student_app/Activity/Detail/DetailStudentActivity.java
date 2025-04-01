@@ -1,10 +1,15 @@
 package com.example.phuongldph29233.student_app.Activity.Detail;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
@@ -29,6 +35,7 @@ import java.util.Objects;
 public class DetailStudentActivity extends AppCompatActivity {
     private TextView txtMaSV, txtTenSV, txtNgaySinh, txtQueQuan, txtSdt, txtEmail, txtLopHoc, txtNgayNhapHoc, txtHeDaoTao, txtChuyenNganh;
     private Button btnEdit, btnDelete, btnBack;
+    private Object classObj; // Thêm biến này
 
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
     private DatabaseHelper<Student> studentDatabaseHelper;
@@ -46,11 +53,44 @@ public class DetailStudentActivity extends AppCompatActivity {
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         initViews();
         getIntentExtra();
+        if (lopHoc == null || lopHoc.equals("Chưa có lớp học")) {
+            fetchStudentClassFromDatabase();
+        }
+
         classList = new ArrayList<>();
         loadClass();
         branchList = new ArrayList<>();
         loadBranches();
         setupButtonListeners();
+    }
+
+    private void fetchStudentClassFromDatabase() {
+        studentDatabaseHelper.get(id, Student.class, new DatabaseHelper.DatabaseGetCallback<Student>() {
+            @Override
+            public void onSuccess(Student student) {
+                Log.d("LOG SUCCESS", "onSuccess: " + student + id);
+                if (student.getStudentClass() != null) {
+                    classObj = student.getStudentClass();
+                    lopHoc = student.getStudentClass().getTenLop();
+                } else {
+                    lopHoc = "Chưa có lớp học";
+                    classObj = null;
+                }
+
+                runOnUiThread(() -> {
+                    txtLopHoc.setText(lopHoc);
+                    // Cập nhật các thông tin khác nếu cần
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() ->
+                        Toast.makeText(DetailStudentActivity.this,
+                                "Lỗi tải thông tin sinh viên: " + error,
+                                Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     private void initViews() {
@@ -77,7 +117,18 @@ public class DetailStudentActivity extends AppCompatActivity {
         queQuan = (String) getIntent().getSerializableExtra("studentHomeTown");
         sdt = (String) getIntent().getSerializableExtra("studentPhone");
         email = (String) getIntent().getSerializableExtra("studentEmail");
-        lopHoc = (String) getIntent().getSerializableExtra("studentClass");
+
+        // Xử lý lớp học
+        classObj = getIntent().getSerializableExtra("studentClass");
+        if (classObj instanceof Class) {
+            Class studentClass = (Class) classObj;
+            lopHoc = studentClass.getTenLop() != null ? studentClass.getTenLop() : "Chưa có lớp học";
+        } else if (classObj instanceof String) {
+            lopHoc = (String) classObj;
+        } else {
+            lopHoc = "Chưa có lớp học";
+        }
+
         ngayNhapHoc = (String) getIntent().getSerializableExtra("studentDateJoin");
         chuyenNganh = (String) getIntent().getSerializableExtra("studentBranch");
         heDaoTao = (String) getIntent().getSerializableExtra("studentTOT");
@@ -106,13 +157,101 @@ public class DetailStudentActivity extends AppCompatActivity {
             public void onSuccess(List<Class> itemList) {
                 classList.clear();
                 classList.addAll(itemList);
+
+                // Kiểm tra và cập nhật lớp học hiện tại của sinh viên
+                if (lopHoc != null && !lopHoc.equals("Chưa có lớp học")) {
+                    boolean classFound = false;
+                    for (Class cls : classList) {
+                        if (cls.getTenLop().equals(lopHoc)) {
+                            classFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!classFound) {
+                        lopHoc = "Chưa có lớp học";
+                        txtLopHoc.setText(lopHoc);
+                    }
+                }
             }
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(DetailStudentActivity.this, "Lỗi tải : " + error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailStudentActivity.this,
+                        "Lỗi tải danh sách lớp: " + error,
+                        Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateClassInfoInUI() {
+        // Kiểm tra nếu sinh viên đã có lớp
+        if (lopHoc != null && !lopHoc.equals("Chưa có lớp học")) {
+            boolean classExists = false;
+
+            // Tìm lớp học trong danh sách mới
+            for (Class cls : classList) {
+                if (cls.getTenLop().equals(lopHoc)) {
+                    classExists = true;
+                    break;
+                }
+            }
+
+            // Nếu lớp không tồn tại nữa, cập nhật UI
+            if (!classExists) {
+                lopHoc = "Chưa có lớp học";
+                txtLopHoc.setText(lopHoc);
+
+                // Cập nhật lại trong database nếu cần
+                Student updatedStudent = new Student(
+                        id, maSV, tenSV, ngaySinh, queQuan,
+                        sdt, email, null, ngayNhapHoc,
+                        null, heDaoTao
+                );
+
+                studentDatabaseHelper.update(id, updatedStudent, new DatabaseHelper.DatabaseActionCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d("DetailStudent", "Đã cập nhật lớp học của sinh viên");
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        Log.e("DetailStudent", "Lỗi cập nhật lớp học: " + error);
+                    }
+                });
+            }
+        }
+    }
+
+    private BroadcastReceiver dataUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("ACTION_DATA_UPDATED".equals(intent.getAction())) {
+                String updateType = intent.getStringExtra("UPDATE_TYPE");
+                if ("STUDENT_CLASS_UPDATE".equals(updateType)) {
+                    // Tải lại thông tin sinh viên từ database
+                    fetchStudentClassFromDatabase();
+                    // Tải lại danh sách lớp
+                    loadClass();
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Đăng ký BroadcastReceiver
+        IntentFilter filter = new IntentFilter("ACTION_DATA_UPDATED");
+        LocalBroadcastManager.getInstance(this).registerReceiver(dataUpdateReceiver, filter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Hủy đăng ký BroadcastReceiver
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(dataUpdateReceiver);
     }
 
     private void loadBranches() {

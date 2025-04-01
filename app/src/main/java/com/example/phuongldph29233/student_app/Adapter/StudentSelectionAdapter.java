@@ -51,17 +51,12 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
         if (student != null) {
             holder.tvStudentCode.setText(student.getStudentID());
             holder.tvStudentName.setText(student.getStudentName());
-
-            // QUAN TRỌNG: Đặt trạng thái checkbox từ selectedItems
             holder.cbStudent.setChecked(selectedItems.get(position, false));
-
-            // Xử lý sự kiện click trên toàn bộ item
             convertView.setOnClickListener(v -> {
                 toggleSelection(position);
                 holder.cbStudent.setChecked(selectedItems.get(position, false));
             });
 
-            // Xử lý sự kiện click trên checkbox
             holder.cbStudent.setOnClickListener(v -> {
                 toggleSelection(position);
             });

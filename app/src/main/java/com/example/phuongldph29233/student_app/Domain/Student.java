@@ -93,8 +93,21 @@ public class Student implements Serializable {
         return studentClass;
     }
 
+    // Trong Student.java
     public void setStudentClass(Class studentClass) {
-        this.studentClass = studentClass;
+        if (studentClass != null) {
+            this.studentClass = new Class(
+                    studentClass.getId(),
+                    studentClass.getMaLop(),
+                    studentClass.getTenLop(),
+                    null,
+                    null,
+                    studentClass.getNamHoc(),
+                    null
+            );
+        } else {
+            this.studentClass = null;
+        }
     }
 
     public String getStudentDateJoin() {

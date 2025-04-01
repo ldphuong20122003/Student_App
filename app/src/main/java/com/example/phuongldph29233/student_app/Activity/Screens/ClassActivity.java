@@ -2,11 +2,13 @@ package com.example.phuongldph29233.student_app.Activity.Screens;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.phuongldph29233.student_app.Adapter.ClassAdapter;
@@ -35,6 +38,7 @@ import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityClassBinding;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -281,27 +285,87 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             Class newClass = new Class(id, maLop, tenLop, khoa, giangVien, namHoc, selectedStudents);
-            addClass(newClass, dialog);
+            addClassAndUpdateStudents(newClass, selectedStudents, dialog);
+
         });
 
         btnHuy.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
-    private void addClass(Class classes, Dialog dialog) {
-        databaseHelper.add(classes, new DatabaseHelper.DatabaseActionCallback() {
+    private void addClassAndUpdateStudents(Class newClass, List<Student> selectedStudents, Dialog dialog) {
+        databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(ClassActivity.this, "Thêm lớp học thành công", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-                loadDataClass();
+                AtomicInteger successCount = new AtomicInteger();
+                int totalStudents = selectedStudents.size();
+
+                for (Student student : selectedStudents) {
+                    student.setStudentClass(newClass);
+
+                    studentDatabaseHelper.update(student.getStudentID(), student,
+                            new DatabaseHelper.DatabaseActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    if (successCount.incrementAndGet() == totalStudents) {
+                                        runOnUiThread(() -> {
+                                            removeUpdatedStudentsFromList(selectedStudents);
+                                            sendRefreshBroadcast();
+                                            Toast.makeText(ClassActivity.this,
+                                                    "Thêm lớp và cập nhật " + totalStudents + " sinh viên thành công",
+                                                    Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                            loadDataClass();
+                                        });
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    runOnUiThread(() ->
+                                            Toast.makeText(ClassActivity.this,
+                                                    "Lỗi cập nhật sinh viên: " + error,
+                                                    Toast.LENGTH_SHORT).show());
+                                }
+                            });
+                }
             }
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+                runOnUiThread(() ->
+                        Toast.makeText(ClassActivity.this,
+                                "Lỗi thêm lớp: " + error,
+                                Toast.LENGTH_SHORT).show());
             }
         });
+    }
+
+    private void sendRefreshBroadcast() {
+        try {
+            Intent intent = new Intent("ACTION_DATA_UPDATED");
+            intent.setPackage(getPackageName());
+            intent.putExtra("UPDATE_TYPE", "STUDENT_CLASS_UPDATE");
+            sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(this)
+                    .sendBroadcast(new Intent("ACTION_DATA_UPDATED_LOCAL"));
+        } catch (Exception e) {
+            Log.e("BroadcastError", "Failed to send broadcast", e);
+        }
+    }
+
+    private void removeUpdatedStudentsFromList(List<Student> updatedStudents) {
+        Iterator<Student> iterator = studentsWithoutClass.iterator();
+        while (iterator.hasNext()) {
+            Student student = iterator.next();
+            for (Student updated : updatedStudents) {
+                if (student.getStudentID().equals(updated.getStudentID())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
+        studentAdapter.notifyDataSetChanged();
     }
 
     private void loadStudentsWithoutClass() {
@@ -310,14 +374,32 @@ public class ClassActivity extends AppCompatActivity {
             public void onSuccess(List<Student> students) {
                 List<Student> filteredStudents = new ArrayList<>();
                 for (Student student : students) {
-                    if (student.getStudentClass() == null || student.getStudentClass().getMaLop().isEmpty()) {
-                        filteredStudents.add(student);
+                    if (student.getStudentClass() == null ||
+                            student.getStudentClass().getMaLop() == null ||
+                            student.getStudentClass().getMaLop().isEmpty()) {
+
+                        Student newStudent = new Student(
+                                student.getId(),
+                                student.getStudentID(),
+                                student.getStudentName(),
+                                student.getStudentBirthday(),
+                                student.getStudentHomeTown(),
+                                student.getStudentPhone(),
+                                student.getStudentEmail(),
+                                null,
+                                student.getStudentDateJoin(),
+                                student.getStudentBranch(),
+                                student.getStudentTOT()
+                        );
+                        filteredStudents.add(newStudent);
                     }
                 }
 
                 runOnUiThread(() -> {
+                    studentsWithoutClass.clear();
+                    studentsWithoutClass.addAll(filteredStudents);
                     studentAdapter.clear();
-                    studentAdapter.addAll(filteredStudents);
+                    studentAdapter.addAll(studentsWithoutClass);
                     studentAdapter.notifyDataSetChanged();
                 });
             }
@@ -330,6 +412,12 @@ public class ClassActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
             }
         });
+    }
+
+    private boolean isStudentWithoutClass(Student student) {
+        return student.getStudentClass() == null ||
+                student.getStudentClass().getMaLop() == null ||
+                student.getStudentClass().getMaLop().isEmpty();
     }
 
     private void searchList(String text) {

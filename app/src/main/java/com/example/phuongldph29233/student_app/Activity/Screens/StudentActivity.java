@@ -3,13 +3,20 @@ package com.example.phuongldph29233.student_app.Activity.Screens;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.phuongldph29233.student_app.Adapter.ClassAdapter;
@@ -102,47 +110,60 @@ public class StudentActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadDataStudent();
+        IntentFilter filter = new IntentFilter("ACTION_DATA_UPDATED");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(globalUpdateReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(globalUpdateReceiver, filter);
+        }
+
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(localUpdateReceiver, new IntentFilter("ACTION_DATA_UPDATED_LOCAL"));
+
+        refreshDataImmediately();
     }
 
     private void loadDataStudent() {
         databaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
-            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSuccess(List<Student> list) {
                 studentArrayList.clear();
                 originalArrayList.clear();
+
                 for (Student student : list) {
-                    Class studentClass = student.getStudentClass();
-                    boolean classExists = false;
-                    for (Class cls : classList) {
-                        if (cls != null && cls.getMaLop() != null &&
-                                cls.getMaLop().equals(studentClass.getMaLop())) {
-                            classExists = true;
-                            break;
+                    // Xử lý khi studentClass null
+                    if (student.getStudentClass() == null) {
+                        student.setStudentClass(EMPTY_CLASS);
+                    } else {
+                        // Kiểm tra lớp có tồn tại
+                        boolean classExists = false;
+                        for (Class cls : classList) {
+                            if (cls != null && cls.getMaLop() != null &&
+                                    cls.getMaLop().equals(student.getStudentClass().getMaLop())) {
+                                classExists = true;
+                                break;
+                            }
+                        }
+                        if (!classExists) {
+                            student.setStudentClass(EMPTY_CLASS);
                         }
                     }
-                    if (!classExists) {
-                        student.setStudentClass(EMPTY_CLASS);
-                        updateStudentClass(student.getId(), EMPTY_CLASS);
-                    }
-
                     studentArrayList.add(student);
                 }
 
                 originalArrayList.addAll(studentArrayList);
-                studentAdapter.notifyDataSetChanged();
-
-                if (studentArrayList.isEmpty()) {
-                    binding.recyclerView.setVisibility(View.GONE);
-                } else {
-                    binding.recyclerView.setVisibility(View.VISIBLE);
-                }
+                runOnUiThread(() -> {
+                    studentAdapter.notifyDataSetChanged();
+                    binding.recyclerView.setVisibility(studentArrayList.isEmpty() ? View.GONE : View.VISIBLE);
+                });
             }
 
             @Override
             public void onFailure(String error) {
-                binding.recyclerView.setVisibility(View.GONE);
-                Toast.makeText(StudentActivity.this, "Lỗi tải dữ liệu: " + error, Toast.LENGTH_SHORT).show();
+                runOnUiThread(() -> {
+                    binding.recyclerView.setVisibility(View.GONE);
+                    Toast.makeText(StudentActivity.this, "Lỗi tải dữ liệu: " + error, Toast.LENGTH_SHORT).show();
+                });
             }
         });
     }
@@ -283,6 +304,44 @@ public class StudentActivity extends AppCompatActivity {
             }
         });
     }
+
+    private BroadcastReceiver localUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            refreshDataImmediately();
+        }
+    };
+
+    private BroadcastReceiver globalUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if ("ACTION_DATA_UPDATED".equals(intent.getAction())) {
+                refreshDataImmediately();
+            }
+        }
+    };
+
+    private void refreshDataImmediately() {
+        runOnUiThread(() -> {
+            loadDataClass();
+            new Handler().postDelayed(this::loadDataStudent, 200); // Sau đó load sinh viên
+        });
+    }
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Hủy đăng ký receivers
+        try {
+            unregisterReceiver(globalUpdateReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(localUpdateReceiver);
+        } catch (Exception e) {
+            Log.e("ReceiverError", "Failed to unregister", e);
+        }
+    }
+
 
     private void searchList(String text) {
         ArrayList<Student> filteredList = new ArrayList<>();
