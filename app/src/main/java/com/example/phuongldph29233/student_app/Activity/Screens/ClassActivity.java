@@ -279,12 +279,8 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             List<Student> selectedStudents = studentAdapter.getSelectedStudents();
-            if (selectedStudents.isEmpty()) {
-                Toast.makeText(this, "Vui lòng chọn ít nhất một sinh viên", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
             Class newClass = new Class(id, maLop, tenLop, khoa, giangVien, namHoc, selectedStudents);
+
             addClassAndUpdateStudents(newClass, selectedStudents, dialog);
 
         });
@@ -294,16 +290,38 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void addClassAndUpdateStudents(Class newClass, List<Student> selectedStudents, Dialog dialog) {
+        // Tạo một đối tượng Class đơn giản hóa để lưu vào studentClass của sinh viên
+        Class simplifiedClass = new Class(
+                newClass.getId(),
+                newClass.getMaLop(),
+                newClass.getTenLop(),
+                null, // Không cần branch
+                null, // Không cần teacher
+                newClass.getNamHoc(),
+                null  // Không cần danh sách sinh viên
+        );
+
         databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
                 AtomicInteger successCount = new AtomicInteger();
                 int totalStudents = selectedStudents.size();
 
-                for (Student student : selectedStudents) {
-                    student.setStudentClass(newClass);
+                if (totalStudents == 0) {
+                    runOnUiThread(() -> {
+                        sendRefreshBroadcast();
+                        Toast.makeText(ClassActivity.this, "Thêm lớp thành công", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        loadDataClass();
+                    });
+                    return;
+                }
 
-                    studentDatabaseHelper.update(student.getStudentID(), student,
+                for (Student student : selectedStudents) {
+                    // Cập nhật studentClass với đối tượng đơn giản hóa
+                    student.setStudentClass(simplifiedClass);
+
+                    studentDatabaseHelper.update(student.getId(), student,
                             new DatabaseHelper.DatabaseActionCallback() {
                                 @Override
                                 public void onSuccess() {
@@ -322,10 +340,25 @@ public class ClassActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure(String error) {
-                                    runOnUiThread(() ->
-                                            Toast.makeText(ClassActivity.this,
-                                                    "Lỗi cập nhật sinh viên: " + error,
-                                                    Toast.LENGTH_SHORT).show());
+                                    runOnUiThread(() -> {
+                                        // Rollback: Xóa lớp vừa tạo nếu có lỗi
+                                        databaseHelper.delete(newClass.getId(), new DatabaseHelper.DatabaseActionCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                Toast.makeText(ClassActivity.this,
+                                                        "Đã hủy tạo lớp do lỗi cập nhật sinh viên",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onFailure(String rollbackError) {
+                                                Log.e("ClassActivity", "Rollback failed: " + rollbackError);
+                                            }
+                                        });
+                                        Toast.makeText(ClassActivity.this,
+                                                "Lỗi cập nhật sinh viên: " + error + ". Đã hủy tạo lớp.",
+                                                Toast.LENGTH_SHORT).show();
+                                    });
                                 }
                             });
                 }
@@ -375,23 +408,9 @@ public class ClassActivity extends AppCompatActivity {
                 List<Student> filteredStudents = new ArrayList<>();
                 for (Student student : students) {
                     if (student.getStudentClass() == null ||
-                            student.getStudentClass().getMaLop() == null ||
-                            student.getStudentClass().getMaLop().isEmpty()) {
-
-                        Student newStudent = new Student(
-                                student.getId(),
-                                student.getStudentID(),
-                                student.getStudentName(),
-                                student.getStudentBirthday(),
-                                student.getStudentHomeTown(),
-                                student.getStudentPhone(),
-                                student.getStudentEmail(),
-                                null,
-                                student.getStudentDateJoin(),
-                                student.getStudentBranch(),
-                                student.getStudentTOT()
-                        );
-                        filteredStudents.add(newStudent);
+                            student.getStudentClass().getId() == null ||
+                            student.getStudentClass().getId().isEmpty()) {
+                        filteredStudents.add(student);
                     }
                 }
 
@@ -401,6 +420,12 @@ public class ClassActivity extends AppCompatActivity {
                     studentAdapter.clear();
                     studentAdapter.addAll(studentsWithoutClass);
                     studentAdapter.notifyDataSetChanged();
+
+                    // Cập nhật trạng thái nút "Chọn tất cả"
+//                    Button btnSelectAll = ((Dialog)findViewById(R.id.dialog_add_class)).findViewById(R.id.btnSelectAll);
+//                    if (btnSelectAll != null) {
+//                        btnSelectAll.setText("Chọn tất cả");
+//                    }
                 });
             }
 
@@ -410,6 +435,29 @@ public class ClassActivity extends AppCompatActivity {
                         Toast.makeText(ClassActivity.this,
                                 "Lỗi tải sinh viên: " + error,
                                 Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void rollbackClassCreation(String classId, List<Student> students) {
+        // Xóa lớp đã tạo
+        databaseHelper.delete(classId, new DatabaseHelper.DatabaseActionCallback() {
+            @Override
+            public void onSuccess() {
+                // Đặt lại studentClass cho các sinh viên đã cập nhật
+                for (Student student : students) {
+                    if (student.getStudentClass() != null &&
+                            student.getStudentClass().getId().equals(classId)) {
+                        student.setStudentClass(null);
+                        studentDatabaseHelper.update(student.getId(), student, null); // Không cần callback
+                    }
+                }
+                Log.d("ClassActivity", "Rollback completed for class " + classId);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("ClassActivity", "Rollback failed for class " + classId + ": " + error);
             }
         });
     }
