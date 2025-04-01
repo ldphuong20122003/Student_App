@@ -106,6 +106,7 @@ public class StudentActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         super.onResume();
@@ -131,11 +132,9 @@ public class StudentActivity extends AppCompatActivity {
                 originalArrayList.clear();
 
                 for (Student student : list) {
-                    // Xử lý khi studentClass null
                     if (student.getStudentClass() == null) {
                         student.setStudentClass(EMPTY_CLASS);
                     } else {
-                        // Kiểm tra lớp có tồn tại
                         boolean classExists = false;
                         for (Class cls : classList) {
                             if (cls != null && cls.getMaLop() != null &&

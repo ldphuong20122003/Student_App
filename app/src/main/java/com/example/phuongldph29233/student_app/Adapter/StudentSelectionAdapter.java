@@ -1,6 +1,7 @@
 package com.example.phuongldph29233.student_app.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,19 +17,30 @@ import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class StudentSelectionAdapter extends ArrayAdapter<Student> {
     private final List<Student> students;
     private final SparseBooleanArray selectedItems;
+    private final Set<String> maxClassStudentIds;
 
     private final LayoutInflater inflater;
     private boolean selectAllMode = false;
+
     public StudentSelectionAdapter(Context context, List<Student> students) {
         super(context, 0, students);
         this.students = new ArrayList<>(students);
         this.selectedItems = new SparseBooleanArray();
         this.inflater = LayoutInflater.from(context);
+        this.maxClassStudentIds = new HashSet<>();
+    }
+
+    public void setMaxClassStudentIds(Set<String> studentIds) {
+        this.maxClassStudentIds.clear();
+        this.maxClassStudentIds.addAll(studentIds);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -50,15 +62,39 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
         Student student = getItem(position);
         if (student != null) {
             holder.tvStudentCode.setText(student.getStudentID());
-            holder.tvStudentName.setText(student.getStudentName());
-            holder.cbStudent.setChecked(selectedItems.get(position, false));
-            convertView.setOnClickListener(v -> {
-                toggleSelection(position);
+
+            // Kiểm tra xem sinh viên đã đạt giới hạn 3 lớp chưa
+            boolean isMaxClass = maxClassStudentIds.contains(student.getId());
+
+            if (isMaxClass) {
+                // Hiển thị thông báo đã đạt giới hạn lớp học
+                holder.tvStudentName.setText(student.getStudentName() + " (Đã đạt giới hạn 3 lớp)");
+                holder.tvStudentName.setTextColor(Color.GRAY);
+                holder.cbStudent.setEnabled(false);
+                holder.cbStudent.setChecked(false);
+
+                // Đảm bảo sinh viên này không được chọn
+                if (selectedItems.get(position, false)) {
+                    selectedItems.put(position, false);
+                }
+            } else {
+                holder.tvStudentName.setText(student.getStudentName());
+                holder.tvStudentName.setTextColor(Color.BLACK);
+                holder.cbStudent.setEnabled(true);
                 holder.cbStudent.setChecked(selectedItems.get(position, false));
+            }
+
+            convertView.setOnClickListener(v -> {
+                if (!isMaxClass) {
+                    toggleSelection(position);
+                    holder.cbStudent.setChecked(selectedItems.get(position, false));
+                }
             });
 
             holder.cbStudent.setOnClickListener(v -> {
-                toggleSelection(position);
+                if (!isMaxClass) {
+                    toggleSelection(position);
+                }
             });
         }
 
@@ -72,8 +108,11 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
     }
 
     public void toggleSelection(int position) {
-        selectedItems.put(position, !selectedItems.get(position, false));
-        notifyDataSetChanged();
+        Student student = getItem(position);
+        if (student != null && !maxClassStudentIds.contains(student.getId())) {
+            selectedItems.put(position, !selectedItems.get(position, false));
+            notifyDataSetChanged();
+        }
     }
 
     public boolean isSelected(int position) {
@@ -90,12 +129,13 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
         return selected;
     }
 
-
-
     public void selectAll(boolean select) {
         selectAllMode = select;
         for (int i = 0; i < getCount(); i++) {
-            selectedItems.put(i, select);
+            Student student = getItem(i);
+            if (student != null && !maxClassStudentIds.contains(student.getId())) {
+                selectedItems.put(i, select);
+            }
         }
         notifyDataSetChanged();
     }
@@ -116,14 +156,20 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
 
     public void clear() {
         students.clear();
+        selectedItems.clear();
         notifyDataSetChanged();
     }
 
     public void clearSelection() {
+        selectedItems.clear();
         notifyDataSetChanged();
     }
 
     public void setSelected(int position, boolean selected) {
+        Student student = getItem(position);
+        if (student != null && !maxClassStudentIds.contains(student.getId())) {
+            selectedItems.put(position, selected);
+        }
         notifyDataSetChanged();
     }
 
@@ -131,7 +177,8 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
         clearSelection();
         for (Student student : studentsToSelect) {
             int position = students.indexOf(student);
-            if (position >= 0) {
+            if (position >= 0 && !maxClassStudentIds.contains(student.getId())) {
+                selectedItems.put(position, true);
             }
         }
         notifyDataSetChanged();

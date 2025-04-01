@@ -38,9 +38,11 @@ import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityClassBinding;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -290,15 +292,14 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void addClassAndUpdateStudents(Class newClass, List<Student> selectedStudents, Dialog dialog) {
-        // Tạo một đối tượng Class đơn giản hóa để lưu vào studentClass của sinh viên
         Class simplifiedClass = new Class(
                 newClass.getId(),
                 newClass.getMaLop(),
                 newClass.getTenLop(),
-                null, // Không cần branch
-                null, // Không cần teacher
+                null,
+                null,
                 newClass.getNamHoc(),
-                null  // Không cần danh sách sinh viên
+                null
         );
 
         databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
@@ -318,7 +319,6 @@ public class ClassActivity extends AppCompatActivity {
                 }
 
                 for (Student student : selectedStudents) {
-                    // Cập nhật studentClass với đối tượng đơn giản hóa
                     student.setStudentClass(simplifiedClass);
 
                     studentDatabaseHelper.update(student.getId(), student,
@@ -341,7 +341,6 @@ public class ClassActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(String error) {
                                     runOnUiThread(() -> {
-                                        // Rollback: Xóa lớp vừa tạo nếu có lỗi
                                         databaseHelper.delete(newClass.getId(), new DatabaseHelper.DatabaseActionCallback() {
                                             @Override
                                             public void onSuccess() {
@@ -402,30 +401,69 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void loadStudentsWithoutClass() {
-        studentDatabaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
+        if (classDatabaseHelper == null) {
+            classDatabaseHelper = new DatabaseHelper<>("Classes");
+        }
+        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
-            public void onSuccess(List<Student> students) {
-                List<Student> filteredStudents = new ArrayList<>();
-                for (Student student : students) {
-                    if (student.getStudentClass() == null ||
-                            student.getStudentClass().getId() == null ||
-                            student.getStudentClass().getId().isEmpty()) {
-                        filteredStudents.add(student);
+            public void onSuccess(List<Class> classes) {
+                java.util.Map<String, Integer> studentClassCount = new java.util.HashMap<>();
+                for (Class aClass : classes) {
+                    if (aClass.getDanhSachSinhVien() != null) {
+                        for (Student student : aClass.getDanhSachSinhVien()) {
+                            String studentId = student.getId();
+                            studentClassCount.put(studentId,
+                                    studentClassCount.getOrDefault(studentId, 0) + 1);
+                        }
                     }
                 }
+                studentDatabaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
+                    @Override
+                    public void onSuccess(List<Student> students) {
+                        List<Student> allStudents = new ArrayList<>();
+                        Set<String> maxClassStudentIds = new HashSet<>();
 
-                runOnUiThread(() -> {
-                    studentsWithoutClass.clear();
-                    studentsWithoutClass.addAll(filteredStudents);
-                    studentAdapter.clear();
-                    studentAdapter.addAll(studentsWithoutClass);
-                    studentAdapter.notifyDataSetChanged();
+                        for (Student student : students) {
+                            int classCount = studentClassCount.getOrDefault(student.getId(), 0);
+                            allStudents.add(student);
+                            if (classCount >= 3) {
+                                maxClassStudentIds.add(student.getId());
+                            }
+                        }
 
-                    // Cập nhật trạng thái nút "Chọn tất cả"
-//                    Button btnSelectAll = ((Dialog)findViewById(R.id.dialog_add_class)).findViewById(R.id.btnSelectAll);
-//                    if (btnSelectAll != null) {
-//                        btnSelectAll.setText("Chọn tất cả");
-//                    }
+                        runOnUiThread(() -> {
+                            studentsWithoutClass.clear();
+                            studentsWithoutClass.addAll(allStudents);
+                            studentAdapter.clear();
+                            studentAdapter.addAll(allStudents);
+
+                            studentAdapter.setMaxClassStudentIds(maxClassStudentIds);
+
+                            int eligibleCount = allStudents.size() - maxClassStudentIds.size();
+                            if (eligibleCount == 0) {
+                                Toast.makeText(ClassActivity.this,
+                                        "Tất cả sinh viên đã có đủ 3 lớp học.",
+                                        Toast.LENGTH_SHORT).show();
+                            } else if (maxClassStudentIds.size() > 0) {
+                                Toast.makeText(ClassActivity.this,
+                                        "Có " + eligibleCount + " sinh viên có thể chọn và " +
+                                                maxClassStudentIds.size() + " sinh viên đã đạt giới hạn 3 lớp.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+//                            Button btnSelectAll = dialog.findViewById(R.id.btnSelectAll);
+//                            if (btnSelectAll != null) {
+//                                btnSelectAll.setText("Chọn tất cả");
+//                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        runOnUiThread(() ->
+                                Toast.makeText(ClassActivity.this,
+                                        "Lỗi tải sinh viên: " + error,
+                                        Toast.LENGTH_SHORT).show());
+                    }
                 });
             }
 
@@ -433,39 +471,10 @@ public class ClassActivity extends AppCompatActivity {
             public void onFailure(String error) {
                 runOnUiThread(() ->
                         Toast.makeText(ClassActivity.this,
-                                "Lỗi tải sinh viên: " + error,
+                                "Lỗi tải danh sách lớp học: " + error,
                                 Toast.LENGTH_SHORT).show());
             }
         });
-    }
-
-    private void rollbackClassCreation(String classId, List<Student> students) {
-        // Xóa lớp đã tạo
-        databaseHelper.delete(classId, new DatabaseHelper.DatabaseActionCallback() {
-            @Override
-            public void onSuccess() {
-                // Đặt lại studentClass cho các sinh viên đã cập nhật
-                for (Student student : students) {
-                    if (student.getStudentClass() != null &&
-                            student.getStudentClass().getId().equals(classId)) {
-                        student.setStudentClass(null);
-                        studentDatabaseHelper.update(student.getId(), student, null); // Không cần callback
-                    }
-                }
-                Log.d("ClassActivity", "Rollback completed for class " + classId);
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Log.e("ClassActivity", "Rollback failed for class " + classId + ": " + error);
-            }
-        });
-    }
-
-    private boolean isStudentWithoutClass(Student student) {
-        return student.getStudentClass() == null ||
-                student.getStudentClass().getMaLop() == null ||
-                student.getStudentClass().getMaLop().isEmpty();
     }
 
     private void searchList(String text) {

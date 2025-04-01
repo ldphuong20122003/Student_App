@@ -24,6 +24,9 @@
             android:name=".Activity.Detail.DetailClassActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.Screens.StudentClassesActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Screens.StudentListActivity"
             android:exported="false"
             android:parentActivityName=".Activity.Detail.DetailClassActivity">

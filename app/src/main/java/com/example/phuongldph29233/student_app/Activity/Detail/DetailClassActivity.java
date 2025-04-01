@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.StudentListActivity;
@@ -36,8 +37,11 @@ import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class DetailClassActivity extends AppCompatActivity {
     private TextView txtMaLop, txtTenLop, txtKhoa, txtGiangVien, txtNamHoc,txtListSV;
@@ -243,7 +247,9 @@ public class DetailClassActivity extends AppCompatActivity {
         loadStudentsForEdit(dialog);
 
         btnSelectAll.setOnClickListener(v -> {
-            boolean allSelected = studentAdapter.getSelectedStudents().size() == studentAdapter.getCount();
+            List<Student> selectedStudents = studentAdapter.getSelectedStudents();
+            List<Student> selectableStudents = studentAdapter.getSelectedStudents();
+            boolean allSelected = selectedStudents.size() == selectableStudents.size();
             studentAdapter.selectAll(!allSelected);
             updateSelectAllButton(dialog);
         });
@@ -265,78 +271,211 @@ public class DetailClassActivity extends AppCompatActivity {
             for (Student student : selectedStudents) {
                 selectedStudentIds.add(student.getId());
             }
-            Class updatedClass = new Class(
-                    id,
-                    updatedMaLop,
-                    updatedTenLop,
-                    selectedBranch,
-                    selectedTeacher,
-                    updatedNamHoc,
-                    selectedStudents
-            );
-
-            classDatabaseHelper.update(id, updatedClass, new DatabaseHelper.DatabaseActionCallback() {
-                @Override
-                public void onSuccess() {
-                    runOnUiThread(() -> {
-                        Toast.makeText(DetailClassActivity.this, "Cập nhật lớp học thành công!", Toast.LENGTH_SHORT).show();
-
-                        maLop = updatedMaLop;
-                        tenLop = updatedTenLop;
-                        khoa = selectedBranch.getBranchName();
-                        giangVien = selectedTeacher.getTeacherName();
-                        namHoc = updatedNamHoc;
-                        danhSachSinhVienIds = selectedStudentIds;
-
-                        txtMaLop.setText(maLop);
-                        txtTenLop.setText(tenLop);
-                        txtKhoa.setText(khoa);
-                        txtGiangVien.setText(giangVien);
-                        txtNamHoc.setText(namHoc);
-
-                        dialog.dismiss();
-                    });
-                }
-
-                @Override
-                public void onFailure(String error) {
-                    runOnUiThread(() ->
-                            Toast.makeText(DetailClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show());
-                }
-            });
+            updateClassAndStudents(updatedMaLop, updatedTenLop, selectedBranch, selectedTeacher,
+                    updatedNamHoc, selectedStudents, selectedStudentIds, dialog);
         });
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
-    private void loadStudentsForEdit(Dialog dialog) {
+    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch,
+                                        Teacher selectedTeacher, String updatedNamHoc,
+                                        List<Student> selectedStudents, List<String> selectedStudentIds,
+                                        Dialog dialog) {
+        Class simplifiedClass = new Class(
+                id,
+                updatedMaLop,
+                updatedTenLop,
+                null,
+                null,
+                updatedNamHoc,
+                null
+        );
+
+        Class updatedClass = new Class(
+                id,
+                updatedMaLop,
+                updatedTenLop,
+                selectedBranch,
+                selectedTeacher,
+                updatedNamHoc,
+                selectedStudents
+        );
+
         studentDatabaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
             @Override
             public void onSuccess(List<Student> allStudents) {
-                List<Student> studentsToShow = new ArrayList<>();
-                List<Student> currentClassStudents = new ArrayList<>();
+                List<Student> studentsToAdd = new ArrayList<>();
+                List<Student> studentsToRemove = new ArrayList<>();
 
+                for (Student student : selectedStudents) {
+                    boolean isNewStudent = true;
+                    for (String existingId : danhSachSinhVienIds) {
+                        if (student.getId().equals(existingId)) {
+                            isNewStudent = false;
+                            break;
+                        }
+                    }
+                    if (isNewStudent) {
+                        studentsToAdd.add(student);
+                    }
+                }
                 for (Student student : allStudents) {
-                    if (student.getStudentClass() == null || student.getStudentClass().getMaLop().isEmpty()) {
-                        studentsToShow.add(student);
-                    } else if (student.getStudentClass().getId().equals(id)) {
-                        currentClassStudents.add(student);
-                        studentsToShow.add(student);
+                    if (danhSachSinhVienIds.contains(student.getId()) &&
+                            !selectedStudentIds.contains(student.getId())) {
+                        studentsToRemove.add(student);
                     }
                 }
 
-                runOnUiThread(() -> {
-                    studentAdapter.clear();
-                    studentAdapter.addAll(studentsToShow);
-                    for (int i = 0; i < studentsToShow.size(); i++) {
-                        Student student = studentsToShow.get(i);
-                        if (currentClassStudents.contains(student)) {
-                            studentAdapter.setSelected(i, true);
+                classDatabaseHelper.update(id, updatedClass, new DatabaseHelper.DatabaseActionCallback() {
+                    @Override
+                    public void onSuccess() {
+                        for (Student student : studentsToRemove) {
+                            student.setStudentClass(null);
+                            studentDatabaseHelper.update(student.getId(), student, new DatabaseHelper.DatabaseActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d("DetailClass", "Đã xóa sinh viên " + student.getStudentName() + " khỏi lớp");
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    Log.e("DetailClass", "Lỗi xóa sinh viên khỏi lớp: " + error);
+                                }
+                            });
                         }
+
+                        for (Student student : studentsToAdd) {
+                            student.setStudentClass(simplifiedClass);
+                            studentDatabaseHelper.update(student.getId(), student, new DatabaseHelper.DatabaseActionCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    Log.d("DetailClass", "Đã thêm sinh viên " + student.getStudentName() + " vào lớp");
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    Log.e("DetailClass", "Lỗi thêm sinh viên vào lớp: " + error);
+                                }
+                            });
+                        }
+
+                        runOnUiThread(() -> {
+                            Toast.makeText(DetailClassActivity.this, "Cập nhật lớp học thành công!", Toast.LENGTH_SHORT).show();
+
+                            maLop = updatedMaLop;
+                            tenLop = updatedTenLop;
+                            khoa = selectedBranch.getBranchName();
+                            giangVien = selectedTeacher.getTeacherName();
+                            namHoc = updatedNamHoc;
+                            danhSachSinhVienIds = selectedStudentIds;
+
+                            txtMaLop.setText(maLop);
+                            txtTenLop.setText(tenLop);
+                            txtKhoa.setText(khoa);
+                            txtGiangVien.setText(giangVien);
+                            txtNamHoc.setText(namHoc);
+                            sendRefreshBroadcast();
+                            dialog.dismiss();
+                        });
                     }
 
-                    updateSelectAllButton(dialog);
+                    @Override
+                    public void onFailure(String error) {
+                        runOnUiThread(() ->
+                                Toast.makeText(DetailClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() ->
+                        Toast.makeText(DetailClassActivity.this, "Lỗi tải sinh viên: " + error, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void sendRefreshBroadcast() {
+        try {
+            Intent intent = new Intent("ACTION_DATA_UPDATED");
+            intent.setPackage(getPackageName());
+            intent.putExtra("UPDATE_TYPE", "STUDENT_CLASS_UPDATE");
+            sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(this)
+                    .sendBroadcast(new Intent("ACTION_DATA_UPDATED_LOCAL"));
+        } catch (Exception e) {
+            Log.e("BroadcastError", "Failed to send broadcast", e);
+        }
+    }
+
+    private void loadStudentsForEdit(Dialog dialog) {
+        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
+            @Override
+            public void onSuccess(List<Class> classes) {
+                java.util.Map<String, Integer> studentClassCount = new java.util.HashMap<>();
+                Set<String> currentClassStudentIds = new HashSet<>(danhSachSinhVienIds);
+                for (Class aClass : classes) {
+                    if (aClass.getDanhSachSinhVien() != null) {
+                        for (Student student : aClass.getDanhSachSinhVien()) {
+                            String studentId = student.getId();
+                            studentClassCount.put(studentId,
+                                    studentClassCount.getOrDefault(studentId, 0) + 1);
+                        }
+                    }
+                }
+
+                studentDatabaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
+                    @Override
+                    public void onSuccess(List<Student> allStudents) {
+                        List<Student> studentsToShow = new ArrayList<>();
+                        List<Student> currentClassStudents = new ArrayList<>();
+                        Set<String> maxClassStudentIds = new HashSet<>();
+
+                        for (Student student : allStudents) {
+                            int classCount = studentClassCount.getOrDefault(student.getId(), 0);
+                            if (currentClassStudentIds.contains(student.getId())) {
+                                classCount--;
+                            }
+                            studentsToShow.add(student);
+                            if (classCount >= 3 && !currentClassStudentIds.contains(student.getId())) {
+                                maxClassStudentIds.add(student.getId());
+                            }
+                            if (currentClassStudentIds.contains(student.getId())) {
+                                currentClassStudents.add(student);
+                            }
+                        }
+
+                        runOnUiThread(() -> {
+                            studentAdapter.clear();
+                            studentAdapter.addAll(studentsToShow);
+                            studentAdapter.setMaxClassStudentIds(maxClassStudentIds);
+                            for (int i = 0; i < studentsToShow.size(); i++) {
+                                Student student = studentsToShow.get(i);
+                                if (currentClassStudents.contains(student)) {
+                                    studentAdapter.setSelected(i, true);
+                                }
+                            }
+                            int eligibleCount = studentsToShow.size() - maxClassStudentIds.size();
+                            if (maxClassStudentIds.size() > 0) {
+                                Toast.makeText(DetailClassActivity.this,
+                                        "Có " + eligibleCount + " sinh viên có thể chọn và " +
+                                                maxClassStudentIds.size() + " sinh viên đã đạt giới hạn 3 lớp.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            updateSelectAllButton(dialog);
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(String error) {
+                        runOnUiThread(() ->
+                                Toast.makeText(DetailClassActivity.this,
+                                        "Lỗi tải sinh viên: " + error,
+                                        Toast.LENGTH_SHORT).show());
+                    }
                 });
             }
 
@@ -344,7 +483,7 @@ public class DetailClassActivity extends AppCompatActivity {
             public void onFailure(String error) {
                 runOnUiThread(() ->
                         Toast.makeText(DetailClassActivity.this,
-                                "Lỗi tải sinh viên: " + error,
+                                "Lỗi tải danh sách lớp học: " + error,
                                 Toast.LENGTH_SHORT).show());
             }
         });
@@ -353,10 +492,13 @@ public class DetailClassActivity extends AppCompatActivity {
     private void updateSelectAllButton(Dialog dialog) {
         Button btnSelectAll = dialog.findViewById(R.id.btnSelectAll);
         if (btnSelectAll != null) {
-            boolean allSelected = studentAdapter.getSelectedStudents().size() == studentAdapter.getCount();
+            List<Student> selectedStudents = studentAdapter.getSelectedStudents();
+            List<Student> selectableStudents = studentAdapter.getSelectedStudents();
+            boolean allSelected = selectedStudents.size() == selectableStudents.size();
             btnSelectAll.setText(allSelected ? "Bỏ chọn tất cả" : "Chọn tất cả");
         }
     }
+
     private void showDeleteConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setMessage("Bạn có chắc chắn muốn xóa lớp học?")
@@ -364,7 +506,8 @@ public class DetailClassActivity extends AppCompatActivity {
                     classDatabaseHelper.delete(id, new DatabaseHelper.DatabaseActionCallback() {
                         @Override
                         public void onSuccess() {
-                            Toast.makeText(DetailClassActivity.this, "Xóa sinh viên thành công!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DetailClassActivity.this, "Xóa lớp học thành công!", Toast.LENGTH_SHORT).show();
+                            updateStudentsAfterClassDeletion();
                             finish();
                         }
 
@@ -378,4 +521,37 @@ public class DetailClassActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void updateStudentsAfterClassDeletion() {
+        if (danhSachSinhVienIds == null || danhSachSinhVienIds.isEmpty()) {
+            return;
+        }
+
+        studentDatabaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
+            @Override
+            public void onSuccess(List<Student> students) {
+                for (Student student : students) {
+                    if (danhSachSinhVienIds.contains(student.getId())) {
+                        student.setStudentClass(null);
+                        studentDatabaseHelper.update(student.getId(), student, new DatabaseHelper.DatabaseActionCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.d("DetailClass", "Cập nhật sinh viên sau khi xóa lớp thành công");
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                Log.e("DetailClass", "Lỗi cập nhật sinh viên sau khi xóa lớp: " + error);
+                            }
+                        });
+                    }
+                }
+                sendRefreshBroadcast();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Log.e("DetailClass", "Lỗi tải sinh viên sau khi xóa lớp: " + error);
+            }
+        });
+    }
 }

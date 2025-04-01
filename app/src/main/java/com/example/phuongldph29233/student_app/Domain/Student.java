@@ -95,19 +95,33 @@ public class Student implements Serializable {
 
     // Trong Student.java
     public void setStudentClass(Class studentClass) {
+
         if (studentClass != null) {
+
             this.studentClass = new Class(
+
                     studentClass.getId(),
+
                     studentClass.getMaLop(),
+
                     studentClass.getTenLop(),
-                    null,
-                    null,
+
+                    studentClass.getKhoa(),  // Giữ nguyên thông tin khoa
+
+                    studentClass.getGiangVien(),  // Giữ nguyên thông tin giảng viên
+
                     studentClass.getNamHoc(),
-                    null
+
+                    studentClass.getDanhSachSinhVien()  // Giữ nguyên danh sách sinh viên nếu cần
+
             );
+
         } else {
+
             this.studentClass = null;
+
         }
+
     }
 
     public String getStudentDateJoin() {

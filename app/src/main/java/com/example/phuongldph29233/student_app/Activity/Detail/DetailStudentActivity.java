@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.phuongldph29233.student_app.Activity.Screens.StudentClassesActivity;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
@@ -35,7 +36,7 @@ import java.util.Objects;
 public class DetailStudentActivity extends AppCompatActivity {
     private TextView txtMaSV, txtTenSV, txtNgaySinh, txtQueQuan, txtSdt, txtEmail, txtLopHoc, txtNgayNhapHoc, txtHeDaoTao, txtChuyenNganh;
     private Button btnEdit, btnDelete, btnBack;
-    private Object classObj; // Thêm biến này
+    private Object classObj;
 
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
     private DatabaseHelper<Student> studentDatabaseHelper;
@@ -79,7 +80,6 @@ public class DetailStudentActivity extends AppCompatActivity {
 
                 runOnUiThread(() -> {
                     txtLopHoc.setText(lopHoc);
-                    // Cập nhật các thông tin khác nếu cần
                 });
             }
 
@@ -107,6 +107,18 @@ public class DetailStudentActivity extends AppCompatActivity {
         btnEdit = findViewById(R.id.btn_edit);
         btnDelete = findViewById(R.id.btn_delete);
         btnBack = findViewById(R.id.btn_back);
+        txtLopHoc.setOnClickListener(v -> {
+            openStudentClassesActivity();
+        });
+    }
+
+    private void openStudentClassesActivity() {
+        Intent intent = new Intent(this, StudentClassesActivity.class);
+        // Pass student ID and other necessary information
+        intent.putExtra("studentId", id);
+        intent.putExtra("studentName", tenSV);
+        intent.putExtra("currentClass", lopHoc);
+        startActivity(intent);
     }
 
     private void getIntentExtra() {
@@ -117,8 +129,6 @@ public class DetailStudentActivity extends AppCompatActivity {
         queQuan = (String) getIntent().getSerializableExtra("studentHomeTown");
         sdt = (String) getIntent().getSerializableExtra("studentPhone");
         email = (String) getIntent().getSerializableExtra("studentEmail");
-
-        // Xử lý lớp học
         classObj = getIntent().getSerializableExtra("studentClass");
         if (classObj instanceof Class) {
             Class studentClass = (Class) classObj;
@@ -158,7 +168,6 @@ public class DetailStudentActivity extends AppCompatActivity {
                 classList.clear();
                 classList.addAll(itemList);
 
-                // Kiểm tra và cập nhật lớp học hiện tại của sinh viên
                 if (lopHoc != null && !lopHoc.equals("Chưa có lớp học")) {
                     boolean classFound = false;
                     for (Class cls : classList) {
@@ -184,55 +193,13 @@ public class DetailStudentActivity extends AppCompatActivity {
         });
     }
 
-    private void updateClassInfoInUI() {
-        // Kiểm tra nếu sinh viên đã có lớp
-        if (lopHoc != null && !lopHoc.equals("Chưa có lớp học")) {
-            boolean classExists = false;
-
-            // Tìm lớp học trong danh sách mới
-            for (Class cls : classList) {
-                if (cls.getTenLop().equals(lopHoc)) {
-                    classExists = true;
-                    break;
-                }
-            }
-
-            // Nếu lớp không tồn tại nữa, cập nhật UI
-            if (!classExists) {
-                lopHoc = "Chưa có lớp học";
-                txtLopHoc.setText(lopHoc);
-
-                // Cập nhật lại trong database nếu cần
-                Student updatedStudent = new Student(
-                        id, maSV, tenSV, ngaySinh, queQuan,
-                        sdt, email, null, ngayNhapHoc,
-                        null, heDaoTao
-                );
-
-                studentDatabaseHelper.update(id, updatedStudent, new DatabaseHelper.DatabaseActionCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.d("DetailStudent", "Đã cập nhật lớp học của sinh viên");
-                    }
-
-                    @Override
-                    public void onFailure(String error) {
-                        Log.e("DetailStudent", "Lỗi cập nhật lớp học: " + error);
-                    }
-                });
-            }
-        }
-    }
-
     private BroadcastReceiver dataUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("ACTION_DATA_UPDATED".equals(intent.getAction())) {
                 String updateType = intent.getStringExtra("UPDATE_TYPE");
                 if ("STUDENT_CLASS_UPDATE".equals(updateType)) {
-                    // Tải lại thông tin sinh viên từ database
                     fetchStudentClassFromDatabase();
-                    // Tải lại danh sách lớp
                     loadClass();
                 }
             }
@@ -242,7 +209,6 @@ public class DetailStudentActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Đăng ký BroadcastReceiver
         IntentFilter filter = new IntentFilter("ACTION_DATA_UPDATED");
         LocalBroadcastManager.getInstance(this).registerReceiver(dataUpdateReceiver, filter);
     }
@@ -250,7 +216,6 @@ public class DetailStudentActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // Hủy đăng ký BroadcastReceiver
         LocalBroadcastManager.getInstance(this).unregisterReceiver(dataUpdateReceiver);
     }
 
@@ -273,7 +238,6 @@ public class DetailStudentActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_student);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
         TextView txtTitle = dialog.findViewById(R.id.txt_title_subject);
         EditText edtMaSVEdit = dialog.findViewById(R.id.edt_maSV_add);
         EditText edtTenSVEdit = dialog.findViewById(R.id.edt_tenSV_add);
@@ -291,7 +255,6 @@ public class DetailStudentActivity extends AppCompatActivity {
         HelperUtils.setupDatePicker(this, edtNgayNhapHocEdit);
         txtTitle.setText("Chỉnh sửa sinh viên");
         btnUpdate.setText("Cập nhật");
-
         edtMaSVEdit.setText(maSV);
         edtTenSVEdit.setText(tenSV);
         edtNgaySinhEdit.setText(ngaySinh);
