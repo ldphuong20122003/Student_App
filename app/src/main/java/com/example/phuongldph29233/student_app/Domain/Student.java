@@ -1,6 +1,8 @@
 package com.example.phuongldph29233.student_app.Domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Student implements Serializable {
     private String id;
@@ -10,16 +12,26 @@ public class Student implements Serializable {
     private String studentHomeTown;
     private String studentPhone;
     private String studentEmail;
-    private Class studentClass;
+//    private Class studentClass;
 
     private String studentDateJoin;
     private Branch studentBranch;
     private String studentTOT;
+    private List<Class> studentClass;
 
     public Student() {
+        this.studentClass = new ArrayList<>();
     }
 
-    public Student(String id, String studentID, String studentName, String studentBirthday, String studentHomeTown, String studentPhone, String studentEmail, Class studentClass, String studentDateJoin, Branch studentBranch, String studentTOT) {
+    public List<Class> getStudentClasses() {
+        return studentClass;
+    }
+
+    public void setStudentClasses(List<Class> studentClasses) {
+        this.studentClass= studentClasses;
+    }
+
+    public Student(String id, String studentID, String studentName, String studentBirthday, String studentHomeTown, String studentPhone, String studentEmail, List<Class> studentClass, String studentDateJoin, Branch studentBranch, String studentTOT) {
         this.id = id;
         this.studentID = studentID;
         this.studentName = studentName;
@@ -89,39 +101,13 @@ public class Student implements Serializable {
         this.studentEmail = studentEmail;
     }
 
-    public Class getStudentClass() {
+    public List<Class> getStudentClass() {
         return studentClass;
     }
 
     // Trong Student.java
-    public void setStudentClass(Class studentClass) {
-
-        if (studentClass != null) {
-
-            this.studentClass = new Class(
-
-                    studentClass.getId(),
-
-                    studentClass.getMaLop(),
-
-                    studentClass.getTenLop(),
-
-                    studentClass.getKhoa(),  // Giữ nguyên thông tin khoa
-
-                    studentClass.getGiangVien(),  // Giữ nguyên thông tin giảng viên
-
-                    studentClass.getNamHoc(),
-
-                    studentClass.getDanhSachSinhVien()  // Giữ nguyên danh sách sinh viên nếu cần
-
-            );
-
-        } else {
-
-            this.studentClass = null;
-
-        }
-
+    public void setStudentClass(List<Class> studentClass) {
+        this.studentClass = studentClass;
     }
 
     public String getStudentDateJoin() {

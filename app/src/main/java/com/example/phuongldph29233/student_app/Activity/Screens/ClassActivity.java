@@ -292,16 +292,6 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void addClassAndUpdateStudents(Class newClass, List<Student> selectedStudents, Dialog dialog) {
-        Class simplifiedClass = new Class(
-                newClass.getId(),
-                newClass.getMaLop(),
-                newClass.getTenLop(),
-                null,
-                null,
-                newClass.getNamHoc(),
-                null
-        );
-
         databaseHelper.add(newClass, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
@@ -319,8 +309,20 @@ public class ClassActivity extends AppCompatActivity {
                 }
 
                 for (Student student : selectedStudents) {
-                    student.setStudentClass(simplifiedClass);
+                    // Tạo bản sao đơn giản của lớp mới để thêm vào sinh viên
+                    Class classCopy = new Class();
+                    classCopy.setId(newClass.getId());
+                    classCopy.setMaLop(newClass.getMaLop());
+                    classCopy.setTenLop(newClass.getTenLop());
+                    classCopy.setNamHoc(newClass.getNamHoc());
 
+                    // Thêm lớp vào danh sách lớp của sinh viên (kiểm tra null)
+                    if (student.getStudentClass() == null) {
+                        student.setStudentClass(new ArrayList<>());
+                    }
+                    student.getStudentClass().add(classCopy);
+
+                    // Cập nhật sinh viên vào database
                     studentDatabaseHelper.update(student.getId(), student,
                             new DatabaseHelper.DatabaseActionCallback() {
                                 @Override
@@ -341,17 +343,16 @@ public class ClassActivity extends AppCompatActivity {
                                 @Override
                                 public void onFailure(String error) {
                                     runOnUiThread(() -> {
+                                        // Rollback: Xóa lớp nếu cập nhật sinh viên thất bại
                                         databaseHelper.delete(newClass.getId(), new DatabaseHelper.DatabaseActionCallback() {
                                             @Override
                                             public void onSuccess() {
-                                                Toast.makeText(ClassActivity.this,
-                                                        "Đã hủy tạo lớp do lỗi cập nhật sinh viên",
-                                                        Toast.LENGTH_SHORT).show();
+                                                Log.d("Rollback", "Đã xóa lớp do lỗi cập nhật sinh viên");
                                             }
 
                                             @Override
                                             public void onFailure(String rollbackError) {
-                                                Log.e("ClassActivity", "Rollback failed: " + rollbackError);
+                                                Log.e("RollbackError", "Không thể xóa lớp: " + rollbackError);
                                             }
                                         });
                                         Toast.makeText(ClassActivity.this,
@@ -366,9 +367,8 @@ public class ClassActivity extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 runOnUiThread(() ->
-                        Toast.makeText(ClassActivity.this,
-                                "Lỗi thêm lớp: " + error,
-                                Toast.LENGTH_SHORT).show());
+                        Toast.makeText(ClassActivity.this, "Lỗi thêm lớp: " + error, Toast.LENGTH_SHORT).show()
+                );
             }
         });
     }

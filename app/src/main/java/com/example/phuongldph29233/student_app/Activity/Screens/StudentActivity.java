@@ -288,11 +288,89 @@ public class StudentActivity extends AppCompatActivity {
     }
 
 
+    // In StudentActivity, update the addStudent method:
     private void addStudent(Student student, Dialog dialog) {
+        // Check if student has the placeholder EMPTY_CLASS
+        if (student.getStudentClass() != null &&
+                student.getStudentClass().getMaLop() != null &&
+                student.getStudentClass().getMaLop().isEmpty()) {
+            // If it's the empty class placeholder, set to null
+            student.setStudentClass(null);
+        }
+
+        // Reference to the actual selected class if not empty
+        Class selectedClass = student.getStudentClass();
+        if (selectedClass != null && !selectedClass.getMaLop().isEmpty() &&
+                !selectedClass.getMaLop().equals(EMPTY_CLASS.getMaLop())) {
+
+            // Create a simplified class object with just the necessary fields
+            Class simplifiedClass = new Class(
+                    selectedClass.getId(),
+                    selectedClass.getMaLop(),
+                    selectedClass.getTenLop(),
+                    null, // Branch can be null for simplified reference
+                    null, // Teacher can be null for simplified reference
+                    selectedClass.getNamHoc(),
+                    null  // Student list should be null to avoid circular references
+            );
+
+            student.setStudentClass(simplifiedClass);
+        }
+
         databaseHelper.add(student, new DatabaseHelper.DatabaseActionCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(StudentActivity.this, "Thêm sinh viên thành công", Toast.LENGTH_SHORT).show();
+
+                // If the student was assigned to a class, update the class too
+                if (selectedClass != null && !selectedClass.getMaLop().isEmpty() &&
+                        !selectedClass.getMaLop().equals(EMPTY_CLASS.getMaLop())) {
+
+                    // Add this student to the class's student list
+                    classDatabaseHelper.get(selectedClass.getId(), Class.class,
+                            new DatabaseHelper.DatabaseGetCallback<Class>() {
+                                @Override
+                                public void onSuccess(Class classObject) {
+                                    if (classObject != null) {
+                                        List<Student> studentList = classObject.getDanhSachSinhVien();
+                                        if (studentList == null) {
+                                            studentList = new ArrayList<>();
+                                        }
+
+                                        // Create simplified student to avoid circular references
+                                        Student simplifiedStudent = new Student();
+                                        simplifiedStudent.setId(student.getId());
+                                        simplifiedStudent.setStudentID(student.getStudentID());
+                                        simplifiedStudent.setStudentName(student.getStudentName());
+                                        // Other essential fields...
+
+                                        studentList.add(simplifiedStudent);
+                                        classObject.setDanhSachSinhVien(studentList);
+
+                                        // Update the class with the new student
+                                        classDatabaseHelper.update(classObject.getId(), classObject,
+                                                new DatabaseHelper.DatabaseActionCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        Log.d("StudentActivity", "Updated class with new student");
+                                                        sendRefreshBroadcast();
+                                                    }
+
+                                                    @Override
+                                                    public void onFailure(String error) {
+                                                        Log.e("StudentActivity", "Failed to update class: " + error);
+                                                    }
+                                                });
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    Log.e("StudentActivity", "Failed to get class: " + error);
+                                }
+                            });
+                }
+
                 dialog.dismiss();
                 loadDataStudent();
             }
@@ -302,6 +380,19 @@ public class StudentActivity extends AppCompatActivity {
                 Toast.makeText(StudentActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void sendRefreshBroadcast() {
+        try {
+            Intent intent = new Intent("ACTION_DATA_UPDATED");
+            intent.setPackage(getPackageName());
+            intent.putExtra("UPDATE_TYPE", "STUDENT_CLASS_UPDATE");
+            sendBroadcast(intent);
+            LocalBroadcastManager.getInstance(this)
+                    .sendBroadcast(new Intent("ACTION_DATA_UPDATED_LOCAL"));
+        } catch (Exception e) {
+            Log.e("BroadcastError", "Failed to send broadcast", e);
+        }
     }
 
     private BroadcastReceiver localUpdateReceiver = new BroadcastReceiver() {

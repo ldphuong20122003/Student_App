@@ -19,6 +19,7 @@ public class DatabaseHelper<T> {
         this.databaseReference = FirebaseDatabase.getInstance().getReference(path);
     }
 
+
     public void getList(Class<T> clazz, DatabaseCallback<T> callback) {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

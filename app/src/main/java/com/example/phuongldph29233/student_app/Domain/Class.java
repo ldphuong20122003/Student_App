@@ -28,10 +28,13 @@ public class Class implements Serializable {
     }
 
     public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc, List<Student> danhSachSinhVien) {
-        this(id, maLop, tenLop, khoa, giangVien, namHoc);
-        if (danhSachSinhVien != null) {
-            this.danhSachSinhVien.addAll(danhSachSinhVien);
-        }
+        this.id = id;
+        this.maLop = maLop;
+        this.tenLop = tenLop;
+        this.khoa = khoa;
+        this.giangVien = giangVien;
+        this.namHoc = namHoc;
+        this.danhSachSinhVien = danhSachSinhVien;
     }
 
     public String getId() {
@@ -93,6 +96,17 @@ public class Class implements Serializable {
         if (sinhVien != null) {
             this.danhSachSinhVien.add(sinhVien);
         }
+    }
+
+    public Class createSimplified() {
+        Class copy = new Class();
+        copy.setId(this.id);
+        copy.setMaLop(this.maLop);
+        copy.setTenLop(this.tenLop);
+        copy.setNamHoc(this.namHoc);
+        copy.setKhoa(this.khoa);
+        copy.setGiangVien(this.giangVien);
+        return copy;
     }
 
     public String getNamHoc() {
