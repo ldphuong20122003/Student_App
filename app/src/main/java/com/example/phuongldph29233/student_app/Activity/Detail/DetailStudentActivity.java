@@ -30,14 +30,17 @@ import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class DetailStudentActivity extends AppCompatActivity {
     private TextView txtMaSV, txtTenSV, txtNgaySinh, txtQueQuan, txtSdt, txtEmail, txtLopHoc, txtNgayNhapHoc, txtHeDaoTao, txtChuyenNganh;
     private Button btnEdit, btnDelete, btnBack;
     private Object classObj;
-
+    private List<Class> studentClasses = new ArrayList<>();
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Branch> branchDatabaseHelper;
@@ -54,10 +57,7 @@ public class DetailStudentActivity extends AppCompatActivity {
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         initViews();
         getIntentExtra();
-        if (lopHoc == null || lopHoc.equals("Chưa có lớp học")) {
-            fetchStudentClassFromDatabase();
-        }
-
+        fetchStudentClassFromDatabase();
         classList = new ArrayList<>();
         loadClass();
         branchList = new ArrayList<>();
@@ -66,29 +66,44 @@ public class DetailStudentActivity extends AppCompatActivity {
     }
 
     private void fetchStudentClassFromDatabase() {
-        studentDatabaseHelper.get(id, Student.class, new DatabaseHelper.DatabaseGetCallback<Student>() {
+        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
-            public void onSuccess(Student student) {
-                Log.d("LOG SUCCESS", "onSuccess: " + student + id);
-                if (student.getStudentClass() != null) {
-                    classObj = student.getStudentClass();
-                    lopHoc = student.getStudentClass().getTenLop();
-                } else {
-                    lopHoc = "Chưa có lớp học";
-                    classObj = null;
+            public void onSuccess(List<Class> allClasses) {
+                Set<String> uniqueClassIds = new HashSet<>();
+                List<Class> enrolledClasses = new ArrayList<>();
+
+                for (Class lop : allClasses) {
+                    if (lop.getDanhSachSinhVien() != null) {
+                        for (Student sv : lop.getDanhSachSinhVien()) {
+                            if (sv != null && id.equals(sv.getId())) {
+                                if (!uniqueClassIds.contains(lop.getId())) {
+                                    uniqueClassIds.add(lop.getId());
+                                    enrolledClasses.add(lop);
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 runOnUiThread(() -> {
-                    txtLopHoc.setText(lopHoc);
+                    studentClasses = enrolledClasses;
+                    if (enrolledClasses.isEmpty()) {
+                        txtLopHoc.setText("Chưa có lớp học");
+                    } else if (enrolledClasses.size() == 1) {
+                        txtLopHoc.setText(enrolledClasses.get(0).getTenLop());
+                    } else {
+                    }
                 });
             }
 
             @Override
             public void onFailure(String error) {
-                runOnUiThread(() ->
-                        Toast.makeText(DetailStudentActivity.this,
-                                "Lỗi tải thông tin sinh viên: " + error,
-                                Toast.LENGTH_SHORT).show());
+                Log.e("ERROR", "Lỗi khi tải lớp: " + error);
+                runOnUiThread(() -> {
+                    txtLopHoc.setText("Lỗi tải dữ liệu");
+                    Toast.makeText(DetailStudentActivity.this, error, Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
@@ -108,16 +123,38 @@ public class DetailStudentActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btn_delete);
         btnBack = findViewById(R.id.btn_back);
         txtLopHoc.setOnClickListener(v -> {
-            openStudentClassesActivity();
+            if (studentClasses.size() > 1) {
+                openStudentClassesActivity();
+            } else if (studentClasses.size() == 1) {
+                showSingleClassDetail(studentClasses.get(0));
+            }
         });
+    }
+
+    private void showSingleClassDetail(Class lop) {
+        new AlertDialog.Builder(this)
+                .setTitle(lop.getTenLop())
+                .setMessage("Mã lớp: " + lop.getMaLop() + "\n" +
+                        "Giảng viên: " + (lop.getGiangVien() != null ? lop.getGiangVien().getTeacherName() : "N/A"))
+                .setPositiveButton("OK", null)
+                .show();
     }
 
     private void openStudentClassesActivity() {
         Intent intent = new Intent(this, StudentClassesActivity.class);
-        // Pass student ID and other necessary information
         intent.putExtra("studentId", id);
         intent.putExtra("studentName", tenSV);
-        intent.putExtra("currentClass", lopHoc);
+        if (studentClasses != null && !studentClasses.isEmpty()) {
+            ArrayList<String> classIds = new ArrayList<>();
+            for (Class c : studentClasses) {
+                if (c != null && c.getId() != null) {
+                    classIds.add(c.getId());
+                }
+            }
+            intent.putStringArrayListExtra("classIds", classIds);
+        } else {
+            intent.putStringArrayListExtra("classIds", new ArrayList<>());
+        }
         startActivity(intent);
     }
 
@@ -162,25 +199,20 @@ public class DetailStudentActivity extends AppCompatActivity {
     }
 
     private void loadClass() {
-        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
+        DatabaseHelper<Class> studentClassHelper = new DatabaseHelper<>("Classes");
+        studentClassHelper.getStudentClasses(id, Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
             public void onSuccess(List<Class> itemList) {
                 classList.clear();
                 classList.addAll(itemList);
-
-                if (lopHoc != null && !lopHoc.equals("Chưa có lớp học")) {
-                    boolean classFound = false;
-                    for (Class cls : classList) {
-                        if (cls.getTenLop().equals(lopHoc)) {
-                            classFound = true;
-                            break;
-                        }
-                    }
-
-                    if (!classFound) {
-                        lopHoc = "Chưa có lớp học";
-                        txtLopHoc.setText(lopHoc);
-                    }
+                if (!studentClasses.isEmpty()) {
+                    txtLopHoc.setText(
+                            studentClasses.size() == 1
+                                    ? studentClasses.get(0).getTenLop()
+                                    : studentClasses.size() + " lớp (Nhấn để xem chi tiết)"
+                    );
+                }else{
+                    txtLopHoc.setText("Chưa có lớp học");
                 }
             }
 

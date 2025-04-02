@@ -10,7 +10,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseHelper<T> {
     private final DatabaseReference databaseReference;
@@ -98,6 +100,183 @@ public class DatabaseHelper<T> {
                 callback.onFailure(error.getMessage());
             }
         });
+    }
+
+    public void getStudentClasses(String studentId, Class<T> clazz, DatabaseCallback<T> callback) {
+        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
+        studentClassRef.orderByChild("studentId").equalTo(studentId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<T> classes = new ArrayList<>();
+                        List<String> classIds = new ArrayList<>();
+
+                        // Lấy tất cả classId của sinh viên
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String classId = ds.child("classId").getValue(String.class);
+                            if (classId != null) {
+                                classIds.add(classId);
+                            }
+                        }
+
+                        // Nếu không có lớp nào
+                        if (classIds.isEmpty()) {
+                            callback.onSuccess(classes);
+                            return;
+                        }
+
+                        // Lấy thông tin chi tiết từng lớp
+                        DatabaseReference classesRef = FirebaseDatabase.getInstance().getReference("Classes");
+                        for (String classId : classIds) {
+                            classesRef.child(classId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot classSnapshot) {
+                                    T cls = classSnapshot.getValue(clazz);
+                                    if (cls != null) {
+                                        try {
+                                            Method setIdMethod = cls.getClass().getMethod("setId", String.class);
+                                            setIdMethod.invoke(cls, classSnapshot.getKey());
+                                        } catch (Exception e) {
+                                            // Handle exception
+                                        }
+                                        classes.add(cls);
+                                    }
+
+                                    // Khi đã lấy đủ tất cả lớp
+                                    if (classes.size() == classIds.size()) {
+                                        callback.onSuccess(classes);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    callback.onFailure(error.getMessage());
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
+                });
+    }
+
+
+    public void addStudentToClass(String studentId, String classId, DatabaseActionCallback callback) {
+        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
+
+        // Kiểm tra xem đã tồn tại chưa
+        studentClassRef.orderByChild("studentId").equalTo(studentId)
+                .orderByChild("classId").equalTo(classId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            callback.onFailure("Sinh viên đã có trong lớp này");
+                        } else {
+                            // Tạo bản ghi mới
+                            String key = studentClassRef.push().getKey();
+                            Map<String, Object> studentClass = new HashMap<>();
+                            studentClass.put("studentId", studentId);
+                            studentClass.put("classId", classId);
+
+                            studentClassRef.child(key).setValue(studentClass)
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess())
+                                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
+                });
+    }
+
+    // 3. Xóa sinh viên khỏi lớp
+    public void removeStudentFromClass(String studentId, String classId, DatabaseActionCallback callback) {
+        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
+        studentClassRef.orderByChild("studentId").equalTo(studentId)
+                .orderByChild("classId").equalTo(classId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                ds.getRef().removeValue()
+                                        .addOnSuccessListener(aVoid -> callback.onSuccess())
+                                        .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+                            }
+                        } else {
+                            callback.onFailure("Không tìm thấy bản ghi");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
+                });
+    }
+
+    // 4. Lấy tất cả sinh viên trong một lớp
+    public void getStudentsInClass(String classId, Class<T> clazz, DatabaseCallback<T> callback) {
+        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
+        studentClassRef.orderByChild("classId").equalTo(classId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        List<T> students = new ArrayList<>();
+                        List<String> studentIds = new ArrayList<>();
+
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String studentId = ds.child("studentId").getValue(String.class);
+                            if (studentId != null) {
+                                studentIds.add(studentId);
+                            }
+                        }
+
+                        if (studentIds.isEmpty()) {
+                            callback.onSuccess(students);
+                            return;
+                        }
+
+                        DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("Students");
+                        for (String studentId : studentIds) {
+                            studentsRef.child(studentId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot studentSnapshot) {
+                                    T student = studentSnapshot.getValue(clazz);
+                                    if (student != null) {
+                                        try {
+                                            Method setIdMethod = student.getClass().getMethod("setId", String.class);
+                                            setIdMethod.invoke(student, studentSnapshot.getKey());
+                                        } catch (Exception e) {
+                                            // Handle exception
+                                        }
+                                        students.add(student);
+                                    }
+
+                                    if (students.size() == studentIds.size()) {
+                                        callback.onSuccess(students);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    callback.onFailure(error.getMessage());
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
+                });
     }
     // Interface callback mới cho phương thức get
     public interface DatabaseGetCallback<T> {

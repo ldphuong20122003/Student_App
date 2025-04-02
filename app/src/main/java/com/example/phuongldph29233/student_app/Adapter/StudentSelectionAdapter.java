@@ -62,18 +62,12 @@ public class StudentSelectionAdapter extends ArrayAdapter<Student> {
         Student student = getItem(position);
         if (student != null) {
             holder.tvStudentCode.setText(student.getStudentID());
-
-            // Kiểm tra xem sinh viên đã đạt giới hạn 3 lớp chưa
             boolean isMaxClass = maxClassStudentIds.contains(student.getId());
-
             if (isMaxClass) {
-                // Hiển thị thông báo đã đạt giới hạn lớp học
                 holder.tvStudentName.setText(student.getStudentName() + " (Đã đạt giới hạn 3 lớp)");
                 holder.tvStudentName.setTextColor(Color.GRAY);
                 holder.cbStudent.setEnabled(false);
                 holder.cbStudent.setChecked(false);
-
-                // Đảm bảo sinh viên này không được chọn
                 if (selectedItems.get(position, false)) {
                     selectedItems.put(position, false);
                 }

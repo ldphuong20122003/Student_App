@@ -258,7 +258,6 @@ public class StudentActivity extends AppCompatActivity {
             String queQuan = edtQue.getText().toString().trim();
             String soDienThoai = edtSDT.getText().toString().trim();
             String email = edtMail.getText().toString().trim();
-//            String lopHoc = edtLophoc.getText().toString().trim();
             Class lopHoc = (Class) edtLophoc.getSelectedItem();
             String ngayNhapHoc = edtNgayNhapHoc.getText().toString().trim();
             String heDaoTao = edtHeDaotao.getText().toString().trim();
@@ -323,7 +322,7 @@ public class StudentActivity extends AppCompatActivity {
     private void refreshDataImmediately() {
         runOnUiThread(() -> {
             loadDataClass();
-            new Handler().postDelayed(this::loadDataStudent, 200); // Sau đó load sinh viên
+            new Handler().postDelayed(this::loadDataStudent, 200);
         });
     }
 
@@ -332,7 +331,6 @@ public class StudentActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        // Hủy đăng ký receivers
         try {
             unregisterReceiver(globalUpdateReceiver);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(localUpdateReceiver);
