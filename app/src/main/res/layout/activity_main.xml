@@ -6,78 +6,76 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.MainActivity">
-    <!-- Ảnh nền -->
-    <LinearLayout
-    android:id="@+id/linearLayout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintHorizontal_bias="0.0"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintVertical_bias="0">
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="12dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Trường Đại học Giao thông vận tải"
-            android:textAllCaps="true"
-            android:textColor="@color/blue"
-            android:textSize="18dp" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="University of transport and comunication"
-            android:textAllCaps="true"
-            android:textColor="@color/yellow"
-            android:textSize="12dp" />
-    </LinearLayout>
-</LinearLayout>
-
+    <!-- Ảnh nền (background) -->
     <ImageView
         android:id="@+id/bg"
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:alpha="0.7"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout"
-        app:srcCompat="@drawable/bg"
-        android:scaleType="centerCrop"
-        android:layout_marginTop="20dp"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bg_school"/>
 
-    <!-- GridLayout với 3 cột 2 hàng -->
+    <!-- Header (Logo + Tên trường) -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/logo"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trường Đại học Giao thông vận tải"
+                android:textAllCaps="true"
+                android:textColor="@color/blue"
+                android:textSize="16dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="University of Transport and Communication"
+                android:textAllCaps="true"
+                android:textColor="@color/yellow"
+                android:textSize="12sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- GridLayout chứa các CardView (CĂN GIỮA MÀN HÌNH) -->
     <GridLayout
         android:id="@+id/gridLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:rowCount="2"
         android:columnCount="3"
         android:padding="16dp"
-        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bg">
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+        app:layout_constraintVertical_bias="0.5">
 
-        <!-- Các ô CardView -->
+        <!-- CardView 1: Lớp học -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_class"
             android:layout_width="0dp"
@@ -89,33 +87,35 @@
             android:layout_columnWeight="1"
             android:layout_row="0"
             android:layout_column="0">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:padding="16dp">
+
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/icon_class"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Lớp học"
                     android:textStyle="bold"
-                    android:layout_marginTop="4dp"
-
-                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="@color/blue"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Sinh viên -->
+        <!-- CardView 2: Sinh viên -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_student"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_margin="8dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
@@ -123,32 +123,35 @@
             android:layout_columnWeight="1"
             android:layout_row="0"
             android:layout_column="1">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:padding="16dp">
+
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/icon_student"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Sinh viên"
                     android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="@color/blue"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Môn học -->
+        <!-- CardView 3: Môn học -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_subject"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_margin="8dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="8dp"
@@ -156,30 +159,31 @@
             android:layout_columnWeight="1"
             android:layout_row="0"
             android:layout_column="2">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="16dp"
-                >
+                android:padding="16dp">
+
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/icon_subjects"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Môn học"
                     android:textStyle="bold"
-                    android:layout_marginTop="4dp"
-
-                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="@color/blue"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Khoa -->
+        <!-- CardView 4: Khoa -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_branch"
             android:layout_width="0dp"
@@ -191,29 +195,31 @@
             android:layout_columnWeight="1"
             android:layout_row="1"
             android:layout_column="0">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="16dp"
-                >
+                android:padding="16dp">
+
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/icon_branch"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Khoa"
                     android:textStyle="bold"
-                    android:layout_marginTop="4dp"
-                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="@color/blue"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Chấm điểm -->
+        <!-- CardView 5: Điểm -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_math"
             android:layout_width="0dp"
@@ -225,29 +231,31 @@
             android:layout_columnWeight="1"
             android:layout_row="1"
             android:layout_column="1">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
                 android:padding="16dp">
+
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/icon_math"/>
+
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="Điểm"
                     android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp"
-
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="@color/blue"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Giảng viên -->
+        <!-- CardView 6: Giảng viên -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_teacher"
             android:layout_width="0dp"
@@ -259,27 +267,28 @@
             android:layout_columnWeight="1"
             android:layout_row="1"
             android:layout_column="2">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="16dp"
-              >
+                android:padding="16dp">
+
                 <ImageView
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/icon_teacher"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Giảng viên"
                     android:textStyle="bold"
-                    android:layout_marginTop="4dp"
-                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"
+                    android:textSize="14sp"
                     android:textColor="@color/blue"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
     </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
