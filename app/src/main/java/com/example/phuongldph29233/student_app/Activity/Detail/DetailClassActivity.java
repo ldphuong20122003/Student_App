@@ -28,18 +28,19 @@ import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
+import com.example.phuongldph29233.student_app.databinding.ActivityDetailClassBinding;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class DetailClassActivity extends AppCompatActivity {
-    private TextView txtMaLop, txtTenLop, txtKhoa, txtGiangVien, txtNamHoc,txtListSV;
-    private Button btnEdit, btnDelete, btnBack;
     private String id, maLop, tenLop, khoa, giangVien, namHoc;
+    private ActivityDetailClassBinding binding;
     private DatabaseHelper<Class> classDatabaseHelper;
     private BranchController branchController;
-
+    private boolean isVisible = false;
     private TeacherController teacherController;
     private ArrayList<Branch> branchList;
     private ArrayList<Teacher> teacherList;
@@ -47,35 +48,21 @@ public class DetailClassActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_class);
-        classDatabaseHelper = new DatabaseHelper<>("Classes");
-        branchController = new BranchController();
-        teacherController = new TeacherController();
-        initViews();
+        binding = ActivityDetailClassBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        initControllers();
         getIntentExtra();
-        branchList = new ArrayList<>();
         loadBranches();
-        teacherList = new ArrayList<>();
         loadTeachers();
         setupButtonListeners();
     }
 
-    private void initViews() {
-        txtMaLop = findViewById(R.id.txt_maLop_detail);
-        txtTenLop = findViewById(R.id.txt_tenLop_detail);
-        txtKhoa = findViewById(R.id.txt_khoa_detail);
-        txtGiangVien = findViewById(R.id.txt_giangVien_detail);
-        txtNamHoc = findViewById(R.id.txt_namHoc_detail);
-        txtListSV = findViewById(R.id.btn_danhSachSV);
-        btnEdit = findViewById(R.id.btn_edit);
-        btnDelete = findViewById(R.id.btn_delete);
-        btnBack = findViewById(R.id.btn_back);
-        txtListSV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(DetailClassActivity.this, ClassActivity.class));
-            }
-        });
+    private void initControllers() {
+        classDatabaseHelper = new DatabaseHelper<>("Classes");
+        branchController = new BranchController();
+        teacherController = new TeacherController();
+        branchList = new ArrayList<>();
+        teacherList = new ArrayList<>();
     }
 
     private void getIntentExtra() {
@@ -85,18 +72,36 @@ public class DetailClassActivity extends AppCompatActivity {
         khoa = (String) getIntent().getSerializableExtra("khoa");
         giangVien = (String) getIntent().getSerializableExtra("giangVien");
         namHoc = (String) getIntent().getSerializableExtra("namHoc");
-
-        txtMaLop.setText(maLop);
-        txtTenLop.setText(tenLop);
-        txtKhoa.setText(khoa);
-        txtGiangVien.setText(giangVien);
-        txtNamHoc.setText(namHoc);
+        binding.txtDetailMaLop.setText(maLop);
+        binding.txtDetailTenLop.setText(tenLop);
+        binding.txtDetailChuyenNganhLop.setText(khoa);
+        binding.txtDetailGiangVien.setText(giangVien);
+        binding.txtDetailNamHoc.setText(namHoc);
     }
 
     private void setupButtonListeners() {
-        btnBack.setOnClickListener(v -> finish());
-        btnEdit.setOnClickListener(v -> showEditDialog());
-        btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnEdit.setOnClickListener(v -> showEditDialog());
+        binding.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+        binding.txtDetailSinhVien.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(DetailClassActivity.this, ClassActivity.class));
+            }
+        });
+        binding.btnList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isVisible = !isVisible;
+                if (isVisible) {
+                    binding.btnEdit.setVisibility(View.VISIBLE);
+                    binding.btnDelete.setVisibility(View.VISIBLE);
+                } else {
+                    binding.btnEdit.setVisibility(View.GONE);
+                    binding.btnDelete.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void loadBranches() {
@@ -134,7 +139,6 @@ public class DetailClassActivity extends AppCompatActivity {
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_class);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.show();
         TextView txtTitle = dialog.findViewById(R.id.textView);
         EditText edtMaLopEdit = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLopEdit = dialog.findViewById(R.id.edt_tenLop_add);
@@ -217,11 +221,11 @@ public class DetailClassActivity extends AppCompatActivity {
                     giangVien = selectedTeacher.getTeacherID();
                     namHoc = updatedNamHoc;
 
-                    txtMaLop.setText(maLop);
-                    txtTenLop.setText(tenLop);
-                    txtKhoa.setText(khoa);
-                    txtGiangVien.setText(giangVien);
-                    txtNamHoc.setText(namHoc);
+                    binding.txtDetailMaLop.setText(maLop);
+                    binding.txtDetailTenLop.setText(tenLop);
+                    binding.txtDetailChuyenNganhLop.setText(khoa);
+                    binding.txtDetailGiangVien.setText(giangVien);
+                    binding.txtDetailNamHoc.setText(namHoc);
                 }
 
                 @Override
@@ -231,6 +235,7 @@ public class DetailClassActivity extends AppCompatActivity {
             });
         });
         btnCancel.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
 
     }
 

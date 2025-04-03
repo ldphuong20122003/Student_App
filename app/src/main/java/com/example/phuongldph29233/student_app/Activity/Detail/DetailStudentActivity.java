@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,15 +22,16 @@ import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
 import com.example.phuongldph29233.student_app.R;
+import com.example.phuongldph29233.student_app.databinding.ActivityDetailStudentBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class DetailStudentActivity extends AppCompatActivity {
-    private TextView txtMaSV, txtTenSV, txtNgaySinh, txtQueQuan, txtSdt, txtEmail, txtLopHoc, txtNgayNhapHoc, txtHeDaoTao, txtChuyenNganh;
-    private Button btnEdit, btnDelete, btnBack;
 
+    private ActivityDetailStudentBinding binding;
+    private boolean isVisible = false;
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Branch> branchDatabaseHelper;
@@ -40,7 +42,8 @@ public class DetailStudentActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail_student);
+        binding = ActivityDetailStudentBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         studentDatabaseHelper = new DatabaseHelper<>("Student");
         branchDatabaseHelper = new DatabaseHelper<>("Branch");
         classDatabaseHelper = new DatabaseHelper<>("Classes");
@@ -54,19 +57,19 @@ public class DetailStudentActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        txtMaSV = findViewById(R.id.txt_maSV_detail);
-        txtTenSV = findViewById(R.id.txt_tenSV_detail);
-        txtNgaySinh = findViewById(R.id.txt_ngaySinh_detail);
-        txtQueQuan = findViewById(R.id.txt_queQuan_detail);
-        txtSdt = findViewById(R.id.txt_sdt_detail);
-        txtEmail = findViewById(R.id.txt_email_detail);
-        txtLopHoc = findViewById(R.id.txt_lopHoc_detail);
-        txtNgayNhapHoc = findViewById(R.id.txt_ngayNhaphoc_detail);
-        txtHeDaoTao = findViewById(R.id.txt_heDaotao_detail);
-        txtChuyenNganh = findViewById(R.id.txt_chuyenNganh_detail);
-        btnEdit = findViewById(R.id.btn_edit);
-        btnDelete = findViewById(R.id.btn_delete);
-        btnBack = findViewById(R.id.btn_back);
+//        txtMaSV = findViewById(R.id.txt_maSV_detail);
+//        txtTenSV = findViewById(R.id.txt_tenSV_detail);
+//        txtNgaySinh = findViewById(R.id.txt_ngaySinh_detail);
+//        txtQueQuan = findViewById(R.id.txt_queQuan_detail);
+//        txtSdt = findViewById(R.id.txt_sdt_detail);
+//        txtEmail = findViewById(R.id.txt_email_detail);
+//        txtLopHoc = findViewById(R.id.txt_lopHoc_detail);
+//        txtNgayNhapHoc = findViewById(R.id.txt_ngayNhaphoc_detail);
+//        txtHeDaoTao = findViewById(R.id.txt_heDaotao_detail);
+//        txtChuyenNganh = findViewById(R.id.txt_chuyenNganh_detail);
+//        btnEdit = findViewById(R.id.btn_edit);
+//        btnDelete = findViewById(R.id.btn_delete);
+//        btnBack = findViewById(R.id.btn_back);
     }
 
     private void getIntentExtra() {
@@ -82,22 +85,36 @@ public class DetailStudentActivity extends AppCompatActivity {
         chuyenNganh = (String) getIntent().getSerializableExtra("studentBranch");
         heDaoTao = (String) getIntent().getSerializableExtra("studentTOT");
 
-        txtMaSV.setText(maSV);
-        txtTenSV.setText(tenSV);
-        txtNgaySinh.setText(ngaySinh);
-        txtQueQuan.setText(queQuan);
-        txtSdt.setText(sdt);
-        txtEmail.setText(email);
-        txtLopHoc.setText(lopHoc);
-        txtNgayNhapHoc.setText(ngayNhapHoc);
-        txtHeDaoTao.setText(heDaoTao);
-        txtChuyenNganh.setText(chuyenNganh);
+        binding.txtMaSVDetail.setText(maSV);
+        binding.txtTenSVDetail.setText(tenSV);
+        binding.txtNgaySinhDetail.setText(ngaySinh);
+        binding.txtQueQuanDetail.setText(queQuan);
+        binding.txtSdtDetail.setText(sdt);
+        binding.txtEmailDetail.setText(email);
+        binding.txtLopHocDetail.setText(lopHoc);
+        binding.txtNgayNhaphocDetail.setText(ngayNhapHoc);
+        binding.txtHeDaotaoDetail.setText(heDaoTao);
+        binding.txtChuyenNganhDetail.setText(chuyenNganh);
     }
 
     private void setupButtonListeners() {
-        btnBack.setOnClickListener(v -> finish());
-        btnEdit.setOnClickListener(v -> showEditDialog());
-        btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                isVisible = !isVisible;
+                if (isVisible) {
+                    binding.btnEdit.setVisibility(View.VISIBLE);
+                    binding.btnDelete.setVisibility(View.VISIBLE);
+                } else {
+                    binding.btnEdit.setVisibility(View.GONE);
+                    binding.btnDelete.setVisibility(View.GONE);
+                }
+
+            }
+        });
+        binding.btnEdit.setOnClickListener(v -> showEditDialog());
+        binding.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
     private void loadClass() {
@@ -249,16 +266,16 @@ public class DetailStudentActivity extends AppCompatActivity {
                     ngayNhapHoc = updatedNgayNhapHoc;
                     heDaoTao = updatedHeDaoTao;
                     chuyenNganh = selectedBranch.getBranchName();
-                    txtMaSV.setText(maSV);
-                    txtTenSV.setText(tenSV);
-                    txtNgaySinh.setText(ngaySinh);
-                    txtQueQuan.setText(queQuan);
-                    txtSdt.setText(sdt);
-                    txtEmail.setText(email);
-                    txtLopHoc.setText(lopHoc);
-                    txtNgayNhapHoc.setText(ngayNhapHoc);
-                    txtHeDaoTao.setText(heDaoTao);
-                    txtChuyenNganh.setText(chuyenNganh);
+                    binding.txtMaSVDetail.setText(maSV);
+                    binding.txtTenSVDetail.setText(tenSV);
+                    binding.txtNgaySinhDetail.setText(ngaySinh);
+                    binding.txtQueQuanDetail.setText(queQuan);
+                    binding.txtSdtDetail.setText(sdt);
+                    binding.txtEmailDetail.setText(email);
+                    binding.txtLopHocDetail.setText(lopHoc);
+                    binding.txtNgayNhaphocDetail.setText(ngayNhapHoc);
+                    binding.txtHeDaotaoDetail.setText(heDaoTao);
+                    binding.txtChuyenNganhDetail.setText(chuyenNganh);
                 }
 
                 @Override
