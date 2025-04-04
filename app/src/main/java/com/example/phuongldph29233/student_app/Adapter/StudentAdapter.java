@@ -46,9 +46,9 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
         public void bind(Student studentItem) {
             binding.txtStudentID.setText(studentItem.getStudentID());
             binding.txtStudentName.setText(studentItem.getStudentName());
-            binding.txtStudentEmail.setText(studentItem.getStudentEmail());
+            binding.txtStudentHomeTown.setText(studentItem.getStudentHomeTown());
             binding.txtStudentTOT.setText(studentItem.getStudentTOT());
-            binding.txtStudentPhone.setText(studentItem.getStudentPhone());
+            binding.txtStudentBranch.setText(studentItem.getStudentBranch().toString());
             binding.cardViewStudent.setOnClickListener(v -> {
                 if (actionListener != null) {
                     actionListener.onItemClick(studentItem);

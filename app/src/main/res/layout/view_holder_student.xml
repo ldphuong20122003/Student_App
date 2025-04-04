@@ -2,88 +2,163 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="220dp"
-    android:paddingBottom="12dp"> <!-- Nền xám nhẹ để CardView nổi bật hơn -->
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"> <!-- Nền xám nhẹ để CardView nổi bật hơn -->
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView_student"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="12dp"
+        android:paddingBottom="10dp"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/white"
-        android:paddingBottom="10dp"> <!-- Đảm bảo nền trắng -->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"> <!-- Đảm bảo nền trắng -->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center_vertical">
+            android:padding="16dp">
 
             <ImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/icon_student"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_student" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="16dp">
+                android:layout_marginLeft="16dp"
+                android:orientation="vertical">
 
-
-                <TextView
-                    android:id="@+id/txt_studentID"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mã SV"
-                    android:textStyle="bold"
-                    android:textSize="22sp"
-                    android:textColor="@color/red" />
-
-
-                <TextView
-                    android:id="@+id/txt_studentName"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tên SV"
-                    android:textSize="22sp"
-                    android:textColor="@color/blue"
-                    android:layout_marginTop="5dp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txt_studentEmail"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Mã sinh viên: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_studentID"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mã SV"
+                        android:textColor="@color/red"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txt_studentPhone"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Tên sinh viên: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_studentName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tên SV"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Số ĐT"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/txt_studentTOT"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Quê quán: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txtStudentHomeTown"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Quê quán"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Hệ đào tạo"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Chuyên ngành: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_studentBranch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chuyên ngành"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Hệ đào tạo: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_studentTOT"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hệ đào tạo"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp" />
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

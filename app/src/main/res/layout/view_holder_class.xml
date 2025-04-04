@@ -9,89 +9,155 @@
         android:id="@+id/cardView_class"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="12dp"
+        android:paddingBottom="10dp"
+        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="16dp"
         app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/white"
-        android:paddingBottom="10dp"> <!-- Đảm bảo nền trắng -->
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"> <!-- Đảm bảo nền trắng -->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center_vertical">
+            android:padding="12dp">
 
             <ImageView
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:src="@drawable/icon_subjects"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:src="@drawable/icon_subjects" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginLeft="16dp">
+                android:layout_marginLeft="16dp"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Mã lớp: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/txt_maLop"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mã lop:"
-                        android:textStyle="bold"
-                        android:textSize="22sp"
-                        android:textColor="@color/red" />
+                        android:text="Mã lớp:"
+                        android:textColor="@color/red"
+                        android:textSize="16dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="30dp"
-                        android:layout_height="match_parent"
-                        android:text="-"
-                        android:textStyle="bold"
-                        android:gravity="center" />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Tên lớp: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/txt_tenLop"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Tên Lop:"
-                        android:textSize="22sp"
                         android:textColor="@color/blue"
+                        android:textSize="16dp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/txt_Khoa"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Khoa:"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp" />
-                <TextView
-                    android:id="@+id/txt_Giangvien"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Khoa: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_Khoa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Khoa:"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Giang vien:"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp" />
-                <TextView
-                    android:id="@+id/txt_namhoc"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Giảng viên: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_Giangvien"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Giang vien:"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nam hoc:"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:text="Năm học: "
+                        android:textColor="@color/red"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/txt_namhoc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nam hoc:"
+                        android:textColor="@color/blue"
+                        android:textSize="16dp" />
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
