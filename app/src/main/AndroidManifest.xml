@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.BROADCAST_STICKY" />
     <application
         android:allowBackup="true"
@@ -18,8 +19,8 @@
             android:exported="false" />
         <activity
             android:name=".Activity.Detail.DetailStudentActivity"
-            android:launchMode="standard"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="standard" />
         <activity
             android:name=".Activity.Detail.DetailClassActivity"
             android:exported="false" />
@@ -28,16 +29,18 @@
             android:exported="false" />
         <activity
             android:name=".Activity.Screens.StudentListActivity"
+            android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:parentActivityName=".Activity.Detail.DetailClassActivity">
+            android:parentActivityName=".Activity.Detail.DetailClassActivity"
+            android:screenOrientation="user">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activity.Detail.DetailClassActivity" />
         </activity>
         <activity
             android:name=".Activity.Detail.DetailTeacherActivity"
-            android:launchMode="standard"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="standard" />
         <activity
             android:name=".Activity.Screens.SubjectActivity"
             android:exported="false" />

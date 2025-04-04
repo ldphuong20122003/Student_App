@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:alpha="0.7"
+        android:alpha="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,41 +25,48 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:gravity="center"
+        android:background="@drawable/gradient_blue"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/logo"/>
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="120dp"
+        android:src="@drawable/logo_new"/>
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Trường Đại học Giao thông VẬN TẢI"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/yellow"
+            android:textSize="18dp"/>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="12dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Trường Đại học Giao thông vận tải"
-                android:textAllCaps="true"
-                android:textColor="@color/blue"
-                android:textSize="16dp"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="University of Transport and Communication"
-                android:textAllCaps="true"
-                android:textColor="@color/yellow"
-                android:textSize="12sp"/>
-        </LinearLayout>
+            android:layout_marginTop="4dp"
+            android:text="University of Transport and Communication"
+            android:textAllCaps="true"
+            android:gravity="center"
+            android:textColor="@color/yellow"
+            android:textSize="16dp"/>
     </LinearLayout>
+</LinearLayout>
 
     <!-- GridLayout chứa các CardView (CĂN GIỮA MÀN HÌNH) -->
     <GridLayout

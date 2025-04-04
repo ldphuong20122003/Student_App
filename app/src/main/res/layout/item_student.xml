@@ -1,65 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical"
-    android:background="?attr/selectableItemBackground">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardBackgroundColor="@android:color/transparent">
 
-    <CheckBox
-        android:id="@+id/cbStudent"
-        android:layout_width="wrap_content"
+    <!-- Container with border -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"/>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        app:strokeColor="@color/outline"
+        app:strokeWidth="1dp"
+        app:cardBackgroundColor="@color/surfaceContainer"
+        app:cardCornerRadius="12dp"
+        app:rippleColor="@color/primary_20pct">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:padding="16dp"
             android:gravity="center_vertical">
 
-            <TextView
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/cbStudent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mã SV: "
-                android:textSize="14sp"
-                android:textStyle="bold"/>
+                android:layout_marginEnd="16dp"
+                app:buttonTint="@color/primary"
+                android:focusable="false"/>
 
-            <TextView
-                android:id="@+id/tvStudentCode"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"/>
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="MÃ SINH VIÊN"
+                        android:textSize="12sp"
+                        android:textAllCaps="true"
+                        android:textColor="@color/outline"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03"/>
+
+                    <TextView
+                        android:id="@+id/tvStudentCode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/onSurface"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        tools:text="21112345"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TÊN SINH VIÊN"
+                        android:textSize="12sp"
+                        android:textAllCaps="true"
+                        android:textColor="@color/outline"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.03"/>
+
+                    <TextView
+                        android:id="@+id/tvStudentName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:textSize="16sp"
+                        android:textColor="@color/onSurface"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        tools:text="Nguyễn Văn A"/>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tên SV: "
-                android:textSize="14sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:id="@+id/tvStudentName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/black"/>
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>

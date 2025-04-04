@@ -1,5 +1,6 @@
 package com.example.phuongldph29233.student_app.Activity.Detail;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -46,6 +47,8 @@ public class StudentListActivity extends AppCompatActivity {
         studentDatabaseHelper = new DatabaseHelper<>("Students");
         loadStudents();
     }
+
+
 
     private void loadStudents() {
         studentDatabaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {

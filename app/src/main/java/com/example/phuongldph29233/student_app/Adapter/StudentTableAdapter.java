@@ -18,7 +18,15 @@ import java.util.List;
 public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapter.StudentViewHolder> {
     private Context context;
     private List<Student> studentList;
+    private OnItemLongClickListener longClickListener;
 
+    public interface OnItemLongClickListener {
+        boolean onItemLongClick(int position);
+    }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        this.longClickListener = listener;
+    }
     public StudentTableAdapter(Context context, List<Student> studentList) {
         this.context = context;
         this.studentList = studentList;
@@ -42,9 +50,19 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
         if (holder.tvStt != null) {
             holder.tvStt.setText(String.valueOf(position + 1));
         }
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (longClickListener != null) {
+                return longClickListener.onItemLongClick(position);
+            }
+            return false;
+        });
 //        holder.tvKhoa.setText(student.getKhoa() != null ? student.getKhoa().getTenKhoa() : "");
     }
 
+    public Student getStudentAtPosition(int position) {
+        return studentList.get(position);
+    }
     @Override
     public int getItemCount() {
         return studentList.size();
