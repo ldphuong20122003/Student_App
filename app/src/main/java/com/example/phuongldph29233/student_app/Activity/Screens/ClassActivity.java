@@ -183,6 +183,8 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void loadDataClass() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.txtNoData.setVisibility(View.GONE);
         databaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -195,10 +197,14 @@ public class ClassActivity extends AppCompatActivity {
                     classAdapter.notifyDataSetChanged();
 
                     if (classArrayList.isEmpty()) {
+                        binding.txtNoData.setVisibility(View.VISIBLE);
                         binding.recyclerView.setVisibility(View.GONE);
                     } else {
                         binding.recyclerView.setVisibility(View.VISIBLE);
+                        binding.txtNoData.setVisibility(View.GONE);
                     }
+
+                    binding.progressBar.setVisibility(View.GONE);
                 });
             }
 

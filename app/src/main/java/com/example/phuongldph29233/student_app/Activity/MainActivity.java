@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.phuongldph29233.student_app.Activity.Screens.BranchActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
+import com.example.phuongldph29233.student_app.Activity.Screens.MarkActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.StudentActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.SubjectActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.TeacherActivity;

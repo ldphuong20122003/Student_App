@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="380dp"
     android:layout_height="match_parent"
     android:layout_margin="10dp"
@@ -26,7 +27,6 @@
         android:layout_marginTop="10dp"
         android:layout_marginBottom="16dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/btn_add_sv"
         app:layout_constraintTop_toBottomOf="@id/txt_title_subject">
 
         <LinearLayout
@@ -199,22 +199,23 @@
                 android:text="Lớp học:"
                 android:textSize="16dp"
                 android:textStyle="bold" />
+
             <Spinner
                 android:id="@+id/edt_lopHoc_add"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
                 android:layout_weight="2"
                 android:paddingStart="10dp" />
-<!--            <EditText-->
-<!--                android:id="@+id/edt_lopHoc_add"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="40dp"-->
-<!--                android:layout_weight="2"-->
-<!--                android:ellipsize="none"-->
-<!--                android:inputType="textMultiLine"-->
-<!--                android:maxLines="3"-->
-<!--                android:paddingStart="10dp"-->
-<!--                android:singleLine="false" />-->
+            <!--            <EditText-->
+            <!--                android:id="@+id/edt_lopHoc_add"-->
+            <!--                android:layout_width="0dp"-->
+            <!--                android:layout_height="40dp"-->
+            <!--                android:layout_weight="2"-->
+            <!--                android:ellipsize="none"-->
+            <!--                android:inputType="textMultiLine"-->
+            <!--                android:maxLines="3"-->
+            <!--                android:paddingStart="10dp"-->
+            <!--                android:singleLine="false" />-->
         </LinearLayout>
 
         <LinearLayout
@@ -292,28 +293,30 @@
         </LinearLayout>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_add_sv"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/blue"
-        android:text="Lưu"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_huy_sv"
-        app:layout_constraintHorizontal_chainStyle="packed" />
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/form_layout"
+        android:layout_marginTop="10dp">
 
-    <Button
-        android:id="@+id/btn_huy_sv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/red"
-        android:text="Hủy"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/btn_add_sv" />
+        <Button
+            android:id="@+id/btn_add_sv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/blue"
+            android:text="Lưu"
+            android:textColor="@color/white"
+            app:layout_constraintHorizontal_chainStyle="packed" />
 
+        <Button
+            android:id="@+id/btn_huy_sv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/red"
+            android:text="Hủy"
+            android:textColor="@color/white" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
