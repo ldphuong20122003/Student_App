@@ -27,10 +27,12 @@ import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.StudentListActivity;
 import com.example.phuongldph29233.student_app.Adapter.StudentSelectionAdapter;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
+import com.example.phuongldph29233.student_app.Controller.SubjectController;
 import com.example.phuongldph29233.student_app.Controller.TeacherController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
+import com.example.phuongldph29233.student_app.Domain.Subject;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
@@ -44,17 +46,18 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DetailClassActivity extends AppCompatActivity {
-    private TextView txtMaLop, txtTenLop, txtKhoa, txtGiangVien, txtNamHoc,txtListSV;
+    private TextView txtMaLop, txtTenLop, txtKhoa,txtMonHoc, txtGiangVien, txtNamHoc,txtListSV;
     private Button btnEdit, btnDelete, btnBack;
-    private String id, maLop, tenLop, khoa, giangVien, namHoc;
+    private String id, maLop, tenLop, khoa,monHoc, giangVien, namHoc;
     private DatabaseHelper<Class> classDatabaseHelper;
     private BranchController branchController;
     private List<Student> danhSachSinhVien;
     private List<String> danhSachSinhVienIds;
     private DatabaseHelper<Student> studentDatabaseHelper;
-
+    private SubjectController subjectController;
     private TeacherController teacherController;
     private ArrayList<Branch> branchList;
+    private ArrayList<Subject> subjectList;
     private ArrayList<Teacher> teacherList;
     private StudentSelectionAdapter studentAdapter;
 
@@ -64,11 +67,13 @@ public class DetailClassActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_class);
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         studentDatabaseHelper = new DatabaseHelper<>("Student");
-
+        subjectController = new SubjectController();
         branchController = new BranchController();
         teacherController = new TeacherController();
         initViews();
         getIntentExtra();
+        subjectList = new ArrayList<>();
+        loadSubjects();
         branchList = new ArrayList<>();
         loadBranches();
         teacherList = new ArrayList<>();
@@ -80,6 +85,7 @@ public class DetailClassActivity extends AppCompatActivity {
         txtMaLop = findViewById(R.id.txt_maLop_detail);
         txtTenLop = findViewById(R.id.txt_tenLop_detail);
         txtKhoa = findViewById(R.id.txt_khoa_detail);
+        txtMonHoc = findViewById(R.id.txt_monhoc_detail);
         txtGiangVien = findViewById(R.id.txt_giangVien_detail);
         txtNamHoc = findViewById(R.id.txt_namHoc_detail);
         txtListSV = findViewById(R.id.btn_danhSachSV);
@@ -131,6 +137,7 @@ public class DetailClassActivity extends AppCompatActivity {
         maLop = (String) getIntent().getSerializableExtra("maLop");
         tenLop = (String) getIntent().getSerializableExtra("tenLop");
         khoa = (String) getIntent().getSerializableExtra("khoa");
+        monHoc = (String) getIntent().getSerializableExtra("monHoc");
         giangVien = (String) getIntent().getSerializableExtra("giangVien");
         namHoc = (String) getIntent().getSerializableExtra("namHoc");
         danhSachSinhVien = (List<Student>) getIntent().getSerializableExtra("danhSachSinhVien");
@@ -141,6 +148,7 @@ public class DetailClassActivity extends AppCompatActivity {
         txtMaLop.setText(maLop);
         txtTenLop.setText(tenLop);
         txtKhoa.setText(khoa);
+        txtMonHoc.setText(monHoc);
         txtGiangVien.setText(giangVien);
         txtNamHoc.setText(namHoc);
     }
@@ -149,6 +157,22 @@ public class DetailClassActivity extends AppCompatActivity {
         btnBack.setOnClickListener(v -> finish());
         btnEdit.setOnClickListener(v -> showEditDialog());
         btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+    }
+
+    private void loadSubjects(){
+        subjectController.getSubject(new DatabaseHelper.DatabaseCallback<Subject>() {
+            @Override
+            public void onSuccess(List<Subject> itemList) {
+                subjectList.clear();
+                subjectList.addAll(itemList);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(DetailClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     private void loadBranches() {
@@ -197,6 +221,7 @@ public class DetailClassActivity extends AppCompatActivity {
         EditText edtMaLopEdit = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLopEdit = dialog.findViewById(R.id.edt_tenLop_add);
         Spinner spnKhoaEdit = dialog.findViewById(R.id.edt_khoa_add);
+        Spinner spnMonHocEdit = dialog.findViewById(R.id.edt_Monhoc_add);
         Spinner spnGiangVienEdit = dialog.findViewById(R.id.edt_giangVien_add);
         EditText edtNamHocEdit = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnUpdate = dialog.findViewById(R.id.btn_add_lop);
@@ -220,6 +245,20 @@ public class DetailClassActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             for (int i = 0; i < branchList.size(); i++) {
                 if (branchList.get(i).getBranchName().equals(khoa)) {
+                    spnKhoaEdit.setSelection(i);
+                    break;
+                }
+            }
+        }, 100);
+
+        ArrayAdapter<Subject> subjectAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, subjectList);
+        subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnMonHocEdit.setAdapter(subjectAdapter);
+
+        new Handler().postDelayed(() -> {
+            for (int i = 0; i < subjectList.size(); i++) {
+                if (subjectList.get(i).getSubjectName().equals(monHoc)) {
                     spnKhoaEdit.setSelection(i);
                     break;
                 }
@@ -258,6 +297,7 @@ public class DetailClassActivity extends AppCompatActivity {
             String updatedMaLop = edtMaLopEdit.getText().toString();
             String updatedTenLop = edtTenLopEdit.getText().toString();
             Branch selectedBranch = (Branch) spnKhoaEdit.getSelectedItem();
+            Subject selectedSubject = (Subject) spnMonHocEdit.getSelectedItem();
             Teacher selectedTeacher = (Teacher) spnGiangVienEdit.getSelectedItem();
             String updatedNamHoc = edtNamHocEdit.getText().toString();
             List<Student> selectedStudents = studentAdapter.getSelectedStudents();
@@ -271,7 +311,7 @@ public class DetailClassActivity extends AppCompatActivity {
             for (Student student : selectedStudents) {
                 selectedStudentIds.add(student.getId());
             }
-            updateClassAndStudents(updatedMaLop, updatedTenLop, selectedBranch, selectedTeacher,
+            updateClassAndStudents(updatedMaLop, updatedTenLop, selectedBranch,selectedSubject, selectedTeacher,
                     updatedNamHoc, selectedStudents, selectedStudentIds, dialog);
         });
 
@@ -279,7 +319,7 @@ public class DetailClassActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch,
+    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch, Subject selectedSubject,
                                         Teacher selectedTeacher, String updatedNamHoc,
                                         List<Student> selectedStudents, List<String> selectedStudentIds,
                                         Dialog dialog) {
@@ -287,6 +327,7 @@ public class DetailClassActivity extends AppCompatActivity {
                 id,
                 updatedMaLop,
                 updatedTenLop,
+                null,
                 null,
                 null,
                 updatedNamHoc,
@@ -298,6 +339,7 @@ public class DetailClassActivity extends AppCompatActivity {
                 updatedMaLop,
                 updatedTenLop,
                 selectedBranch,
+                selectedSubject,
                 selectedTeacher,
                 updatedNamHoc,
                 selectedStudents
@@ -367,6 +409,7 @@ public class DetailClassActivity extends AppCompatActivity {
                             maLop = updatedMaLop;
                             tenLop = updatedTenLop;
                             khoa = selectedBranch.getBranchName();
+                            monHoc = selectedSubject.getSubjectName();
                             giangVien = selectedTeacher.getTeacherName();
                             namHoc = updatedNamHoc;
                             danhSachSinhVienIds = selectedStudentIds;
@@ -374,6 +417,7 @@ public class DetailClassActivity extends AppCompatActivity {
                             txtMaLop.setText(maLop);
                             txtTenLop.setText(tenLop);
                             txtKhoa.setText(khoa);
+                            txtMonHoc.setText(monHoc);
                             txtGiangVien.setText(giangVien);
                             txtNamHoc.setText(namHoc);
                             sendRefreshBroadcast();

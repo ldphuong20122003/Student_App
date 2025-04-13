@@ -64,7 +64,7 @@ public class StudentActivity extends AppCompatActivity {
     private ArrayList<Student> originalArrayList;
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Class> classList;
-    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null, null, "");
+    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null,null, null, "");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

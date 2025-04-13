@@ -1,6 +1,8 @@
 package com.example.phuongldph29233.student_app.Domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Student implements Serializable {
     private String id;
@@ -16,7 +18,22 @@ public class Student implements Serializable {
     private Branch studentBranch;
     private String studentTOT;
 
+    private List<CourseResult> courseResults;
+
     public Student() {
+        courseResults = new ArrayList<>();
+    }
+
+    public void addCourseResult(CourseResult result) {
+        courseResults.add(result);
+    }
+    public CourseResult getCourseResult(String courseId) {
+        for (CourseResult result : courseResults) {
+            if (result.getSubjectId().equals(courseId)) {
+                return result;
+            }
+        }
+        return null;
     }
 
     public Student(String id, String studentID, String studentName, String studentBirthday, String studentHomeTown, String studentPhone, String studentEmail, Class studentClass, String studentDateJoin, Branch studentBranch, String studentTOT) {
@@ -101,6 +118,7 @@ public class Student implements Serializable {
                     studentClass.getMaLop(),
                     studentClass.getTenLop(),
                     studentClass.getKhoa(),
+                    studentClass.getMonHoc(),
                     studentClass.getGiangVien(),
                     studentClass.getNamHoc(),
                     studentClass.getDanhSachSinhVien()

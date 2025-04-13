@@ -57,7 +57,7 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             }
             return false;
         });
-//        holder.tvKhoa.setText(student.getKhoa() != null ? student.getKhoa().getTenKhoa() : "");
+        holder.tvKhoa.setText(student.getStudentBranch() != null ? student.getStudentBranch().getBranchName() : "");
     }
 
     public Student getStudentAtPosition(int position) {
@@ -85,7 +85,7 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             tvTenSV = itemView.findViewById(R.id.tvTenSV);
             tvNgaySinh = itemView.findViewById(R.id.tvNgaySinh);
             tvQueQuan = itemView.findViewById(R.id.tvQueQuan);
-//            tvKhoa = itemView.findViewById(R.id.tvKhoa);
+            tvKhoa = itemView.findViewById(R.id.tvKhoa);
         }
     }
 }
