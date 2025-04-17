@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.phuongldph29233.student_app.Activity.Screens.StudentActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.StudentClassesActivity;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
@@ -89,19 +90,22 @@ public class DetailStudentActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     studentClasses = enrolledClasses;
                     if (enrolledClasses.isEmpty()) {
-                        txtLopHoc.setText("Chưa có lớp học");
+                        // Chỉ hiển thị "Chưa có lớp học" nếu classObj cũng null
+                        if (classObj == null) {
+                            txtLopHoc.setText("Chưa có lớp học");
+                        }
                     } else if (enrolledClasses.size() == 1) {
                         txtLopHoc.setText(enrolledClasses.get(0).getTenLop());
                     } else {
+                        // Xử lý khi có nhiều lớp
+                        txtLopHoc.setText(enrolledClasses.get(0).getTenLop() + " (+" + (enrolledClasses.size()-1) + ")");
                     }
                 });
             }
 
             @Override
             public void onFailure(String error) {
-                Log.e("ERROR", "Lỗi khi tải lớp: " + error);
                 runOnUiThread(() -> {
-                    txtLopHoc.setText("Lỗi tải dữ liệu");
                     Toast.makeText(DetailStudentActivity.this, error, Toast.LENGTH_LONG).show();
                 });
             }
@@ -167,19 +171,28 @@ public class DetailStudentActivity extends AppCompatActivity {
         sdt = (String) getIntent().getSerializableExtra("studentPhone");
         email = (String) getIntent().getSerializableExtra("studentEmail");
         classObj = getIntent().getSerializableExtra("studentClass");
+
         if (classObj instanceof Class) {
-            Class studentClass = (Class) classObj;
-            lopHoc = studentClass.getTenLop() != null ? studentClass.getTenLop() : "Chưa có lớp học";
-        } else if (classObj instanceof String) {
-            lopHoc = (String) classObj;
+            Class c = (Class) classObj;
+            if (c.getId() != null && c.getTenLop() != null) {
+                lopHoc = c.getTenLop();
+                Log.d("DetailStudent", "Valid Class: " + c.getTenLop());
+            } else {
+                lopHoc = "Lớp không hợp lệ";
+                Log.e("DetailStudent", "Class missing required fields");
+            }
         } else {
             lopHoc = "Chưa có lớp học";
+            Log.e("DetailStudent", "Invalid Class type: " +
+                    (classObj != null ? classObj.getClass().getName() : "null"));
         }
+
 
         ngayNhapHoc = (String) getIntent().getSerializableExtra("studentDateJoin");
         chuyenNganh = (String) getIntent().getSerializableExtra("studentBranch");
         heDaoTao = (String) getIntent().getSerializableExtra("studentTOT");
 
+        // Hiển thị dữ liệu
         txtMaSV.setText(maSV);
         txtTenSV.setText(tenSV);
         txtNgaySinh.setText(ngaySinh);
@@ -190,6 +203,9 @@ public class DetailStudentActivity extends AppCompatActivity {
         txtNgayNhapHoc.setText(ngayNhapHoc);
         txtHeDaoTao.setText(heDaoTao);
         txtChuyenNganh.setText(chuyenNganh);
+
+        // Luôn fetch lớp học từ database để cập nhật
+        fetchStudentClassFromDatabase();
     }
 
     private void setupButtonListeners() {
@@ -199,28 +215,16 @@ public class DetailStudentActivity extends AppCompatActivity {
     }
 
     private void loadClass() {
-        DatabaseHelper<Class> studentClassHelper = new DatabaseHelper<>("Classes");
-        studentClassHelper.getStudentClasses(id, Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
+        classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
             public void onSuccess(List<Class> itemList) {
                 classList.clear();
                 classList.addAll(itemList);
-                if (!studentClasses.isEmpty()) {
-                    txtLopHoc.setText(
-                            studentClasses.size() == 1
-                                    ? studentClasses.get(0).getTenLop()
-                                    : studentClasses.size() + " lớp (Nhấn để xem chi tiết)"
-                    );
-                }else{
-                    txtLopHoc.setText("Chưa có lớp học");
-                }
             }
 
             @Override
             public void onFailure(String error) {
-                Toast.makeText(DetailStudentActivity.this,
-                        "Lỗi tải danh sách lớp: " + error,
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailStudentActivity.this, "Lỗi tải : " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }

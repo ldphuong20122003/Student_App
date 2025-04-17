@@ -1,6 +1,8 @@
 package com.example.phuongldph29233.student_app.Domain;
 
-public class Subject {
+import java.io.Serializable;
+
+public class Subject implements Serializable {
     private String id;
     private String subjectID;
     private String subjectName;

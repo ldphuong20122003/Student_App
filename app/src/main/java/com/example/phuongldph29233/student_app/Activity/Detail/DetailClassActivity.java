@@ -48,7 +48,7 @@ import java.util.Set;
 
 public class DetailClassActivity extends AppCompatActivity {
     private ActivityDetailClassBinding binding;
-    private String id, maLop, tenLop, khoa,monHoc, giangVien, namHoc;
+    private String id, maLop, tenLop, khoa,monHoc, giangVien, namHoc,subjectId;
     private DatabaseHelper<Class> classDatabaseHelper;
     private BranchController branchController;
     private List<Student> danhSachSinhVien;
@@ -108,6 +108,8 @@ public class DetailClassActivity extends AppCompatActivity {
                         Intent intent = new Intent(DetailClassActivity.this, StudentListActivity.class);
                         intent.putExtra("maLop", maLop);
                         intent.putExtra("tenLop", tenLop);
+                        intent.putExtra("subjectId", subjectId);
+                        intent.putExtra("monHoc", monHoc);
                         intent.putExtra("danhSachSinhVien", new ArrayList<>(filteredStudents));
                         startActivity(intent);
                     });
@@ -128,6 +130,7 @@ public class DetailClassActivity extends AppCompatActivity {
         id = (String) getIntent().getSerializableExtra("id");
         maLop = (String) getIntent().getSerializableExtra("maLop");
         tenLop = (String) getIntent().getSerializableExtra("tenLop");
+        subjectId = getIntent().getStringExtra("subjectId");
         khoa = (String) getIntent().getSerializableExtra("khoa");
         monHoc = (String) getIntent().getSerializableExtra("monHoc");
         giangVien = (String) getIntent().getSerializableExtra("giangVien");

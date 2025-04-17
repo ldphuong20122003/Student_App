@@ -41,8 +41,8 @@ public class StudentListActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewStudents);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new StudentTableAdapter(this, new ArrayList<>());
-        recyclerView.setAdapter(adapter);
+//        adapter = new StudentTableAdapter(this, new ArrayList<>());
+//        recyclerView.setAdapter(adapter);
 
         studentDatabaseHelper = new DatabaseHelper<>("Students");
         loadStudents();

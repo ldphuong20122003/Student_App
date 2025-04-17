@@ -1,7 +1,11 @@
 package com.example.phuongldph29233.student_app.Activity.Screens;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,9 +35,10 @@ public class StudentListActivity extends AppCompatActivity {
     private StudentTableAdapter adapter;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Score> scoreDatabaseHelper;
-    private String maLop, tenLop, subjectId;
+    private String maLop, tenLop, subjectId, monHoc;
     private List<Student> students;
     private Map<String, Score> studentScores;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,15 +48,20 @@ public class StudentListActivity extends AppCompatActivity {
         maLop = getIntent().getStringExtra("maLop");
         tenLop = getIntent().getStringExtra("tenLop");
         subjectId = getIntent().getStringExtra("subjectId");
-        List<Student> students = (List<Student>) getIntent().getSerializableExtra("danhSachSinhVien");
-        if (students == null || students.isEmpty()) {
+        monHoc = getIntent().getStringExtra("monHoc");
+        students = (List<Student>) getIntent().getSerializableExtra("danhSachSinhVien");
+
+        if (students == null || students.isEmpty() || maLop == null || subjectId == null) {
+            Log.e("StudentListActivity", "Invalid input: students=" + students + ", maLop=" + maLop + ", subjectId=" + subjectId);
+            Toast.makeText(this, "Dữ liệu không hợp lệ", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
+
         studentScores = new HashMap<>();
         recyclerView = findViewById(R.id.recyclerViewStudents);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new StudentTableAdapter(this, students);
+        adapter = new StudentTableAdapter(this, students, studentScores);
         adapter.setOnItemLongClickListener(position -> {
             Student student = adapter.getStudentAtPosition(position);
             if (student != null) {
@@ -67,29 +77,70 @@ public class StudentListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         studentDatabaseHelper = new DatabaseHelper<>("Students");
         scoreDatabaseHelper = new DatabaseHelper<>("Scores");
+
         loadStudentScores();
     }
 
     private void loadStudentScores() {
+        Log.d("StudentListActivity", "Starting loadStudentScores, student count: " + students.size());
+        Log.d("StudentListActivity", "maLop: " + maLop + ", subjectId: " + subjectId);
+
+        if (students == null || students.isEmpty()) {
+            Log.e("StudentListActivity", "Students list is null or empty");
+            return;
+        }
+
+        if (!isNetworkAvailable()) {
+            Log.e("StudentListActivity", "No network connection");
+            Toast.makeText(this, "Không có kết nối mạng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int[] loadedCount = {0};
         for (Student student : students) {
+            if (student == null || student.getId() == null) {
+                Log.e("StudentListActivity", "Invalid student or student ID is null");
+                loadedCount[0]++;
+                if (loadedCount[0] == students.size()) {
+                    adapter.notifyDataSetChanged();
+                }
+                continue;
+            }
+
+            Log.d("StudentListActivity", "Loading scores for student: " + student.getId());
             scoreDatabaseHelper.getStudentScores(
                     student.getId(), maLop, subjectId, Score.class,
                     new DatabaseHelper.DatabaseGetCallback<Score>() {
                         @Override
                         public void onSuccess(Score score) {
+                            Log.d("StudentListActivity", "Score loaded for student: " + student.getId());
                             studentScores.put(student.getId(), score);
-                            adapter.notifyDataSetChanged();
+                            loadedCount[0]++;
+                            if (loadedCount[0] == students.size()) {
+                                adapter.notifyDataSetChanged();
+                            }
                         }
 
                         @Override
                         public void onFailure(String error) {
+                            Log.e("StudentListActivity", "Failed to load score for student: " + student.getId() + ", error: " + error);
                             studentScores.put(student.getId(), null);
-                            adapter.notifyDataSetChanged();
+                            loadedCount[0]++;
+                            if (loadedCount[0] == students.size()) {
+                                adapter.notifyDataSetChanged();
+                            }
                         }
                     });
         }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void showPopupMenu(int position, Student student) {
@@ -126,7 +177,6 @@ public class StudentListActivity extends AppCompatActivity {
         Button btnCancel = dialogView.findViewById(R.id.btnCancel);
         Button btnSave = dialogView.findViewById(R.id.btnSave);
 
-        // Hiển thị điểm hiện tại (nếu có)
         Score existingScore = studentScores.get(student.getId());
         if (existingScore != null) {
             etProgressScore.setText(String.format("%.1f", existingScore.getProgressScore()));
@@ -146,9 +196,8 @@ public class StudentListActivity extends AppCompatActivity {
             try {
                 double progressScore = Double.parseDouble(etProgressScore.getText().toString());
                 double examScore = Double.parseDouble(etExamScore.getText().toString());
-                double finalScore = Double.parseDouble(etFinalScore.getText().toString());
+                double finalScore = 0.4 * progressScore + 0.6 * examScore;
 
-                // Kiểm tra điểm hợp lệ
                 if (progressScore < 0 || progressScore > 10 ||
                         examScore < 0 || examScore > 10 ||
                         finalScore < 0 || finalScore > 10) {
@@ -156,7 +205,6 @@ public class StudentListActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Tạo hoặc cập nhật điểm
                 Score score = new Score();
                 score.setStudentId(student.getId());
                 score.setClassId(maLop);
@@ -166,7 +214,6 @@ public class StudentListActivity extends AppCompatActivity {
                 score.setFinalScore(finalScore);
 
                 if (existingScore != null) {
-                    // Cập nhật điểm hiện có
                     score.setId(existingScore.getId());
                     scoreDatabaseHelper.update(score.getId(), score, new DatabaseHelper.DatabaseActionCallback() {
                         @Override
@@ -185,7 +232,6 @@ public class StudentListActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    // Thêm điểm mới
                     scoreDatabaseHelper.add(score, new DatabaseHelper.DatabaseActionCallback() {
                         @Override
                         public void onSuccess() {

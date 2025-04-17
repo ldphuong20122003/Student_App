@@ -195,10 +195,9 @@ public class StudentActivity extends AppCompatActivity {
         classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
             public void onSuccess(List<Class> itemList) {
-                classList.add(EMPTY_CLASS);
+                classList.clear();
                 classList.addAll(itemList);
                 classAdapter.notifyDataSetChanged();
-                loadDataStudent();
             }
 
             @Override

@@ -62,6 +62,7 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
                     intent.putExtra("maLop", classItem.getMaLop());
                     intent.putExtra("tenLop", classItem.getTenLop());
                     intent.putExtra("khoa", classItem.getKhoa().toString());
+                    intent.putExtra("subjectId", classItem.getMonHoc() != null ? classItem.getMonHoc().getSubjectID() : "");
                     intent.putExtra("monHoc", classItem.getMonHoc().toString());
                     intent.putExtra("giangVien", classItem.getGiangVien().toString());
                     intent.putExtra("namHoc", classItem.getNamHoc());
