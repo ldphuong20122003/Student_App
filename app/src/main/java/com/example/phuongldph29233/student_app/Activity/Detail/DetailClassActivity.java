@@ -27,10 +27,12 @@ import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.StudentListActivity;
 import com.example.phuongldph29233.student_app.Adapter.StudentSelectionAdapter;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
+import com.example.phuongldph29233.student_app.Controller.SubjectController;
 import com.example.phuongldph29233.student_app.Controller.TeacherController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
+import com.example.phuongldph29233.student_app.Domain.Subject;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
@@ -46,7 +48,7 @@ import java.util.Set;
 
 public class DetailClassActivity extends AppCompatActivity {
     private ActivityDetailClassBinding binding;
-    private String id, maLop, tenLop, khoa, giangVien, namHoc;
+    private String id, maLop, tenLop, khoa,monHoc, giangVien, namHoc;
     private DatabaseHelper<Class> classDatabaseHelper;
     private BranchController branchController;
     private List<Student> danhSachSinhVien;
@@ -57,7 +59,8 @@ public class DetailClassActivity extends AppCompatActivity {
     private ArrayList<Branch> branchList;
     private ArrayList<Teacher> teacherList;
     private StudentSelectionAdapter studentAdapter;
-
+    private SubjectController subjectController;
+    private ArrayList<Subject> subjectList;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,11 +68,13 @@ public class DetailClassActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         studentDatabaseHelper = new DatabaseHelper<>("Student");
-
+        subjectController = new SubjectController();
         branchController = new BranchController();
         teacherController = new TeacherController();
         initViews();
         getIntentExtra();
+        subjectList = new ArrayList<>();
+        loadSubjects();
         branchList = new ArrayList<>();
         loadBranches();
         teacherList = new ArrayList<>();
@@ -124,6 +129,7 @@ public class DetailClassActivity extends AppCompatActivity {
         maLop = (String) getIntent().getSerializableExtra("maLop");
         tenLop = (String) getIntent().getSerializableExtra("tenLop");
         khoa = (String) getIntent().getSerializableExtra("khoa");
+        monHoc = (String) getIntent().getSerializableExtra("monHoc");
         giangVien = (String) getIntent().getSerializableExtra("giangVien");
         namHoc = (String) getIntent().getSerializableExtra("namHoc");
         danhSachSinhVien = (List<Student>) getIntent().getSerializableExtra("danhSachSinhVien");
@@ -134,6 +140,7 @@ public class DetailClassActivity extends AppCompatActivity {
         binding.txtMaLopDetail.setText(maLop);
         binding.txtTenLopDetail.setText(tenLop);
         binding.txtKhoaDetail.setText(khoa);
+        binding.txtMonhocDetail.setText(monHoc);
         binding.txtGiangVienDetail.setText(giangVien);
         binding.txtNamHocDetail.setText(namHoc);
     }
@@ -152,6 +159,22 @@ public class DetailClassActivity extends AppCompatActivity {
         });
         binding.btnEdit.setOnClickListener(v -> showEditDialog());
         binding.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+    }
+
+    private void loadSubjects(){
+        subjectController.getSubject(new DatabaseHelper.DatabaseCallback<Subject>() {
+            @Override
+            public void onSuccess(List<Subject> itemList) {
+                subjectList.clear();
+                subjectList.addAll(itemList);
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(DetailClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     private void loadBranches() {
@@ -200,6 +223,7 @@ public class DetailClassActivity extends AppCompatActivity {
         EditText edtMaLopEdit = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLopEdit = dialog.findViewById(R.id.edt_tenLop_add);
         Spinner spnKhoaEdit = dialog.findViewById(R.id.edt_khoa_add);
+        Spinner spnMonHocEdit = dialog.findViewById(R.id.edt_Monhoc_add);
         Spinner spnGiangVienEdit = dialog.findViewById(R.id.edt_giangVien_add);
         EditText edtNamHocEdit = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnUpdate = dialog.findViewById(R.id.btn_add_lop);
@@ -223,6 +247,20 @@ public class DetailClassActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             for (int i = 0; i < branchList.size(); i++) {
                 if (branchList.get(i).getBranchName().equals(khoa)) {
+                    spnKhoaEdit.setSelection(i);
+                    break;
+                }
+            }
+        }, 100);
+
+        ArrayAdapter<Subject> subjectAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, subjectList);
+        subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spnMonHocEdit.setAdapter(subjectAdapter);
+
+        new Handler().postDelayed(() -> {
+            for (int i = 0; i < subjectList.size(); i++) {
+                if (subjectList.get(i).getSubjectName().equals(monHoc)) {
                     spnKhoaEdit.setSelection(i);
                     break;
                 }
@@ -261,6 +299,7 @@ public class DetailClassActivity extends AppCompatActivity {
             String updatedMaLop = edtMaLopEdit.getText().toString();
             String updatedTenLop = edtTenLopEdit.getText().toString();
             Branch selectedBranch = (Branch) spnKhoaEdit.getSelectedItem();
+            Subject selectedSubject = (Subject) spnMonHocEdit.getSelectedItem();
             Teacher selectedTeacher = (Teacher) spnGiangVienEdit.getSelectedItem();
             String updatedNamHoc = edtNamHocEdit.getText().toString();
             List<Student> selectedStudents = studentAdapter.getSelectedStudents();
@@ -274,7 +313,7 @@ public class DetailClassActivity extends AppCompatActivity {
             for (Student student : selectedStudents) {
                 selectedStudentIds.add(student.getId());
             }
-            updateClassAndStudents(updatedMaLop, updatedTenLop, selectedBranch, selectedTeacher,
+            updateClassAndStudents(updatedMaLop, updatedTenLop, selectedBranch,selectedSubject, selectedTeacher,
                     updatedNamHoc, selectedStudents, selectedStudentIds, dialog);
         });
 
@@ -282,7 +321,7 @@ public class DetailClassActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch,
+    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch,Subject selectedSubject,
                                         Teacher selectedTeacher, String updatedNamHoc,
                                         List<Student> selectedStudents, List<String> selectedStudentIds,
                                         Dialog dialog) {
@@ -290,6 +329,7 @@ public class DetailClassActivity extends AppCompatActivity {
                 id,
                 updatedMaLop,
                 updatedTenLop,
+                null,
                 null,
                 null,
                 updatedNamHoc,
@@ -301,6 +341,7 @@ public class DetailClassActivity extends AppCompatActivity {
                 updatedMaLop,
                 updatedTenLop,
                 selectedBranch,
+                selectedSubject,
                 selectedTeacher,
                 updatedNamHoc,
                 selectedStudents

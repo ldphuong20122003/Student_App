@@ -59,4 +59,31 @@
         android:gravity="center"
         android:text="Khoa"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvProgressScore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:text="DQT"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvExamScore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:text="DT"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvFinalScore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:text="DTK"
+        android:textStyle="bold" />
 </LinearLayout>

@@ -10,16 +10,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.phuongldph29233.student_app.Domain.Score;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.List;
+import java.util.Map;
 
 public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapter.StudentViewHolder> {
     private Context context;
     private List<Student> studentList;
     private OnItemLongClickListener longClickListener;
-
+    private Map<String, Score> studentScores;
     public interface OnItemLongClickListener {
         boolean onItemLongClick(int position);
     }
@@ -27,9 +29,15 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.longClickListener = listener;
     }
-    public StudentTableAdapter(Context context, List<Student> studentList) {
+//    public StudentTableAdapter(Context context, List<Student> studentList) {
+//        this.context = context;
+//        this.studentList = studentList;
+//    }
+
+    public StudentTableAdapter(Context context, List<Student> studentList, Map<String, Score> studentScores) {
         this.context = context;
         this.studentList = studentList;
+        this.studentScores = studentScores;
     }
 
     @NonNull
@@ -50,6 +58,16 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
         if (holder.tvStt != null) {
             holder.tvStt.setText(String.valueOf(position + 1));
         }
+        Score score = studentScores.get(student.getId());
+        if (score != null) {
+            holder.tvDiemQT.setText(String.format("%.1f", score.getProgressScore()));
+            holder.tvDiemThi.setText(String.format("%.1f", score.getExamScore()));
+            holder.tvDiemTK.setText(String.format("%.1f", score.getFinalScore()));
+        } else {
+            holder.tvDiemQT.setText("0.0");
+            holder.tvDiemThi.setText("0.0");
+            holder.tvDiemTK.setText("0.0");
+        }
 
         holder.itemView.setOnLongClickListener(v -> {
             if (longClickListener != null) {
@@ -57,6 +75,8 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             }
             return false;
         });
+        holder.tvKhoa.setText(student.getStudentBranch() != null ? student.getStudentBranch().getBranchName() : "");
+
 //        holder.tvKhoa.setText(student.getKhoa() != null ? student.getKhoa().getTenKhoa() : "");
     }
 
@@ -76,7 +96,7 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
     }
 
     static class StudentViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStt, tvMaSV, tvTenSV, tvNgaySinh, tvQueQuan, tvKhoa;
+        TextView tvStt, tvMaSV, tvTenSV, tvNgaySinh, tvQueQuan, tvKhoa, tvDiemQT, tvDiemThi, tvDiemTK;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -85,6 +105,10 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             tvTenSV = itemView.findViewById(R.id.tvTenSV);
             tvNgaySinh = itemView.findViewById(R.id.tvNgaySinh);
             tvQueQuan = itemView.findViewById(R.id.tvQueQuan);
+            tvKhoa = itemView.findViewById(R.id.tvKhoa);
+            tvDiemQT = itemView.findViewById(R.id.tvProgressScore);
+            tvDiemThi = itemView.findViewById(R.id.tvExamScore);
+            tvDiemTK = itemView.findViewById(R.id.tvFinalScore);
 //            tvKhoa = itemView.findViewById(R.id.tvKhoa);
         }
     }

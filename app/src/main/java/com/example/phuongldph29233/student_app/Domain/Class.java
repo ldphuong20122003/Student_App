@@ -9,6 +9,8 @@ public class Class implements Serializable {
     private String maLop;
     private String tenLop;
     private Branch khoa;
+
+    private Subject monHoc;
     private Teacher giangVien;
     private String namHoc;
     private final List<Student> danhSachSinhVien;
@@ -17,18 +19,19 @@ public class Class implements Serializable {
         this.danhSachSinhVien = new ArrayList<>();
     }
 
-    public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc) {
+    public Class(String id, String maLop, String tenLop, Branch khoa, Subject monHoc, Teacher giangVien, String namHoc) {
         this();
         this.id = id;
         this.maLop = maLop;
         this.tenLop = tenLop;
         this.khoa = khoa;
+        this.monHoc= monHoc;
         this.giangVien = giangVien;
         this.namHoc = namHoc;
     }
 
-    public Class(String id, String maLop, String tenLop, Branch khoa, Teacher giangVien, String namHoc, List<Student> danhSachSinhVien) {
-        this(id, maLop, tenLop, khoa, giangVien, namHoc);
+    public Class(String id, String maLop, String tenLop, Branch khoa,Subject monHoc, Teacher giangVien, String namHoc, List<Student> danhSachSinhVien) {
+        this(id, maLop, tenLop, khoa,monHoc, giangVien, namHoc);
         if (danhSachSinhVien != null) {
             this.danhSachSinhVien.addAll(danhSachSinhVien);
         }
@@ -64,6 +67,14 @@ public class Class implements Serializable {
 
     public void setKhoa(Branch khoa) {
         this.khoa = khoa;
+    }
+
+    public Subject getMonHoc() {
+        return monHoc;
+    }
+
+    public void setMonHoc(Subject monHoc) {
+        this.monHoc = monHoc;
     }
 
     public Teacher getGiangVien() {

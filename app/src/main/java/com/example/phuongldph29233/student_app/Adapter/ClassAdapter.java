@@ -50,6 +50,7 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
             binding.txtMaLop.setText(classItem.getMaLop());
             binding.txtTenLop.setText(classItem.getTenLop());
             binding.txtKhoa.setText(classItem.getKhoa().toString());
+            binding.txtMonhoc.setText(classItem.getMonHoc().toString());
             binding.txtGiangvien.setText(classItem.getGiangVien().toString());
             binding.txtNamhoc.setText(classItem.getNamHoc());
             binding.cardViewClass.setOnClickListener(v -> {
@@ -61,6 +62,7 @@ public class ClassAdapter extends AdapterHelper<Class, ViewHolderClassBinding> {
                     intent.putExtra("maLop", classItem.getMaLop());
                     intent.putExtra("tenLop", classItem.getTenLop());
                     intent.putExtra("khoa", classItem.getKhoa().toString());
+                    intent.putExtra("monHoc", classItem.getMonHoc().toString());
                     intent.putExtra("giangVien", classItem.getGiangVien().toString());
                     intent.putExtra("namHoc", classItem.getNamHoc());
                     ArrayList<String> studentIds = new ArrayList<>();

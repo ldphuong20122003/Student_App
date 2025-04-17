@@ -64,7 +64,7 @@ public class StudentActivity extends AppCompatActivity {
     private ArrayList<Student> originalArrayList;
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Class> classList;
-    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null, null, "");
+    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null,null, null, "");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,13 +125,12 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     private void loadDataStudent() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.txtNoData.setVisibility(View.GONE);
         databaseHelper.getList(Student.class, new DatabaseHelper.DatabaseCallback<Student>() {
             @Override
             public void onSuccess(List<Student> list) {
                 studentArrayList.clear();
                 originalArrayList.clear();
+
                 for (Student student : list) {
                     if (student.getStudentClass() == null) {
                         student.setStudentClass(EMPTY_CLASS);
@@ -149,14 +148,6 @@ public class StudentActivity extends AppCompatActivity {
                         }
                     }
                     studentArrayList.add(student);
-                    if (list.isEmpty()) {
-                        binding.txtNoData.setVisibility(View.VISIBLE);
-                        binding.recyclerView.setVisibility(View.GONE);
-                    } else {
-                        binding.txtNoData.setVisibility(View.GONE);
-                        binding.recyclerView.setVisibility(View.VISIBLE);
-                    }
-                    binding.progressBar.setVisibility(View.GONE);
                 }
 
                 originalArrayList.addAll(studentArrayList);
@@ -204,7 +195,6 @@ public class StudentActivity extends AppCompatActivity {
         classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
             public void onSuccess(List<Class> itemList) {
-                classList.clear();
                 classList.add(EMPTY_CLASS);
                 classList.addAll(itemList);
                 classAdapter.notifyDataSetChanged();
@@ -313,14 +303,14 @@ public class StudentActivity extends AppCompatActivity {
         });
     }
 
-    private final BroadcastReceiver localUpdateReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver localUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             refreshDataImmediately();
         }
     };
 
-    private final BroadcastReceiver globalUpdateReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver globalUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("ACTION_DATA_UPDATED".equals(intent.getAction())) {
@@ -335,6 +325,7 @@ public class StudentActivity extends AppCompatActivity {
             new Handler().postDelayed(this::loadDataStudent, 200);
         });
     }
+
 
 
     @Override

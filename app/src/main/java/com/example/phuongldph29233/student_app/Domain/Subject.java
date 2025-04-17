@@ -58,4 +58,7 @@ public class Subject {
     public void setSubjectNOC(String subjectNOC) {
         this.subjectNOC = subjectNOC;
     }
+    public String toString() {
+        return getSubjectName();
+    }
 }

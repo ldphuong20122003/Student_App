@@ -24,13 +24,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.phuongldph29233.student_app.Activity.Detail.DetailClassActivity;
 import com.example.phuongldph29233.student_app.Adapter.ClassAdapter;
 import com.example.phuongldph29233.student_app.Adapter.StudentSelectionAdapter;
 import com.example.phuongldph29233.student_app.Controller.BranchController;
+import com.example.phuongldph29233.student_app.Controller.SubjectController;
 import com.example.phuongldph29233.student_app.Controller.TeacherController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
+import com.example.phuongldph29233.student_app.Domain.Subject;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
@@ -54,10 +57,16 @@ public class ClassActivity extends AppCompatActivity {
     private ArrayList<Class> originalArrayList;
     private ArrayAdapter<Branch> branchAdapter;
     private ArrayAdapter<Teacher> teacherAdapter;
+    private ArrayAdapter<Subject> subjectAdapter;
+
     private ArrayList<Branch> branchList;
     private ArrayList<Teacher> teacherList;
+    private ArrayList<Subject> subjectList;
+
     private BranchController branchController;
     private TeacherController teacherController;
+
+    private SubjectController subjectController;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Student> studentsWithoutClass;
@@ -66,8 +75,8 @@ public class ClassActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityClassBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+//        binding = ActivityClassBinding.inflate(getLayoutInflater());
+//        setContentView(binding.getRoot());
         binding = ActivityClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         databaseHelper = new DatabaseHelper<>("Classes");
@@ -110,8 +119,12 @@ public class ClassActivity extends AppCompatActivity {
     private void initializeComponents() {
         branchList = new ArrayList<>();
         teacherList = new ArrayList<>();
+        subjectList = new ArrayList<>();
         branchController = new BranchController();
         teacherController = new TeacherController();
+        subjectController = new SubjectController();
+        subjectAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, subjectList);
+        subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         branchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
         branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         teacherAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, teacherList);
@@ -140,6 +153,26 @@ public class ClassActivity extends AppCompatActivity {
     private void loadData() {
         loadBranches();
         loadTeachers();
+        loadSubjects();
+
+    }
+
+    private void loadSubjects(){
+        subjectController.getSubject(new DatabaseHelper.DatabaseCallback<Subject>() {
+            @Override
+            public void onSuccess(List<Subject> itemList) {
+                Log.d("TAG onSuccess", "onSuccess: " + itemList);
+                subjectList.clear();
+                subjectList.addAll(itemList);
+                subjectAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(String error) {
+                Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     private void loadBranches() {
@@ -183,8 +216,6 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void loadDataClass() {
-        binding.progressBar.setVisibility(View.VISIBLE);
-        binding.txtNoData.setVisibility(View.GONE);
         databaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -197,14 +228,10 @@ public class ClassActivity extends AppCompatActivity {
                     classAdapter.notifyDataSetChanged();
 
                     if (classArrayList.isEmpty()) {
-                        binding.txtNoData.setVisibility(View.VISIBLE);
                         binding.recyclerView.setVisibility(View.GONE);
                     } else {
                         binding.recyclerView.setVisibility(View.VISIBLE);
-                        binding.txtNoData.setVisibility(View.GONE);
                     }
-
-                    binding.progressBar.setVisibility(View.GONE);
                 });
             }
 
@@ -234,6 +261,7 @@ public class ClassActivity extends AppCompatActivity {
         EditText edtTenLop = dialog.findViewById(R.id.edt_tenLop_add);
         Spinner spnKhoaAdd = dialog.findViewById(R.id.edt_khoa_add);
         Spinner spnGiangVienAdd = dialog.findViewById(R.id.edt_giangVien_add);
+        Spinner spnMonHocAdd = dialog.findViewById(R.id.edt_Monhoc_add);
         EditText edtNamHoc = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_lop);
         Button btnAdd = dialog.findViewById(R.id.btn_add_lop);
@@ -245,6 +273,7 @@ public class ClassActivity extends AppCompatActivity {
         }
         runOnUiThread(() -> {
             spnKhoaAdd.setAdapter(branchAdapter);
+            spnMonHocAdd.setAdapter(subjectAdapter);
             spnGiangVienAdd.setAdapter(teacherAdapter);
             txtTitle.setText("Thêm lớp học");
         });
@@ -268,6 +297,7 @@ public class ClassActivity extends AppCompatActivity {
             String maLop = edtMaLop.getText().toString().trim();
             String tenLop = edtTenLop.getText().toString().trim();
             Branch khoa = (Branch) spnKhoaAdd.getSelectedItem();
+            Subject selectedSubject = (Subject) spnMonHocAdd.getSelectedItem();
             Teacher giangVien = (Teacher) spnGiangVienAdd.getSelectedItem();
             String namHoc = edtNamHoc.getText().toString().trim();
 
@@ -287,7 +317,7 @@ public class ClassActivity extends AppCompatActivity {
             }
 
             List<Student> selectedStudents = studentAdapter.getSelectedStudents();
-            Class newClass = new Class(id, maLop, tenLop, khoa, giangVien, namHoc, selectedStudents);
+            Class newClass = new Class(id, maLop, tenLop, khoa,selectedSubject, giangVien, namHoc, selectedStudents);
 
             addClassAndUpdateStudents(newClass, selectedStudents, dialog);
 
@@ -302,6 +332,7 @@ public class ClassActivity extends AppCompatActivity {
                 newClass.getId(),
                 newClass.getMaLop(),
                 newClass.getTenLop(),
+                null,
                 null,
                 null,
                 newClass.getNamHoc(),

@@ -30,7 +30,6 @@ public class DatabaseHelper<T> {
                     T item = itemSnapshot.getValue(clazz);
                     if (item != null) {
                         try {
-                            itemSnapshot.getKey();
                             item.getClass().getMethod("setId", String.class).invoke(item, itemSnapshot.getKey());
                         } catch (Exception e) {
                         }
@@ -111,7 +110,6 @@ public class DatabaseHelper<T> {
                         List<T> classes = new ArrayList<>();
                         List<String> classIds = new ArrayList<>();
 
-                        // Lấy tất cả classId của sinh viên
                         for (DataSnapshot ds : snapshot.getChildren()) {
                             String classId = ds.child("classId").getValue(String.class);
                             if (classId != null) {
@@ -119,13 +117,11 @@ public class DatabaseHelper<T> {
                             }
                         }
 
-                        // Nếu không có lớp nào
                         if (classIds.isEmpty()) {
                             callback.onSuccess(classes);
                             return;
                         }
 
-                        // Lấy thông tin chi tiết từng lớp
                         DatabaseReference classesRef = FirebaseDatabase.getInstance().getReference("Classes");
                         for (String classId : classIds) {
                             classesRef.child(classId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -137,12 +133,10 @@ public class DatabaseHelper<T> {
                                             Method setIdMethod = cls.getClass().getMethod("setId", String.class);
                                             setIdMethod.invoke(cls, classSnapshot.getKey());
                                         } catch (Exception e) {
-                                            // Handle exception
                                         }
                                         classes.add(cls);
                                     }
 
-                                    // Khi đã lấy đủ tất cả lớp
                                     if (classes.size() == classIds.size()) {
                                         callback.onSuccess(classes);
                                     }
@@ -163,11 +157,8 @@ public class DatabaseHelper<T> {
                 });
     }
 
-
     public void addStudentToClass(String studentId, String classId, DatabaseActionCallback callback) {
         DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
-
-        // Kiểm tra xem đã tồn tại chưa
         studentClassRef.orderByChild("studentId").equalTo(studentId)
                 .orderByChild("classId").equalTo(classId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -176,7 +167,6 @@ public class DatabaseHelper<T> {
                         if (snapshot.exists()) {
                             callback.onFailure("Sinh viên đã có trong lớp này");
                         } else {
-                            // Tạo bản ghi mới
                             String key = studentClassRef.push().getKey();
                             Map<String, Object> studentClass = new HashMap<>();
                             studentClass.put("studentId", studentId);
@@ -195,7 +185,6 @@ public class DatabaseHelper<T> {
                 });
     }
 
-    // 3. Xóa sinh viên khỏi lớp
     public void removeStudentFromClass(String studentId, String classId, DatabaseActionCallback callback) {
         DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
         studentClassRef.orderByChild("studentId").equalTo(studentId)
@@ -221,7 +210,6 @@ public class DatabaseHelper<T> {
                 });
     }
 
-    // 4. Lấy tất cả sinh viên trong một lớp
     public void getStudentsInClass(String classId, Class<T> clazz, DatabaseCallback<T> callback) {
         DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
         studentClassRef.orderByChild("classId").equalTo(classId)
@@ -254,7 +242,6 @@ public class DatabaseHelper<T> {
                                             Method setIdMethod = student.getClass().getMethod("setId", String.class);
                                             setIdMethod.invoke(student, studentSnapshot.getKey());
                                         } catch (Exception e) {
-                                            // Handle exception
                                         }
                                         students.add(student);
                                     }
@@ -278,7 +265,41 @@ public class DatabaseHelper<T> {
                     }
                 });
     }
-    // Interface callback mới cho phương thức get
+
+    // Phương thức mới: Lấy điểm của sinh viên trong một lớp và môn học
+    public void getStudentScores(String studentId, String classId, String subjectId, Class<T> clazz, DatabaseGetCallback<T> callback) {
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference("Scores");
+        scoresRef.orderByChild("studentId").equalTo(studentId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds : snapshot.getChildren()) {
+                            String scoreClassId = ds.child("classId").getValue(String.class);
+                            String scoreSubjectId = ds.child("subjectId").getValue(String.class);
+                            if (scoreClassId != null && scoreClassId.equals(classId) &&
+                                    scoreSubjectId != null && scoreSubjectId.equals(subjectId)) {
+                                T score = ds.getValue(clazz);
+                                if (score != null) {
+                                    try {
+                                        Method setIdMethod = score.getClass().getMethod("setId", String.class);
+                                        setIdMethod.invoke(score, ds.getKey());
+                                    } catch (Exception e) {
+                                    }
+                                    callback.onSuccess(score);
+                                    return;
+                                }
+                            }
+                        }
+                        callback.onFailure("Không tìm thấy điểm cho sinh viên này");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onFailure(error.getMessage());
+                    }
+                });
+    }
+
     public interface DatabaseGetCallback<T> {
         void onSuccess(T item);
         void onFailure(String error);
@@ -286,13 +307,11 @@ public class DatabaseHelper<T> {
 
     public interface DatabaseCallback<T> {
         void onSuccess(List<T> itemList);
-
         void onFailure(String error);
     }
 
     public interface DatabaseActionCallback {
         void onSuccess();
-
         void onFailure(String error);
     }
 }
