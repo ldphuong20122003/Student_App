@@ -64,7 +64,7 @@ public class StudentActivity extends AppCompatActivity {
     private ArrayList<Student> originalArrayList;
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Class> classList;
-    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null,null, null, "");
+    private static final Class EMPTY_CLASS = new Class("", "", "Chưa có lớp học", null, null, null, "");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -236,8 +236,6 @@ public class StudentActivity extends AppCompatActivity {
         HelperUtils.setupPhoneNumberValidation(edtSDT);
         EditText edtMail = dialog.findViewById(R.id.edt_email_add);
         HelperUtils.setupEmailValidation(edtMail);
-        Spinner edtLophoc = dialog.findViewById(R.id.edt_lopHoc_add);
-
         EditText edtNgayNhapHoc = dialog.findViewById(R.id.edt_ngayNhaphoc_add);
         EditText edtHeDaotao = dialog.findViewById(R.id.edt_heDaotao_add);
         Spinner spn_chuyenNganh = dialog.findViewById(R.id.spn_chuyenNganh);
@@ -247,7 +245,6 @@ public class StudentActivity extends AppCompatActivity {
         HelperUtils.setupDatePicker(this, edtNgayNhapHoc);
         txtTitle.setText("Thêm sinh viên");
         spn_chuyenNganh.setAdapter(branchAdapter);
-        edtLophoc.setAdapter(classAdapter);
 
         btnAdd.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
@@ -257,7 +254,6 @@ public class StudentActivity extends AppCompatActivity {
             String queQuan = edtQue.getText().toString().trim();
             String soDienThoai = edtSDT.getText().toString().trim();
             String email = edtMail.getText().toString().trim();
-            Class lopHoc = (Class) edtLophoc.getSelectedItem();
             String ngayNhapHoc = edtNgayNhapHoc.getText().toString().trim();
             String heDaoTao = edtHeDaotao.getText().toString().trim();
             Branch selectedBranch = (Branch) spn_chuyenNganh.getSelectedItem();
@@ -278,7 +274,7 @@ public class StudentActivity extends AppCompatActivity {
                 edtMail.setError("Email không hợp lệ");
                 return;
             }
-            Student student = new Student(id, maSV, tenSV, ngaySinh, queQuan, soDienThoai, email, lopHoc, ngayNhapHoc, selectedBranch, heDaoTao);
+            Student student = new Student(id, maSV, tenSV, ngaySinh, queQuan, soDienThoai, email, ngayNhapHoc, selectedBranch, heDaoTao);
             addStudent(student, dialog);
         });
         btnHuy.setOnClickListener(v -> dialog.dismiss());
@@ -302,14 +298,14 @@ public class StudentActivity extends AppCompatActivity {
         });
     }
 
-    private BroadcastReceiver localUpdateReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver localUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             refreshDataImmediately();
         }
     };
 
-    private BroadcastReceiver globalUpdateReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver globalUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("ACTION_DATA_UPDATED".equals(intent.getAction())) {
@@ -324,7 +320,6 @@ public class StudentActivity extends AppCompatActivity {
             new Handler().postDelayed(this::loadDataStudent, 200);
         });
     }
-
 
 
     @Override

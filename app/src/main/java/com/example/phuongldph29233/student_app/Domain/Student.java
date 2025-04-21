@@ -24,9 +24,23 @@ public class Student implements Serializable {
         courseResults = new ArrayList<>();
     }
 
+    public Student(String id, String maSV, String tenSV, String ngaySinh, String queQuan, String soDienThoai, String email, String ngayNhapHoc, Branch selectedBranch, String heDaoTao) {
+        this.id = id;
+        this.studentID = maSV;
+        this.studentName = tenSV;
+        this.studentBirthday = ngaySinh;
+        this.studentHomeTown = queQuan;
+        this.studentPhone = soDienThoai;
+        this.studentEmail = email;
+        this.studentDateJoin = ngayNhapHoc;
+        this.studentBranch = selectedBranch;
+        this.studentTOT = heDaoTao;
+    }
+
     public void addCourseResult(CourseResult result) {
         courseResults.add(result);
     }
+
     public CourseResult getCourseResult(String courseId) {
         for (CourseResult result : courseResults) {
             if (result.getSubjectId().equals(courseId)) {

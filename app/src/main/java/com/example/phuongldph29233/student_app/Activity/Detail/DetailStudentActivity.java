@@ -10,9 +10,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +42,8 @@ import java.util.stream.Collectors;
 
 public class DetailStudentActivity extends AppCompatActivity {
     private TextView txtMaSV, txtTenSV, txtNgaySinh, txtQueQuan, txtSdt, txtEmail, txtLopHoc, txtNgayNhapHoc, txtHeDaoTao, txtChuyenNganh;
-    private Button btnEdit, btnDelete, btnBack;
+    private ImageView btn_back_student;
+    private ImageButton btn_list_student, btn_delete_student, btn_edit_student;
     private Object classObj;
     private List<Class> studentClasses = new ArrayList<>();
     private String id, maSV, tenSV, ngaySinh, queQuan, sdt, email, lopHoc, ngayNhapHoc, heDaoTao, chuyenNganh;
@@ -48,6 +52,7 @@ public class DetailStudentActivity extends AppCompatActivity {
     private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Branch> branchList;
     private ArrayList<Class> classList;
+    private boolean isVisible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +103,7 @@ public class DetailStudentActivity extends AppCompatActivity {
                         txtLopHoc.setText(enrolledClasses.get(0).getTenLop());
                     } else {
                         // Xử lý khi có nhiều lớp
-                        txtLopHoc.setText(enrolledClasses.get(0).getTenLop() + " (+" + (enrolledClasses.size()-1) + ")");
+                        txtLopHoc.setText(enrolledClasses.get(0).getTenLop() + " (+" + (enrolledClasses.size() - 1) + ")");
                     }
                 });
             }
@@ -123,9 +128,10 @@ public class DetailStudentActivity extends AppCompatActivity {
         txtNgayNhapHoc = findViewById(R.id.txt_ngayNhaphoc_detail);
         txtHeDaoTao = findViewById(R.id.txt_heDaotao_detail);
         txtChuyenNganh = findViewById(R.id.txt_chuyenNganh_detail);
-        btnEdit = findViewById(R.id.btn_edit);
-        btnDelete = findViewById(R.id.btn_delete);
-        btnBack = findViewById(R.id.btn_back);
+        btn_edit_student = findViewById(R.id.btn_edit_student);
+        btn_delete_student = findViewById(R.id.btn_delete_student);
+        btn_back_student = findViewById(R.id.btn_back_student);
+        btn_list_student = findViewById(R.id.btn_list_student);
         txtLopHoc.setOnClickListener(v -> {
             if (studentClasses.size() > 1) {
                 openStudentClassesActivity();
@@ -209,9 +215,19 @@ public class DetailStudentActivity extends AppCompatActivity {
     }
 
     private void setupButtonListeners() {
-        btnBack.setOnClickListener(v -> finish());
-        btnEdit.setOnClickListener(v -> showEditDialog());
-        btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+        btn_back_student.setOnClickListener(v -> finish());
+        btn_list_student.setOnClickListener(v -> {
+            isVisible = !isVisible;
+            if (isVisible) {
+                btn_edit_student.setVisibility(View.VISIBLE);
+                btn_delete_student.setVisibility(View.VISIBLE);
+            } else {
+                btn_edit_student.setVisibility(View.GONE);
+                btn_delete_student.setVisibility(View.GONE);
+            }
+        });
+        btn_edit_student.setOnClickListener(v -> showEditDialog());
+        btn_delete_student.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
     private void loadClass() {
@@ -229,7 +245,7 @@ public class DetailStudentActivity extends AppCompatActivity {
         });
     }
 
-    private BroadcastReceiver dataUpdateReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver dataUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if ("ACTION_DATA_UPDATED".equals(intent.getAction())) {
@@ -281,7 +297,6 @@ public class DetailStudentActivity extends AppCompatActivity {
         EditText edtQueQuanEdit = dialog.findViewById(R.id.edt_queQuan_add);
         EditText edtSdtEdit = dialog.findViewById(R.id.edt_sdt_add);
         EditText edtEmailEdit = dialog.findViewById(R.id.edt_email_add);
-        Spinner edtLopHocEdit = dialog.findViewById(R.id.edt_lopHoc_add);
         EditText edtNgayNhapHocEdit = dialog.findViewById(R.id.edt_ngayNhaphoc_add);
         EditText edtHeDaoTaoEdit = dialog.findViewById(R.id.edt_heDaotao_add);
         Spinner spnChuyenNganhEdit = dialog.findViewById(R.id.spn_chuyenNganh);
@@ -302,21 +317,8 @@ public class DetailStudentActivity extends AppCompatActivity {
         ArrayAdapter<Class> dialogClassAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, classList);
         dialogClassAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        edtLopHocEdit.setAdapter(dialogClassAdapter);
 
-        new Handler().postDelayed(() -> {
-            int position = -1;
-            for (int i = 0; i < dialogClassAdapter.getCount(); i++) {
-                Class classes = dialogClassAdapter.getItem(i);
-                if (classes.getTenLop() != null && classes.getTenLop().equals(lopHoc)) {
-                    position = i;
-                    break;
-                }
-            }
-            if (position != -1) {
-                edtLopHocEdit.setSelection(position);
-            }
-        }, 250);
+
         ArrayAdapter<Branch> dialogBranchAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, branchList);
         dialogBranchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -343,7 +345,6 @@ public class DetailStudentActivity extends AppCompatActivity {
             String updatedQueQuan = edtQueQuanEdit.getText().toString();
             String updatedSdt = edtSdtEdit.getText().toString();
             String updatedEmail = edtEmailEdit.getText().toString();
-            Class updatedLopHoc = (Class) edtLopHocEdit.getSelectedItem();
             String updatedNgayNhapHoc = edtNgayNhapHocEdit.getText().toString();
             String updatedHeDaoTao = edtHeDaoTaoEdit.getText().toString();
             Branch selectedBranch = (Branch) spnChuyenNganhEdit.getSelectedItem();
@@ -368,7 +369,7 @@ public class DetailStudentActivity extends AppCompatActivity {
             }
             Student updatedStudent = new Student(
                     id, updatedMaSV, updatedTenSV, updatedNgaySinh, updatedQueQuan,
-                    updatedSdt, updatedEmail, updatedLopHoc, updatedNgayNhapHoc,
+                    updatedSdt, updatedEmail, updatedNgayNhapHoc,
                     selectedBranch, updatedHeDaoTao
             );
 
@@ -383,7 +384,6 @@ public class DetailStudentActivity extends AppCompatActivity {
                     queQuan = updatedQueQuan;
                     sdt = updatedSdt;
                     email = updatedEmail;
-                    lopHoc = updatedLopHoc.getTenLop();
                     ngayNhapHoc = updatedNgayNhapHoc;
                     heDaoTao = updatedHeDaoTao;
                     chuyenNganh = selectedBranch.getBranchName();
