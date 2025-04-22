@@ -54,14 +54,12 @@ public class AverageScoreAdapter extends RecyclerView.Adapter<AverageScoreAdapte
         holder.binding.txtStudentID.setText(student.getStudentID() != null ? student.getStudentID() : "N/A");
         holder.binding.txtStudentName.setText(student.getStudentName() != null ? student.getStudentName() : "N/A");
 
-        // Hiển thị tên lớp
 //        String classId = student.getClassId();
 //        Class clazz = classId != null ? classMap.get(classId) : null;
 //        String className = clazz != null && clazz.getTenLop() != null ? clazz.getTenLop() : "Chưa có lớp";
 //        holder.binding.txtClassName.setText(className);
 //        Log.d("AverageScoreAdapter", "Class for student " + student.getStudentID() + ": " + className);
 
-        // Hiển thị điểm trung bình và xếp loại
         String studentId = student.getId();
         Double average = studentId != null ? averageScores.get(studentId) : null;
         if (average != null && average != 0.0) {

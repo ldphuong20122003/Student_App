@@ -78,12 +78,8 @@ public class StudentAdapter extends AdapterHelper<Student, ViewHolderStudentBind
                     } else {
                         intent.putExtra("studentClass", (Serializable) null);
                     }
-
                     intent.putExtra("studentDateJoin", studentItem.getStudentDateJoin());
-
-                    // Nếu studentBranch cũng là đối tượng, sửa tương tự
                     intent.putExtra("studentBranch", studentItem.getStudentBranch().toString());
-
                     intent.putExtra("studentTOT", studentItem.getStudentTOT());
                     context.startActivity(intent);
                 }
