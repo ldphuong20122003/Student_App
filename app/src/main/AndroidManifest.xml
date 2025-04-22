@@ -21,6 +21,9 @@
             android:name=".Activity.Screens.AverageScoreActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.Screens.AverageScoreActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Detail.DetailSubjectActivity"
             android:exported="false" />
         <activity

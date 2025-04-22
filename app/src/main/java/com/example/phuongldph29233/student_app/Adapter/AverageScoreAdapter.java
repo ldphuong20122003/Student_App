@@ -2,7 +2,6 @@ package com.example.phuongldph29233.student_app.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ public class AverageScoreAdapter extends RecyclerView.Adapter<AverageScoreAdapte
         this.items = items != null ? items : new ArrayList<>();
         this.classMap = classMap != null ? classMap : new HashMap<>();
         this.averageScores = averageScores != null ? averageScores : new HashMap<>();
+        Log.d("AverageScoreAdapter", "Initialized with " + this.items.size() + " students");
     }
 
     @NonNull
@@ -40,20 +40,30 @@ public class AverageScoreAdapter extends RecyclerView.Adapter<AverageScoreAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+        if (position < 0 || position >= items.size()) {
+            Log.e("AverageScoreAdapter", "Invalid position: " + position);
+            return;
+        }
         Student student = items.get(position);
+        if (student == null) {
+            Log.e("AverageScoreAdapter", "Student at position " + position + " is null");
+            return;
+        }
         Log.d("AverageScoreAdapter", "Binding student at position " + position + ": " + student);
 
         holder.binding.txtStudentID.setText(student.getStudentID() != null ? student.getStudentID() : "N/A");
         holder.binding.txtStudentName.setText(student.getStudentName() != null ? student.getStudentName() : "N/A");
 
         // Hiển thị tên lớp
-//        Class clazz = classMap.get(student.getClass());
+//        String classId = student.getClassId();
+//        Class clazz = classId != null ? classMap.get(classId) : null;
 //        String className = clazz != null && clazz.getTenLop() != null ? clazz.getTenLop() : "Chưa có lớp";
-//        holder.binding.txtClassName.setText(student.getStudentClass().getTenLop());
-//        Log.d("AverageScoreAdapter", "Class for student " + student.getStudentID() + ": " + student.getStudentClass().getTenLop());
+//        holder.binding.txtClassName.setText(className);
+//        Log.d("AverageScoreAdapter", "Class for student " + student.getStudentID() + ": " + className);
 
         // Hiển thị điểm trung bình và xếp loại
-        Double average = averageScores.get(student.getId());
+        String studentId = student.getId();
+        Double average = studentId != null ? averageScores.get(studentId) : null;
         if (average != null && average != 0.0) {
             holder.binding.txtAverageScore.setText(String.format("%.1f", average));
             holder.binding.txtRanking.setText(getRanking(average));
@@ -62,24 +72,6 @@ public class AverageScoreAdapter extends RecyclerView.Adapter<AverageScoreAdapte
             holder.binding.txtRanking.setText("Chưa xếp loại");
         }
         Log.d("AverageScoreAdapter", "Average score for " + student.getStudentID() + ": " + average);
-
-        // Sự kiện click để mở StudentDetailActivity
-//        holder.binding.getRoot().setOnClickListener(v -> {
-//            Intent intent = new Intent(context, StudentDetailActivity.class);
-//            intent.putExtra("id", student.getId());
-//            intent.putExtra("studentID", student.getStudentId());
-//            intent.putExtra("studentName", student.getStudentName());
-//            intent.putExtra("studentBirthday", student.getStudentBirthday());
-//            intent.putExtra("studentHomeTown", student.getStudentHomeTown());
-//            intent.putExtra("studentPhone", student.getStudentPhone());
-//            intent.putExtra("studentEmail", student.getStudentEmail());
-//            intent.putExtra("studentClass", clazz);
-//            intent.putExtra("studentDateJoin", student.getStudentDateJoin());
-//            intent.putExtra("studentBranch", student.getStudentBranch());
-//            intent.putExtra("studentTOT", student.getStudentTOT());
-//            Log.d("AverageScoreAdapter", "Opening StudentDetailActivity for student: " + student.getStudentId());
-//            context.startActivity(intent);
-//        });
     }
 
     private String getRanking(double average) {
@@ -92,7 +84,9 @@ public class AverageScoreAdapter extends RecyclerView.Adapter<AverageScoreAdapte
 
     @Override
     public int getItemCount() {
-        return items.size();
+        int size = items.size();
+        Log.d("AverageScoreAdapter", "getItemCount: " + size);
+        return size;
     }
 
     @SuppressLint("NotifyDataSetChanged")
