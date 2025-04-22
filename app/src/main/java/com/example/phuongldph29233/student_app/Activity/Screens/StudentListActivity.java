@@ -78,7 +78,7 @@ public class StudentListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        studentDatabaseHelper = new DatabaseHelper<>("Students");
+        studentDatabaseHelper = new DatabaseHelper<>("Student");
         scoreDatabaseHelper = new DatabaseHelper<>("Scores");
 
         loadStudentScores();

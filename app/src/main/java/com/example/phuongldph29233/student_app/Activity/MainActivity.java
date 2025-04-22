@@ -6,6 +6,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.phuongldph29233.student_app.Activity.Screens.AverageScoreActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.BranchActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.ClassActivity;
 import com.example.phuongldph29233.student_app.Activity.Screens.MarkActivity;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         binding.cardMath.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, MarkActivity.class));
+                startActivity(new Intent(MainActivity.this, AverageScoreActivity.class));
             }
         });
     }
