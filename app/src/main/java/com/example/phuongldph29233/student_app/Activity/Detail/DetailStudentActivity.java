@@ -95,14 +95,12 @@ public class DetailStudentActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     studentClasses = enrolledClasses;
                     if (enrolledClasses.isEmpty()) {
-                        // Chỉ hiển thị "Chưa có lớp học" nếu classObj cũng null
                         if (classObj == null) {
                             txtLopHoc.setText("Chưa có lớp học");
                         }
                     } else if (enrolledClasses.size() == 1) {
                         txtLopHoc.setText(enrolledClasses.get(0).getTenLop());
                     } else {
-                        // Xử lý khi có nhiều lớp
                         txtLopHoc.setText(enrolledClasses.get(0).getTenLop() + " (+" + (enrolledClasses.size() - 1) + ")");
                     }
                 });
@@ -197,8 +195,6 @@ public class DetailStudentActivity extends AppCompatActivity {
         ngayNhapHoc = (String) getIntent().getSerializableExtra("studentDateJoin");
         chuyenNganh = (String) getIntent().getSerializableExtra("studentBranch");
         heDaoTao = (String) getIntent().getSerializableExtra("studentTOT");
-
-        // Hiển thị dữ liệu
         txtMaSV.setText(maSV);
         txtTenSV.setText(tenSV);
         txtNgaySinh.setText(ngaySinh);
@@ -209,8 +205,6 @@ public class DetailStudentActivity extends AppCompatActivity {
         txtNgayNhapHoc.setText(ngayNhapHoc);
         txtHeDaoTao.setText(heDaoTao);
         txtChuyenNganh.setText(chuyenNganh);
-
-        // Luôn fetch lớp học từ database để cập nhật
         fetchStudentClassFromDatabase();
     }
 
