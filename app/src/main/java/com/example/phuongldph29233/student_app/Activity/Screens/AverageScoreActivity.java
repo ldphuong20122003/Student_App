@@ -14,6 +14,7 @@ import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Score;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.StudentHelper;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class AverageScoreActivity extends AppCompatActivity {
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Class> classDatabaseHelper;
     private DatabaseHelper<Score> scoreDatabaseHelper;
+    private StudentHelper<Score> scoreStudentHelper;
     private ArrayList<Student> students;
     private Map<String, Class> classMap;
     private Map<String, Double> averageScores;
@@ -49,7 +51,7 @@ public class AverageScoreActivity extends AppCompatActivity {
         studentDatabaseHelper = new DatabaseHelper<>("Student");
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         scoreDatabaseHelper = new DatabaseHelper<>("Scores");
-
+        scoreStudentHelper = new StudentHelper<>("Scores");
         loadData();
     }
 
@@ -117,7 +119,7 @@ public class AverageScoreActivity extends AppCompatActivity {
                 Log.w("AverageScoreActivity", "Student ID is null: " + student);
                 continue;
             }
-            scoreDatabaseHelper.getAverageScore(student.getId(), new DatabaseHelper.DatabaseCallback<Double>() {
+            scoreStudentHelper.getAverageScore(student.getId(), new DatabaseHelper.DatabaseCallback<Double>() {
                 @Override
                 public void onSuccess(List<Double> result) {
                     double average = result.get(0);

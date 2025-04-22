@@ -102,233 +102,67 @@ public class DatabaseHelper<T> {
         });
     }
 
-    public void getStudentClasses(String studentId, Class<T> clazz, DatabaseCallback<T> callback) {
-        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
-        studentClassRef.orderByChild("studentId").equalTo(studentId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List<T> classes = new ArrayList<>();
-                        List<String> classIds = new ArrayList<>();
-
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            String classId = ds.child("classId").getValue(String.class);
-                            if (classId != null) {
-                                classIds.add(classId);
-                            }
-                        }
-
-                        if (classIds.isEmpty()) {
-                            callback.onSuccess(classes);
-                            return;
-                        }
-
-                        DatabaseReference classesRef = FirebaseDatabase.getInstance().getReference("Classes");
-                        for (String classId : classIds) {
-                            classesRef.child(classId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot classSnapshot) {
-                                    T cls = classSnapshot.getValue(clazz);
-                                    if (cls != null) {
-                                        try {
-                                            Method setIdMethod = cls.getClass().getMethod("setId", String.class);
-                                            setIdMethod.invoke(cls, classSnapshot.getKey());
-                                        } catch (Exception e) {
-                                        }
-                                        classes.add(cls);
-                                    }
-
-                                    if (classes.size() == classIds.size()) {
-                                        callback.onSuccess(classes);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    callback.onFailure(error.getMessage());
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onFailure(error.getMessage());
-                    }
-                });
-    }
-
-    public void addStudentToClass(String studentId, String classId, DatabaseActionCallback callback) {
-        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
-        studentClassRef.orderByChild("studentId").equalTo(studentId)
-                .orderByChild("classId").equalTo(classId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            callback.onFailure("Sinh viên đã có trong lớp này");
-                        } else {
-                            String key = studentClassRef.push().getKey();
-                            Map<String, Object> studentClass = new HashMap<>();
-                            studentClass.put("studentId", studentId);
-                            studentClass.put("classId", classId);
-
-                            studentClassRef.child(key).setValue(studentClass)
-                                    .addOnSuccessListener(aVoid -> callback.onSuccess())
-                                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onFailure(error.getMessage());
-                    }
-                });
-    }
-
-    public void removeStudentFromClass(String studentId, String classId, DatabaseActionCallback callback) {
-        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
-        studentClassRef.orderByChild("studentId").equalTo(studentId)
-                .orderByChild("classId").equalTo(classId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            for (DataSnapshot ds : snapshot.getChildren()) {
-                                ds.getRef().removeValue()
-                                        .addOnSuccessListener(aVoid -> callback.onSuccess())
-                                        .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-                            }
-                        } else {
-                            callback.onFailure("Không tìm thấy bản ghi");
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onFailure(error.getMessage());
-                    }
-                });
-    }
-
-    public void getStudentsInClass(String classId, Class<T> clazz, DatabaseCallback<T> callback) {
-        DatabaseReference studentClassRef = FirebaseDatabase.getInstance().getReference("StudentClasses");
-        studentClassRef.orderByChild("classId").equalTo(classId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        List<T> students = new ArrayList<>();
-                        List<String> studentIds = new ArrayList<>();
-
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            String studentId = ds.child("studentId").getValue(String.class);
-                            if (studentId != null) {
-                                studentIds.add(studentId);
-                            }
-                        }
-
-                        if (studentIds.isEmpty()) {
-                            callback.onSuccess(students);
-                            return;
-                        }
-
-                        DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("Students");
-                        for (String studentId : studentIds) {
-                            studentsRef.child(studentId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot studentSnapshot) {
-                                    T student = studentSnapshot.getValue(clazz);
-                                    if (student != null) {
-                                        try {
-                                            Method setIdMethod = student.getClass().getMethod("setId", String.class);
-                                            setIdMethod.invoke(student, studentSnapshot.getKey());
-                                        } catch (Exception e) {
-                                        }
-                                        students.add(student);
-                                    }
-
-                                    if (students.size() == studentIds.size()) {
-                                        callback.onSuccess(students);
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    callback.onFailure(error.getMessage());
-                                }
-                            });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onFailure(error.getMessage());
-                    }
-                });
-    }
-
-    // Phương thức mới: Lấy điểm của sinh viên trong một lớp và môn học
-    public void getStudentScores(String studentId, String classId, String subjectId, Class<T> clazz, DatabaseGetCallback<T> callback) {
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference("Scores");
-        scoresRef.orderByChild("studentId").equalTo(studentId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds : snapshot.getChildren()) {
-                            String scoreClassId = ds.child("classId").getValue(String.class);
-                            String scoreSubjectId = ds.child("subjectId").getValue(String.class);
-                            if (scoreClassId != null && scoreClassId.equals(classId) &&
-                                    scoreSubjectId != null && scoreSubjectId.equals(subjectId)) {
-                                T score = ds.getValue(clazz);
-                                if (score != null) {
-                                    try {
-                                        Method setIdMethod = score.getClass().getMethod("setId", String.class);
-                                        setIdMethod.invoke(score, ds.getKey());
-                                    } catch (Exception e) {
-                                    }
-                                    callback.onSuccess(score);
-                                    return;
-                                }
-                            }
-                        }
-                        callback.onFailure("Không tìm thấy điểm cho sinh viên này");
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        callback.onFailure(error.getMessage());
-                    }
-                });
-    }
-
-    public void getAverageScore(String studentId, DatabaseCallback<Double> callback) {
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Double> finalScores = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Score score = snapshot.getValue(Score.class);
-                    if (score != null && studentId.equals(score.getStudentId())) {
-                        finalScores.add(score.getFinalScore());
-                    }
-                }
-                if (finalScores.isEmpty()) {
-                    callback.onSuccess(List.of(0.0));
-                    return;
-                }
-                double average = finalScores.stream()
-                        .mapToDouble(Double::doubleValue)
-                        .average()
-                        .orElse(0.0);
-                callback.onSuccess(List.of(average));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                callback.onFailure(databaseError.getMessage());
-            }
-        });
-    }
+//    public void getStudentScores(String studentId, String classId, String subjectId, Class<T> clazz, DatabaseGetCallback<T> callback) {
+//        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference("Scores");
+//        scoresRef.orderByChild("studentId").equalTo(studentId)
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                        for (DataSnapshot ds : snapshot.getChildren()) {
+//                            String scoreClassId = ds.child("classId").getValue(String.class);
+//                            String scoreSubjectId = ds.child("subjectId").getValue(String.class);
+//                            if (scoreClassId != null && scoreClassId.equals(classId) &&
+//                                    scoreSubjectId != null && scoreSubjectId.equals(subjectId)) {
+//                                T score = ds.getValue(clazz);
+//                                if (score != null) {
+//                                    try {
+//                                        Method setIdMethod = score.getClass().getMethod("setId", String.class);
+//                                        setIdMethod.invoke(score, ds.getKey());
+//                                    } catch (Exception e) {
+//                                    }
+//                                    callback.onSuccess(score);
+//                                    return;
+//                                }
+//                            }
+//                        }
+//                        callback.onFailure("Không tìm thấy điểm cho sinh viên này");
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError error) {
+//                        callback.onFailure(error.getMessage());
+//                    }
+//                });
+//    }
+//
+//        public void getAverageScore(String studentId, DatabaseCallback<Double> callback) {
+//        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                List<Double> finalScores = new ArrayList<>();
+//                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                    Score score = snapshot.getValue(Score.class);
+//                    if (score != null && studentId.equals(score.getStudentId())) {
+//                        finalScores.add(score.getFinalScore());
+//                    }
+//                }
+//                if (finalScores.isEmpty()) {
+//                    callback.onSuccess(List.of(0.0));
+//                    return;
+//                }
+//                double average = finalScores.stream()
+//                        .mapToDouble(Double::doubleValue)
+//                        .average()
+//                        .orElse(0.0);
+//                callback.onSuccess(List.of(average));
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                callback.onFailure(databaseError.getMessage());
+//            }
+//        });
+//    }
 
     public interface DatabaseGetCallback<T> {
         void onSuccess(T item);

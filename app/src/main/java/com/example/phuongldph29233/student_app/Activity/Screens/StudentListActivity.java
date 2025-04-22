@@ -24,6 +24,7 @@ import com.example.phuongldph29233.student_app.Adapter.StudentTableAdapter;
 import com.example.phuongldph29233.student_app.Domain.Score;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.StudentHelper;
 import com.example.phuongldph29233.student_app.R;
 
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class StudentListActivity extends AppCompatActivity {
     private StudentTableAdapter adapter;
     private DatabaseHelper<Student> studentDatabaseHelper;
     private DatabaseHelper<Score> scoreDatabaseHelper;
+    private StudentHelper<Score> scoreStudentHelper;
     private String maLop, tenLop, subjectId, monHoc;
     private List<Student> students;
     private Map<String, Score> studentScores;
@@ -80,7 +82,7 @@ public class StudentListActivity extends AppCompatActivity {
 
         studentDatabaseHelper = new DatabaseHelper<>("Students");
         scoreDatabaseHelper = new DatabaseHelper<>("Scores");
-
+        scoreStudentHelper = new StudentHelper<>("Scores");
         loadStudentScores();
     }
 
@@ -111,7 +113,7 @@ public class StudentListActivity extends AppCompatActivity {
             }
 
             Log.d("StudentListActivity", "Loading scores for student: " + student.getId());
-            scoreDatabaseHelper.getStudentScores(
+            scoreStudentHelper.getStudentScores(
                     student.getId(), maLop, subjectId, Score.class,
                     new DatabaseHelper.DatabaseGetCallback<Score>() {
                         @Override
