@@ -37,10 +37,12 @@ import com.example.phuongldph29233.student_app.Domain.Subject;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
+import com.example.phuongldph29233.student_app.Helper.SessionManager;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityClassBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -50,46 +52,91 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClassActivity extends AppCompatActivity {
-    ActivityClassBinding binding;
+    private ActivityClassBinding binding;
     private DatabaseHelper<Class> databaseHelper;
+    private DatabaseHelper<Student> studentDatabaseHelper;
+    private DatabaseHelper<Class> classDatabaseHelper;
+    private SessionManager sessionManager;
     private ClassAdapter classAdapter;
     private ArrayList<Class> classArrayList;
     private ArrayList<Class> originalArrayList;
     private ArrayAdapter<Branch> branchAdapter;
     private ArrayAdapter<Teacher> teacherAdapter;
     private ArrayAdapter<Subject> subjectAdapter;
-
     private ArrayList<Branch> branchList;
     private ArrayList<Teacher> teacherList;
     private ArrayList<Subject> subjectList;
-
     private BranchController branchController;
     private TeacherController teacherController;
-
     private SubjectController subjectController;
-    private DatabaseHelper<Student> studentDatabaseHelper;
-    private DatabaseHelper<Class> classDatabaseHelper;
     private ArrayList<Student> studentsWithoutClass;
     private StudentSelectionAdapter studentAdapter;
+    private String username;
+    private String role;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        binding = ActivityClassBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
         binding = ActivityClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        databaseHelper = new DatabaseHelper<>("Classes");
-        studentDatabaseHelper = new DatabaseHelper<>("Student");
-        studentsWithoutClass = new ArrayList<>();
+
+        // Initialize SessionManager and retrieve user info
+        sessionManager = new SessionManager(this);
+        username = getIntent().getStringExtra("username");
+        role = getIntent().getStringExtra("role");
+        if (username == null) username = sessionManager.getUsername();
+        if (role == null) role = sessionManager.getRole();
+
+        // Validate user info
+        if (username == null || role == null || !Arrays.asList("admin", "teacher", "student").contains(role)) {
+            Toast.makeText(this, "Lỗi: Thông tin người dùng không hợp lệ!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Initialize DatabaseHelpers
+        try {
+            databaseHelper = new DatabaseHelper<>("Classes");
+            studentDatabaseHelper = new DatabaseHelper<>("Student");
+            classDatabaseHelper = new DatabaseHelper<>("Classes");
+        } catch (Exception e) {
+            Log.e("ClassActivity", "Lỗi khởi tạo DatabaseHelper: " + e.getMessage());
+            Toast.makeText(this, "Lỗi khởi tạo cơ sở dữ liệu: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
+        // Initialize lists and adapters
         classArrayList = new ArrayList<>();
         originalArrayList = new ArrayList<>();
+        studentsWithoutClass = new ArrayList<>();
         classAdapter = new ClassAdapter(classArrayList);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(classAdapter);
+
+        // Initialize components for admin role
+        if ("admin".equals(role)) {
+            branchList = new ArrayList<>();
+            teacherList = new ArrayList<>();
+            subjectList = new ArrayList<>();
+            branchController = new BranchController();
+            teacherController = new TeacherController();
+            subjectController = new SubjectController();
+            branchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
+            branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            teacherAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, teacherList);
+            teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            subjectAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, subjectList);
+            subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        }
+
+        // Setup views based on role
+        setupViews();
+        loadData();
+    }
+
+    private void setupViews() {
         binding.btnBack.setOnClickListener(v -> finish());
-        binding.btnAdd.setOnClickListener(v -> showDialogAdd());
-        loadDataClass();
         binding.edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -104,75 +151,26 @@ public class ClassActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
-        initializeComponents();
-        setupListeners();
-        loadData();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        loadData();
-        loadDataClass();
-    }
-
-    private void initializeComponents() {
-        branchList = new ArrayList<>();
-        teacherList = new ArrayList<>();
-        subjectList = new ArrayList<>();
-        branchController = new BranchController();
-        teacherController = new TeacherController();
-        subjectController = new SubjectController();
-        subjectAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, subjectList);
-        subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        branchAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
-        branchAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        teacherAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, teacherList);
-        teacherAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    }
-
-    private void setupListeners() {
-        binding.btnBack.setOnClickListener(v -> finish());
-        binding.btnAdd.setOnClickListener(v -> showDialogAdd());
-        binding.edtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchList(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        switch (role) {
+            case "admin":
+                binding.btnAdd.setVisibility(View.VISIBLE);
+                binding.btnAdd.setOnClickListener(v -> showDialogAdd());
+                break;
+            case "teacher":
+            case "student":
+                binding.btnAdd.setVisibility(View.GONE);
+                break;
+        }
     }
 
     private void loadData() {
-        loadBranches();
-        loadTeachers();
-        loadSubjects();
-
-    }
-
-    private void loadSubjects(){
-        subjectController.getSubject(new DatabaseHelper.DatabaseCallback<Subject>() {
-            @Override
-            public void onSuccess(List<Subject> itemList) {
-                Log.d("TAG onSuccess", "onSuccess: " + itemList);
-                subjectList.clear();
-                subjectList.addAll(itemList);
-                subjectAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(String error) {
-                Toast.makeText(ClassActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
-
-            }
-        });
+        if ("admin".equals(role)) {
+            loadBranches();
+            loadTeachers();
+            loadSubjects();
+        }
+        loadDataClass();
     }
 
     private void loadBranches() {
@@ -215,28 +213,117 @@ public class ClassActivity extends AppCompatActivity {
         });
     }
 
+    private void loadSubjects() {
+        subjectController.getSubject(new DatabaseHelper.DatabaseCallback<Subject>() {
+            @Override
+            public void onSuccess(List<Subject> itemList) {
+                runOnUiThread(() -> {
+                    subjectList.clear();
+                    subjectList.addAll(itemList);
+                    subjectAdapter.notifyDataSetChanged();
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() ->
+                        Toast.makeText(ClassActivity.this, "Lỗi tải môn học: " + error, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
     private void loadDataClass() {
         databaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onSuccess(List<Class> list) {
+                Log.d("ClassActivity", "Số lớp học gốc: " + list.size());
+                for (Class cls : list) {
+                    Log.d("ClassActivity", "Lớp: " + cls.getTenLop() +
+                            ", TeacherID: " + (cls.getGiangVien() != null ? cls.getGiangVien().getTeacherID() : "null"));
+                }
                 runOnUiThread(() -> {
                     classArrayList.clear();
                     originalArrayList.clear();
-                    classArrayList.addAll(list);
-                    originalArrayList.addAll(list);
-                    classAdapter.notifyDataSetChanged();
 
+                    switch (role) {
+                        case "admin":
+                            Log.d("ClassActivity", "Admin: Số lớp trước lọc: " + list.size());
+                            for (Class cls : list) {
+                                if (cls != null && cls.getId() != null) {
+                                    classArrayList.add(cls);
+                                }
+                            }
+                            Log.d("ClassActivity", "Admin: Số lớp sau lọc: " + classArrayList.size());
+                            break;
+                        case "teacher":
+                            Log.d("ClassActivity", "Teacher: Username = " + username);
+                            for (Class cls : list) {
+                                if (cls == null) {
+                                    Log.d("ClassActivity", "Bỏ qua lớp: Lớp null");
+                                    continue;
+                                }
+                                if (cls.getGiangVien() == null) {
+                                    Log.d("ClassActivity", "Bỏ qua lớp: " + cls.getTenLop() + ", Teacher null");
+                                    continue;
+                                }
+                                if (cls.getGiangVien().getTeacherID() == null) {
+                                    Log.d("ClassActivity", "Bỏ qua lớp: " + cls.getTenLop() + ", TeacherID null");
+                                    continue;
+                                }
+                                if (cls.getGiangVien().getTeacherID().trim().equals(username.trim())) {
+                                    classArrayList.add(cls);
+                                    Log.d("ClassActivity", "Lớp được thêm: " + cls.getTenLop() + ", TeacherID: " + cls.getGiangVien().getTeacherID());
+                                } else {
+                                    Log.d("ClassActivity", "Bỏ qua lớp: " + cls.getTenLop() + ", TeacherID: " + cls.getGiangVien().getTeacherID() + " không khớp với " + username);
+                                }
+                            }
+                            Log.d("ClassActivity", "Teacher: Số lớp sau lọc: " + classArrayList.size());
+                            break;
+                        case "student":
+                            Log.d("ClassActivity", "Student: Username = " + username);
+                            for (Class cls : list) {
+                                if (cls != null && cls.getDanhSachSinhVien() != null) {
+                                    for (Student student : cls.getDanhSachSinhVien()) {
+                                        if (student != null && student.getStudentID() != null
+                                                && student.getStudentID().trim().equals(username.trim())) {
+                                            classArrayList.add(cls);
+                                            Log.d("ClassActivity", "Lớp được thêm: " + cls.getTenLop());
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            Log.d("ClassActivity", "Student: Số lớp sau lọc: " + classArrayList.size());
+                            break;
+                    }
+
+                    originalArrayList.addAll(classArrayList);
+                    classAdapter.notifyDataSetChanged();
+                    binding.recyclerView.setVisibility(classArrayList.isEmpty() ? View.GONE : View.VISIBLE);
                     if (classArrayList.isEmpty()) {
-                        binding.recyclerView.setVisibility(View.GONE);
-                    } else {
-                        binding.recyclerView.setVisibility(View.VISIBLE);
+                        String message;
+                        switch (role) {
+                            case "admin":
+                                message = "Hệ thống chưa có lớp học nào!";
+                                break;
+                            case "teacher":
+                                message = "Bạn chưa được gán lớp học nào với mã " + username + "!";
+                                break;
+                            case "student":
+                                message = "Bạn chưa tham gia lớp học nào với mã " + username + "!";
+                                break;
+                            default:
+                                message = "Không có lớp học nào!";
+                        }
+                        Toast.makeText(ClassActivity.this, message, Toast.LENGTH_LONG).show();
                     }
                 });
             }
 
             @Override
             public void onFailure(String error) {
+                Log.e("ClassActivity", "Lỗi tải dữ liệu lớp: " + error);
                 runOnUiThread(() -> {
                     binding.recyclerView.setVisibility(View.GONE);
                     Toast.makeText(ClassActivity.this, "Lỗi tải dữ liệu lớp: " + error, Toast.LENGTH_SHORT).show();
@@ -246,6 +333,11 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void showDialogAdd() {
+        if (!"admin".equals(role)) {
+            Toast.makeText(this, "Chỉ admin có thể thêm lớp học!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_add_class);
         Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -253,9 +345,9 @@ public class ClassActivity extends AppCompatActivity {
         if (window != null) {
             window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
             window.setWindowAnimations(R.style.DialogAnimation);
         }
+
         TextView txtTitle = dialog.findViewById(R.id.textView);
         EditText edtMaLop = dialog.findViewById(R.id.edt_maLop_add);
         EditText edtTenLop = dialog.findViewById(R.id.edt_tenLop_add);
@@ -265,25 +357,25 @@ public class ClassActivity extends AppCompatActivity {
         EditText edtNamHoc = dialog.findViewById(R.id.edt_namHoc_add);
         Button btnHuy = dialog.findViewById(R.id.btn_huy_lop);
         Button btnAdd = dialog.findViewById(R.id.btn_add_lop);
-        HelperUtils.setupDatePicker(this, edtNamHoc);
-        if (txtTitle == null || edtMaLop == null || edtTenLop == null || spnKhoaAdd == null ||
-                spnGiangVienAdd == null || edtNamHoc == null || btnHuy == null || btnAdd == null) {
-            Toast.makeText(this, "Lỗi hiển thị dialog", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        runOnUiThread(() -> {
-            spnKhoaAdd.setAdapter(branchAdapter);
-            spnMonHocAdd.setAdapter(subjectAdapter);
-            spnGiangVienAdd.setAdapter(teacherAdapter);
-            txtTitle.setText("Thêm lớp học");
-        });
-
         ListView lvStudents = dialog.findViewById(R.id.lvStudents);
         Button btnSelectAll = dialog.findViewById(R.id.btnSelectAll);
 
+        if (txtTitle == null || edtMaLop == null || edtTenLop == null || spnKhoaAdd == null ||
+                spnGiangVienAdd == null || spnMonHocAdd == null || edtNamHoc == null ||
+                btnHuy == null || btnAdd == null || lvStudents == null || btnSelectAll == null) {
+            Toast.makeText(this, "Lỗi hiển thị dialog", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        runOnUiThread(() -> {
+            txtTitle.setText("Thêm lớp học");
+            spnKhoaAdd.setAdapter(branchAdapter);
+            spnMonHocAdd.setAdapter(subjectAdapter);
+            spnGiangVienAdd.setAdapter(teacherAdapter);
+        });
+
         studentAdapter = new StudentSelectionAdapter(this, new ArrayList<>());
         lvStudents.setAdapter(studentAdapter);
-
         loadStudentsWithoutClass();
 
         btnSelectAll.setOnClickListener(v -> {
@@ -291,6 +383,8 @@ public class ClassActivity extends AppCompatActivity {
             studentAdapter.selectAll(selectAll);
             btnSelectAll.setText(selectAll ? "Bỏ chọn tất cả" : "Chọn tất cả");
         });
+
+        HelperUtils.setupDatePicker(this, edtNamHoc);
 
         btnAdd.setOnClickListener(v -> {
             String id = UUID.randomUUID().toString();
@@ -311,16 +405,19 @@ public class ClassActivity extends AppCompatActivity {
                 return;
             }
 
+            if (selectedSubject == null || selectedSubject.getSubjectName() == null || selectedSubject.getSubjectID().trim().isEmpty()) {
+                Toast.makeText(this, "Vui lòng chọn môn học hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (giangVien == null || giangVien.getTeacherName() == null || giangVien.getTeacherID().trim().isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn giảng viên hợp lệ", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             List<Student> selectedStudents = studentAdapter.getSelectedStudents();
-            Class newClass = new Class(id, maLop, tenLop, khoa,selectedSubject, giangVien, namHoc, selectedStudents);
-
+            Class newClass = new Class(id, maLop, tenLop, khoa, selectedSubject, giangVien, namHoc, selectedStudents);
             addClassAndUpdateStudents(newClass, selectedStudents, dialog);
-
         });
 
         btnHuy.setOnClickListener(v -> dialog.dismiss());
@@ -357,7 +454,6 @@ public class ClassActivity extends AppCompatActivity {
 
                 for (Student student : selectedStudents) {
                     student.setStudentClass(simplifiedClass);
-
                     studentDatabaseHelper.update(student.getId(), student,
                             new DatabaseHelper.DatabaseActionCallback() {
                                 @Override
@@ -438,9 +534,6 @@ public class ClassActivity extends AppCompatActivity {
     }
 
     private void loadStudentsWithoutClass() {
-        if (classDatabaseHelper == null) {
-            classDatabaseHelper = new DatabaseHelper<>("Classes");
-        }
         classDatabaseHelper.getList(Class.class, new DatabaseHelper.DatabaseCallback<Class>() {
             @Override
             public void onSuccess(List<Class> classes) {
@@ -473,7 +566,6 @@ public class ClassActivity extends AppCompatActivity {
                             studentsWithoutClass.addAll(allStudents);
                             studentAdapter.clear();
                             studentAdapter.addAll(allStudents);
-
                             studentAdapter.setMaxClassStudentIds(maxClassStudentIds);
 
                             int eligibleCount = allStudents.size() - maxClassStudentIds.size();
@@ -487,10 +579,6 @@ public class ClassActivity extends AppCompatActivity {
                                                 maxClassStudentIds.size() + " sinh viên đã đạt giới hạn 3 lớp.",
                                         Toast.LENGTH_SHORT).show();
                             }
-//                            Button btnSelectAll = dialog.findViewById(R.id.btnSelectAll);
-//                            if (btnSelectAll != null) {
-//                                btnSelectAll.setText("Chọn tất cả");
-//                            }
                         });
                     }
 
@@ -522,5 +610,11 @@ public class ClassActivity extends AppCompatActivity {
             }
         }
         classAdapter.searchClass(filteredList);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
     }
 }
