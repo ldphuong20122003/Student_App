@@ -45,6 +45,7 @@ public class AverageScoreAdapter extends RecyclerView.Adapter<AverageScoreAdapte
             return;
         }
         Student student = items.get(position);
+        holder.binding.txtSTT.setText(String.valueOf(position + 1));
         if (student == null) {
             Log.e("AverageScoreAdapter", "Student at position " + position + " is null");
             return;

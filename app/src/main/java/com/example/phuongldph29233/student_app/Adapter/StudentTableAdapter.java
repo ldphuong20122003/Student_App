@@ -75,7 +75,7 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             }
             return false;
         });
-        holder.tvKhoa.setText(student.getStudentBranch() != null ? student.getStudentBranch().getBranchName() : "");
+        holder.tvKhoa.setText(student.getStudentBranch() != null ? student.getStudentBranch().getBranchID() : "");
 
 //        holder.tvKhoa.setText(student.getKhoa() != null ? student.getKhoa().getTenKhoa() : "");
     }

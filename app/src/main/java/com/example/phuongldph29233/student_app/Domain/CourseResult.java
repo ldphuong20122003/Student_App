@@ -52,7 +52,6 @@ public class CourseResult {
         this.finalScore = finalScore;
     }
 
-    // Phương thức tính điểm tổng kết
     public void calculateFinalScore() {
         this.finalScore = (float) (processScore * 0.3 + examScore * 0.7);
     }

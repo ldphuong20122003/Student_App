@@ -1,11 +1,14 @@
 package com.example.phuongldph29233.student_app.Activity.Screens;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,7 +41,7 @@ public class AverageScoreActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_average_score);
-
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         recyclerView = findViewById(R.id.recyclerViewAverageScores);
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -47,12 +50,39 @@ public class AverageScoreActivity extends AppCompatActivity {
         averageScores = new HashMap<>();
         adapter = new AverageScoreAdapter(students, classMap, averageScores);
         recyclerView.setAdapter(adapter);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        TextView toolbarTitle = findViewById(R.id.toolbarText);
+        toolbarTitle.setText("Điểm");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         studentDatabaseHelper = new DatabaseHelper<>("Student");
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         scoreDatabaseHelper = new DatabaseHelper<>("Scores");
         scoreStudentHelper = new StudentHelper<>("Scores");
         loadData();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     private void loadData() {

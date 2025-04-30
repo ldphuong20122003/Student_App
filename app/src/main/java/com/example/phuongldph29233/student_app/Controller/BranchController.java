@@ -13,8 +13,6 @@ public class BranchController {
     public BranchController() {
         myRef = FirebaseDatabase.getInstance().getReference("Branch");
     }
-
-    // Lấy danh sách Khoa từ Firebase
     public void getBranches(BranchCallback callback) {
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -36,7 +34,6 @@ public class BranchController {
         });
     }
 
-    // Thêm Khoa mới vào Firebase
     public void addBranch(Branch branch, AddBranchCallback callback) {
         myRef.child(branch.getId()).setValue(branch)
                 .addOnSuccessListener(unused -> callback.onSuccess())
@@ -64,7 +61,6 @@ public class BranchController {
         });
     }
 
-    // Interface Callback
     public interface BranchCallback {
         void onSuccess(ArrayList<Branch> list);
 

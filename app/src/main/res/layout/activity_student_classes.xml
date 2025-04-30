@@ -3,16 +3,59 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    >
 
-    <TextView
-        android:id="@+id/txt_student_info"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- STT -->
+        <TextView
+            android:id="@+id/txt_stt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="STT"
+            android:textColor="@android:color/black"
+           />
+
+        <!-- Mã lớp -->
+        <TextView
+            android:id="@+id/txt_class_code"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:text="Mã lớp"
+            android:textColor="@android:color/black"
+            android:ellipsize="end"
+            android:maxLines="1"
+           />
+
+        <!-- Tên lớp -->
+        <TextView
+            android:id="@+id/txt_class_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:ellipsize="end"
+            android:textAlignment="center"
+            android:maxLines="1"
+            android:text="Tên lớp"
+            />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_student_classes"

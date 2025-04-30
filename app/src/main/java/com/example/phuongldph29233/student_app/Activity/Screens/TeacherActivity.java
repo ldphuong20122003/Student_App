@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.phuongldph29233.student_app.Activity.LoginActivity;
 import com.example.phuongldph29233.student_app.Adapter.TeacherAdapter;
+import com.example.phuongldph29233.student_app.Controller.BranchController;
 import com.example.phuongldph29233.student_app.Domain.Branch;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
@@ -52,6 +53,8 @@ public class TeacherActivity extends AppCompatActivity {
     private ArrayList<Teacher> originalArrayList;
     private ArrayList<Branch> branchArrayList;
     private ArrayAdapter<Branch> branchAdapter;
+    private BranchController branchController;
+
     private String username;
     private String role;
 
@@ -73,6 +76,7 @@ public class TeacherActivity extends AppCompatActivity {
             case "admin":
                 listBinding = ActivityTeacherBinding.inflate(getLayoutInflater());
                 setContentView(listBinding.getRoot());
+                branchController = new BranchController();
                 break;
             case "teacher":
                 detailBinding = ActivityTeacherDetailBinding.inflate(getLayoutInflater());
@@ -202,7 +206,7 @@ public class TeacherActivity extends AppCompatActivity {
                         break;
                     }
                 }
-                final Teacher finalCurrentTeacher = currentTeacher; // Biến final để tránh lỗi lambda
+                final Teacher finalCurrentTeacher = currentTeacher;
                 runOnUiThread(() -> {
                     detailBinding.progressBar.setVisibility(View.GONE);
                     if (finalCurrentTeacher != null && finalCurrentTeacher.getTeacherID() != null) {
@@ -322,21 +326,17 @@ public class TeacherActivity extends AppCompatActivity {
     }
 
     private void loadDataBranch() {
-        branchDatabaseHelper.getList(Branch.class, new DatabaseHelper.DatabaseCallback<Branch>() {
+        branchController.getBranches(new BranchController.BranchCallback() {
             @Override
-            public void onSuccess(List<Branch> list) {
-                runOnUiThread(() -> {
-                    branchArrayList.clear();
-                    branchArrayList.addAll(list);
-                    branchAdapter.notifyDataSetChanged();
-                });
+            public void onSuccess(ArrayList<Branch> list) {
+                branchArrayList.clear();
+                branchArrayList.addAll(list);
+                branchAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onFailure(String error) {
-                runOnUiThread(() -> {
-                    Toast.makeText(TeacherActivity.this, "Lỗi tải chuyên ngành: " + error, Toast.LENGTH_SHORT).show();
-                });
+                Toast.makeText(TeacherActivity.this, "Lỗi: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -112,13 +112,11 @@ public class StudentActivity extends AppCompatActivity {
                 break;
             case "teacher":
                 listBinding.btnBack.setOnClickListener(v -> finish());
-                listBinding.btnLogout.setOnClickListener(v -> showLogoutDialog());
                 listBinding.btnAdd.setVisibility(View.GONE);
                 setupRecyclerViewAndSearch();
                 break;
             case "admin":
                 listBinding.btnBack.setOnClickListener(v -> finish());
-                listBinding.btnLogout.setOnClickListener(v -> showLogoutDialog());
                 listBinding.btnAdd.setVisibility(View.VISIBLE);
                 listBinding.btnAdd.setOnClickListener(v -> showDialogAdd());
                 setupRecyclerViewAndSearch();

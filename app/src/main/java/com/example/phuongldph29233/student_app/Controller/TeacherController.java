@@ -12,7 +12,7 @@ public class TeacherController {
     private final DatabaseHelper<Teacher> databaseHelper;
 
     public TeacherController() {
-        databaseHelper = new DatabaseHelper<>("Teacher"); // Đảm bảo tên node đúng
+        databaseHelper = new DatabaseHelper<>("Teacher");
     }
 
     public void getTeacher(DatabaseHelper.DatabaseCallback<Teacher> callback) {
@@ -29,7 +29,6 @@ public class TeacherController {
         });
     }
 
-    // Các phương thức khác giữ nguyên
     public void addTeacher(Teacher teacher, DatabaseHelper.DatabaseActionCallback callback) {
         databaseHelper.add(teacher, callback);
     }

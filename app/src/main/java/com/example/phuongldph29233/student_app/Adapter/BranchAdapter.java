@@ -43,7 +43,7 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        final Branch selectedBranch = items.get(position); // Biến final để sử dụng trong lambda
+        final Branch selectedBranch = items.get(position);
         holder.binding.txtBranchName.setText("Tên khoa: " + selectedBranch.getBranchName());
         holder.binding.btnDelete.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -56,7 +56,6 @@ public class BranchAdapter extends RecyclerView.Adapter<BranchAdapter.ViewHolder
                         notifyItemRemoved(position);
                         notifyItemRangeChanged(position, items.size());
                         Toast.makeText(context, "Xóa khoa thành công!", Toast.LENGTH_SHORT).show();
-                        // Gửi broadcast để làm mới dữ liệu
                         Intent intent = new Intent("ACTION_DATA_UPDATED_LOCAL");
                         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                     }

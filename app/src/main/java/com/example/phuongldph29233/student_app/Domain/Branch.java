@@ -42,6 +42,6 @@ public class Branch implements Serializable {
 
     @Override
     public String toString() {
-        return getBranchName(); // Hiển thị tên chuyên ngành trong log và Spinner
+        return getBranchName();
     }
 }

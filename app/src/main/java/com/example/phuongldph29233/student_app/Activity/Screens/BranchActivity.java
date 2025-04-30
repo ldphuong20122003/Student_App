@@ -201,7 +201,7 @@ public class BranchActivity extends AppCompatActivity {
                         break;
                     }
                 }
-                final Branch finalSelectedBranch = selectedBranch; // Biến final để sử dụng trong lambda
+                final Branch finalSelectedBranch = selectedBranch;
                 runOnUiThread(() -> {
                     if (finalSelectedBranch != null && finalSelectedBranch.getBranchID() != null) {
                         detailBinding.txtBranchID.setText("Mã khoa: " + finalSelectedBranch.getBranchID());

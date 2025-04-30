@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.phuongldph29233.student_app.Activity.Screens.StudentListActivity;
 import com.example.phuongldph29233.student_app.Domain.Class;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
@@ -46,20 +46,23 @@ public class StudentClassesAdapter extends RecyclerView.Adapter<StudentClassesAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Class classItem = classList.get(position);
-
+        holder.txt_stt.setText(String.valueOf(position + 1));
         holder.txtClassName.setText(classItem.getTenLop());
-        holder.txtClassCode.setText("Mã lớp: " + classItem.getMaLop());
-//        holder.radioButton.setChecked(classItem.getTenLop().equals(currentClass));
-//        holder.radioButton.setOnClickListener(v -> {
-//            if (!classItem.getTenLop().equals(currentClass)) {
-//                updateStudentClass(classItem);
-//            }
-//        });
+        holder.txtClassCode.setText(classItem.getMaLop());
+
         holder.itemView.setOnClickListener(v -> {
-            if (!classItem.getTenLop().equals(currentClass)) {
-//                holder.radioButton.setChecked(true);
-                updateStudentClass(classItem);
+            Intent intent = new Intent(context, StudentListActivity.class);
+            intent.putExtra("maLop", classItem.getMaLop());
+            intent.putExtra("tenLop", classItem.getTenLop());
+            intent.putExtra("subjectId", classItem.getMonHoc() != null ? classItem.getMonHoc().getSubjectID() : "");
+            intent.putExtra("monHoc", classItem.getMonHoc() != null ? classItem.getMonHoc().toString() : "");
+            ArrayList<Student> students = new ArrayList<>();
+            if (classItem.getDanhSachSinhVien() != null) {
+                students.addAll(classItem.getDanhSachSinhVien());
             }
+            intent.putExtra("danhSachSinhVien", students);
+
+            context.startActivity(intent);
         });
     }
 
@@ -106,14 +109,13 @@ public class StudentClassesAdapter extends RecyclerView.Adapter<StudentClassesAd
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView txtClassName, txtClassCode, txtClassTeacher;
-        RadioButton radioButton;
+        TextView txtClassName, txtClassCode, txt_stt;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             txtClassName = itemView.findViewById(R.id.txt_class_name);
             txtClassCode = itemView.findViewById(R.id.txt_class_code);
-            radioButton = itemView.findViewById(R.id.radio_select_class);
+            txt_stt = itemView.findViewById(R.id.txt_stt);
         }
     }
 }

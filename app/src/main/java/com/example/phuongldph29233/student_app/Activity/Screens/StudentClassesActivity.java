@@ -53,9 +53,7 @@ public class StudentClassesActivity extends AppCompatActivity {
 
     private void initViews() {
         recyclerView = findViewById(R.id.recycler_student_classes);
-        txtStudentInfo = findViewById(R.id.txt_student_info);
         btnBack = findViewById(R.id.btn_back);
-        txtStudentInfo.setText("Danh sách lớp học của sinh viên: " + studentName);
         btnBack.setOnClickListener(v -> finish());
     }
 

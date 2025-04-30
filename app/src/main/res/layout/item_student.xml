@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         app:strokeColor="@color/outline"
         app:strokeWidth="1dp"
+        android:layout_marginBottom="6dp"
         app:cardBackgroundColor="@color/surfaceContainer"
         app:cardCornerRadius="12dp"
         app:rippleColor="@color/primary_20pct">

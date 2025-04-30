@@ -80,21 +80,16 @@ public class ClassActivity extends AppCompatActivity {
         binding = ActivityClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize SessionManager and retrieve user info
         sessionManager = new SessionManager(this);
         username = getIntent().getStringExtra("username");
         role = getIntent().getStringExtra("role");
         if (username == null) username = sessionManager.getUsername();
         if (role == null) role = sessionManager.getRole();
-
-        // Validate user info
         if (username == null || role == null || !Arrays.asList("admin", "teacher", "student").contains(role)) {
             Toast.makeText(this, "Lỗi: Thông tin người dùng không hợp lệ!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-
-        // Initialize DatabaseHelpers
         try {
             databaseHelper = new DatabaseHelper<>("Classes");
             studentDatabaseHelper = new DatabaseHelper<>("Student");
@@ -105,16 +100,12 @@ public class ClassActivity extends AppCompatActivity {
             finish();
             return;
         }
-
-        // Initialize lists and adapters
         classArrayList = new ArrayList<>();
         originalArrayList = new ArrayList<>();
         studentsWithoutClass = new ArrayList<>();
         classAdapter = new ClassAdapter(classArrayList);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerView.setAdapter(classAdapter);
-
-        // Initialize components for admin role
         if ("admin".equals(role)) {
             branchList = new ArrayList<>();
             teacherList = new ArrayList<>();
@@ -129,8 +120,9 @@ public class ClassActivity extends AppCompatActivity {
             subjectAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, subjectList);
             subjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         }
-
-        // Setup views based on role
+        if (!"admin".equals(role)) {
+            binding.btnAdd.setVisibility(View.GONE);
+        }
         setupViews();
         loadData();
     }

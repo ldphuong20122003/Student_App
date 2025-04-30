@@ -36,10 +36,12 @@ import com.example.phuongldph29233.student_app.Domain.Subject;
 import com.example.phuongldph29233.student_app.Domain.Teacher;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
 import com.example.phuongldph29233.student_app.Helper.HelperUtils;
+import com.example.phuongldph29233.student_app.Helper.SessionManager;
 import com.example.phuongldph29233.student_app.R;
 import com.example.phuongldph29233.student_app.databinding.ActivityDetailClassBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -61,11 +63,20 @@ public class DetailClassActivity extends AppCompatActivity {
     private StudentSelectionAdapter studentAdapter;
     private SubjectController subjectController;
     private ArrayList<Subject> subjectList;
+    private SessionManager sessionManager;
+    private String role;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDetailClassBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        sessionManager = new SessionManager(this);
+        role = sessionManager.getRole();
+        if (role == null || !Arrays.asList("admin", "teacher", "student").contains(role)) {
+            Toast.makeText(this, "Lỗi: Thông tin vai trò không hợp lệ!", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         classDatabaseHelper = new DatabaseHelper<>("Classes");
         studentDatabaseHelper = new DatabaseHelper<>("Student");
         subjectController = new SubjectController();
@@ -80,6 +91,9 @@ public class DetailClassActivity extends AppCompatActivity {
         teacherList = new ArrayList<>();
         loadTeachers();
         setupButtonListeners();
+        if (!"admin".equals(role)) {
+            binding.btnList.setVisibility(View.GONE);
+        }
     }
 
     private void initViews() {
@@ -151,17 +165,35 @@ public class DetailClassActivity extends AppCompatActivity {
     private void setupButtonListeners() {
         binding.btnBack.setOnClickListener(v -> finish());
         binding.btnList.setOnClickListener(v -> {
-            isVisible = !isVisible;
-            if (isVisible) {
-                binding.btnEdit.setVisibility(View.VISIBLE);
-                binding.btnDelete.setVisibility(View.VISIBLE);
+            if ("admin".equals(role)) {
+                isVisible = !isVisible;
+                if (isVisible) {
+                    binding.btnEdit.setVisibility(View.VISIBLE);
+                    binding.btnDelete.setVisibility(View.VISIBLE);
+                } else {
+                    binding.btnEdit.setVisibility(View.GONE);
+                    binding.btnDelete.setVisibility(View.GONE);
+                }
             } else {
-                binding.btnEdit.setVisibility(View.GONE);
-                binding.btnDelete.setVisibility(View.GONE);
+                Toast.makeText(this, "Chỉ admin mới có quyền chỉnh sửa hoặc xóa lớp học!", Toast.LENGTH_SHORT).show();
             }
         });
-        binding.btnEdit.setOnClickListener(v -> showEditDialog());
-        binding.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog());
+
+        binding.btnEdit.setOnClickListener(v -> {
+            if ("admin".equals(role)) {
+                showEditDialog();
+            } else {
+                Toast.makeText(this, "Bạn không có quyền chỉnh sửa lớp học!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        binding.btnDelete.setOnClickListener(v -> {
+            if ("admin".equals(role)) {
+                showDeleteConfirmationDialog();
+            } else {
+                Toast.makeText(this, "Bạn không có quyền xóa lớp học!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void loadSubjects(){
@@ -264,7 +296,7 @@ public class DetailClassActivity extends AppCompatActivity {
         new Handler().postDelayed(() -> {
             for (int i = 0; i < subjectList.size(); i++) {
                 if (subjectList.get(i).getSubjectName().equals(monHoc)) {
-                    spnKhoaEdit.setSelection(i);
+                    spnMonHocEdit.setSelection(i);
                     break;
                 }
             }
@@ -324,7 +356,7 @@ public class DetailClassActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch,Subject selectedSubject,
+    private void updateClassAndStudents(String updatedMaLop, String updatedTenLop, Branch selectedBranch, Subject selectedSubject,
                                         Teacher selectedTeacher, String updatedNamHoc,
                                         List<Student> selectedStudents, List<String> selectedStudentIds,
                                         Dialog dialog) {
@@ -410,10 +442,10 @@ public class DetailClassActivity extends AppCompatActivity {
 
                         runOnUiThread(() -> {
                             Toast.makeText(DetailClassActivity.this, "Cập nhật lớp học thành công!", Toast.LENGTH_SHORT).show();
-
                             maLop = updatedMaLop;
                             tenLop = updatedTenLop;
                             khoa = selectedBranch.getBranchName();
+                            monHoc = selectedSubject.getSubjectName();
                             giangVien = selectedTeacher.getTeacherName();
                             namHoc = updatedNamHoc;
                             danhSachSinhVienIds = selectedStudentIds;
@@ -421,6 +453,7 @@ public class DetailClassActivity extends AppCompatActivity {
                             binding.txtMaLopDetail.setText(maLop);
                             binding.txtTenLopDetail.setText(tenLop);
                             binding.txtKhoaDetail.setText(khoa);
+                            binding.txtMonhocDetail.setText(monHoc);
                             binding.txtGiangVienDetail.setText(giangVien);
                             binding.txtNamHocDetail.setText(namHoc);
                             sendRefreshBroadcast();

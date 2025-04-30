@@ -101,9 +101,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.cardSubject.setOnClickListener(v -> {
-            if (role.equals("admin")) {
                 startActivity(new Intent(MainActivity.this, SubjectActivity.class));
-            }
+
         });
 
         binding.cardTeacher.setOnClickListener(v -> {

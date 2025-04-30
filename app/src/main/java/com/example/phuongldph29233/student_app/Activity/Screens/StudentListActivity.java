@@ -175,7 +175,6 @@ public class StudentListActivity extends AppCompatActivity {
 
         EditText etProgressScore = dialogView.findViewById(R.id.etProgressScore);
         EditText etExamScore = dialogView.findViewById(R.id.etExamScore);
-        EditText etFinalScore = dialogView.findViewById(R.id.etFinalScore);
         Button btnCancel = dialogView.findViewById(R.id.btnCancel);
         Button btnSave = dialogView.findViewById(R.id.btnSave);
 
@@ -183,11 +182,9 @@ public class StudentListActivity extends AppCompatActivity {
         if (existingScore != null) {
             etProgressScore.setText(String.format("%.1f", existingScore.getProgressScore()));
             etExamScore.setText(String.format("%.1f", existingScore.getExamScore()));
-            etFinalScore.setText(String.format("%.1f", existingScore.getFinalScore()));
         } else {
             etProgressScore.setText("0.0");
             etExamScore.setText("0.0");
-            etFinalScore.setText("0.0");
         }
 
         AlertDialog dialog = builder.create();

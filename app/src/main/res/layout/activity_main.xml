@@ -304,7 +304,7 @@
         android:layout_height="wrap_content"
         app:backgroundTint="@color/blue"
         android:layout_margin="30dp"
-        android:src="@drawable/icon_add"
+        android:src="@drawable/logout"
         app:tint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
