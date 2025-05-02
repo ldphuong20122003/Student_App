@@ -120,7 +120,6 @@ public class TeacherActivity extends AppCompatActivity {
                 break;
             case "teacher":
                 detailBinding.btnBack.setOnClickListener(v -> finish());
-                detailBinding.btnLogout.setOnClickListener(v -> showLogoutDialog());
                 break;
         }
     }
@@ -194,8 +193,6 @@ public class TeacherActivity extends AppCompatActivity {
     }
 
     private void loadTeacherDataForTeacher() {
-        detailBinding.progressBar.setVisibility(View.VISIBLE);
-        detailBinding.txtNoData.setVisibility(View.GONE);
         teacherDatabaseHelper.getList(Teacher.class, new DatabaseHelper.DatabaseCallback<Teacher>() {
             @Override
             public void onSuccess(List<Teacher> teacherList) {
@@ -208,19 +205,14 @@ public class TeacherActivity extends AppCompatActivity {
                 }
                 final Teacher finalCurrentTeacher = currentTeacher;
                 runOnUiThread(() -> {
-                    detailBinding.progressBar.setVisibility(View.GONE);
                     if (finalCurrentTeacher != null && finalCurrentTeacher.getTeacherID() != null) {
                         detailBinding.txtTeacherID.setText("Mã giảng viên: " + (finalCurrentTeacher.getTeacherID() != null ? finalCurrentTeacher.getTeacherID() : "N/A"));
                         detailBinding.txtTeacherName.setText("Tên giảng viên: " + (finalCurrentTeacher.getTeacherName() != null ? finalCurrentTeacher.getTeacherName() : "N/A"));
                         detailBinding.txtTeacherEmail.setText("Email: " + (finalCurrentTeacher.getTeacherEmail() != null ? finalCurrentTeacher.getTeacherEmail() : "N/A"));
                         detailBinding.txtTeacherPhone.setText("Số điện thoại: " + (finalCurrentTeacher.getTeacherPhone() != null ? finalCurrentTeacher.getTeacherPhone() : "N/A"));
                         detailBinding.txtTeacherBranch.setText("Chuyên ngành: " + (finalCurrentTeacher.getTeacherBranch() != null && finalCurrentTeacher.getTeacherBranch().getBranchName() != null ? finalCurrentTeacher.getTeacherBranch().getBranchName() : "N/A"));
-                        detailBinding.teacherDetailLayout.setVisibility(View.VISIBLE);
-                        detailBinding.txtNoData.setVisibility(View.GONE);
+
                     } else {
-                        detailBinding.teacherDetailLayout.setVisibility(View.GONE);
-                        detailBinding.txtNoData.setVisibility(View.VISIBLE);
-                        detailBinding.txtNoData.setText("Không tìm thấy thông tin giảng viên!");
                         Toast.makeText(TeacherActivity.this, "Không tìm thấy thông tin giảng viên!", Toast.LENGTH_SHORT).show();
                         finish();
                     }
@@ -230,10 +222,6 @@ public class TeacherActivity extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 runOnUiThread(() -> {
-                    detailBinding.progressBar.setVisibility(View.GONE);
-                    detailBinding.teacherDetailLayout.setVisibility(View.GONE);
-                    detailBinding.txtNoData.setVisibility(View.VISIBLE);
-                    detailBinding.txtNoData.setText("Lỗi tải dữ liệu: " + error);
                     Toast.makeText(TeacherActivity.this, "Lỗi tải dữ liệu giảng viên: " + error, Toast.LENGTH_SHORT).show();
                     finish();
                 });

@@ -109,11 +109,9 @@ public class BranchActivity extends AppCompatActivity {
                 break;
             case "teacher":
                 detailBinding.btnBack.setOnClickListener(v -> finish());
-                detailBinding.btnLogout.setOnClickListener(v -> showLogoutDialog());
                 break;
             case "student":
                 detailBinding.btnBack.setOnClickListener(v -> finish());
-                detailBinding.btnLogout.setOnClickListener(v -> showLogoutDialog());
                 break;
         }
     }
@@ -206,10 +204,8 @@ public class BranchActivity extends AppCompatActivity {
                     if (finalSelectedBranch != null && finalSelectedBranch.getBranchID() != null) {
                         detailBinding.txtBranchID.setText("Mã khoa: " + finalSelectedBranch.getBranchID());
                         detailBinding.txtBranchName.setText("Tên khoa: " + finalSelectedBranch.getBranchName());
-                        detailBinding.branchDetailLayout.setVisibility(View.VISIBLE);
                         detailBinding.txtNoData.setVisibility(View.GONE);
                     } else {
-                        detailBinding.branchDetailLayout.setVisibility(View.GONE);
                         detailBinding.txtNoData.setVisibility(View.VISIBLE);
                         detailBinding.txtNoData.setText("Bạn chưa được gán lớp học nào thuộc khoa nào!");
                     }
@@ -219,7 +215,6 @@ public class BranchActivity extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 runOnUiThread(() -> {
-                    detailBinding.branchDetailLayout.setVisibility(View.GONE);
                     detailBinding.txtNoData.setVisibility(View.VISIBLE);
                     detailBinding.txtNoData.setText("Lỗi tải dữ liệu: " + error);
                 });
@@ -245,10 +240,8 @@ public class BranchActivity extends AppCompatActivity {
                     if (finalSelectedBranch != null && finalSelectedBranch.getBranchID() != null) {
                         detailBinding.txtBranchID.setText("Mã khoa: " + finalSelectedBranch.getBranchID());
                         detailBinding.txtBranchName.setText("Tên khoa: " + finalSelectedBranch.getBranchName());
-                        detailBinding.branchDetailLayout.setVisibility(View.VISIBLE);
                         detailBinding.txtNoData.setVisibility(View.GONE);
                     } else {
-                        detailBinding.branchDetailLayout.setVisibility(View.GONE);
                         detailBinding.txtNoData.setVisibility(View.VISIBLE);
                         detailBinding.txtNoData.setText("Bạn chưa được gán vào khoa nào!");
                     }
@@ -258,7 +251,6 @@ public class BranchActivity extends AppCompatActivity {
             @Override
             public void onFailure(String error) {
                 runOnUiThread(() -> {
-                    detailBinding.branchDetailLayout.setVisibility(View.GONE);
                     detailBinding.txtNoData.setVisibility(View.VISIBLE);
                     detailBinding.txtNoData.setText("Lỗi tải dữ liệu: " + error);
                 });

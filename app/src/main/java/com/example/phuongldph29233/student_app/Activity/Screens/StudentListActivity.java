@@ -24,6 +24,7 @@ import com.example.phuongldph29233.student_app.Adapter.StudentTableAdapter;
 import com.example.phuongldph29233.student_app.Domain.Score;
 import com.example.phuongldph29233.student_app.Domain.Student;
 import com.example.phuongldph29233.student_app.Helper.DatabaseHelper;
+import com.example.phuongldph29233.student_app.Helper.SessionManager;
 import com.example.phuongldph29233.student_app.Helper.StudentHelper;
 import com.example.phuongldph29233.student_app.R;
 
@@ -63,7 +64,11 @@ public class StudentListActivity extends AppCompatActivity {
         studentScores = new HashMap<>();
         recyclerView = findViewById(R.id.recyclerViewStudents);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new StudentTableAdapter(this, students, studentScores);
+
+        // Lấy role từ SessionManager và truyền vào adapter
+        SessionManager sessionManager = new SessionManager(this);
+        String role = sessionManager.getRole();
+        adapter = new StudentTableAdapter(this, students, studentScores, role);
         adapter.setOnItemLongClickListener(position -> {
             Student student = adapter.getStudentAtPosition(position);
             if (student != null) {
@@ -80,7 +85,7 @@ public class StudentListActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        studentDatabaseHelper = new DatabaseHelper<>("Students");
+        studentDatabaseHelper = new DatabaseHelper<>("Student");
         scoreDatabaseHelper = new DatabaseHelper<>("Scores");
         scoreStudentHelper = new StudentHelper<>("Scores");
         loadStudentScores();

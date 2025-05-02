@@ -22,6 +22,8 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
     private List<Student> studentList;
     private OnItemLongClickListener longClickListener;
     private Map<String, Score> studentScores;
+    private String role; // Thêm thuộc tính role để kiểm tra quyền
+
     public interface OnItemLongClickListener {
         boolean onItemLongClick(int position);
     }
@@ -29,15 +31,12 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
     public void setOnItemLongClickListener(OnItemLongClickListener listener) {
         this.longClickListener = listener;
     }
-//    public StudentTableAdapter(Context context, List<Student> studentList) {
-//        this.context = context;
-//        this.studentList = studentList;
-//    }
 
-    public StudentTableAdapter(Context context, List<Student> studentList, Map<String, Score> studentScores) {
+    public StudentTableAdapter(Context context, List<Student> studentList, Map<String, Score> studentScores, String role) {
         this.context = context;
         this.studentList = studentList;
         this.studentScores = studentScores;
+        this.role = role;
     }
 
     @NonNull
@@ -69,20 +68,25 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             holder.tvDiemTK.setText("0.0");
         }
 
-        holder.itemView.setOnLongClickListener(v -> {
-            if (longClickListener != null) {
-                return longClickListener.onItemLongClick(position);
-            }
-            return false;
-        });
-        holder.tvKhoa.setText(student.getStudentBranch() != null ? student.getStudentBranch().getBranchID() : "");
+        // Chỉ gán sự kiện onLongClick cho admin và teacher
+        if ("admin".equals(role) || "teacher".equals(role)) {
+            holder.itemView.setOnLongClickListener(v -> {
+                if (longClickListener != null) {
+                    return longClickListener.onItemLongClick(position);
+                }
+                return false;
+            });
+        } else {
+            holder.itemView.setOnLongClickListener(null); // Không gán sự kiện cho các vai trò khác
+        }
 
-//        holder.tvKhoa.setText(student.getKhoa() != null ? student.getKhoa().getTenKhoa() : "");
+        holder.tvKhoa.setText(student.getStudentBranch() != null ? student.getStudentBranch().getBranchID() : "");
     }
 
     public Student getStudentAtPosition(int position) {
         return studentList.get(position);
     }
+
     @Override
     public int getItemCount() {
         return studentList.size();
@@ -109,7 +113,6 @@ public class StudentTableAdapter extends RecyclerView.Adapter<StudentTableAdapte
             tvDiemQT = itemView.findViewById(R.id.tvProgressScore);
             tvDiemThi = itemView.findViewById(R.id.tvExamScore);
             tvDiemTK = itemView.findViewById(R.id.tvFinalScore);
-//            tvKhoa = itemView.findViewById(R.id.tvKhoa);
         }
     }
 }
